@@ -10,7 +10,8 @@ services:
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_TABLE_PREFIX=
     volumes:
-      - /Users/ernesto/Projects/JadCargas/docker/woocommerce/src:/var/www/html
+      - ./src:/var/www/html
+      - ./jadlog-shipping:/var/www/html/wp-content/plugins/jadlog-shipping
     ports:
       - 8080:80
     depends_on:
