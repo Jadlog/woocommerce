@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: JadLog Pickup
+ * Plugin Name: Jadlog Shipping
  * Plugin URI: https://www.jadlog.com.br/
- * Description: JadLog Pickup Module for WooCommerce 2 & 3
+ * Description: JadLog Shipping Module for WooCommerce 2 & 3
  * Version: 1.0.0
  * Author: JadLog
  * Author URI: https://www.jadlog.com.br/
  * License: Open Software License (OSL 3.0) - http://opensource.org/licenses/osl-3.0.php
- * Text Domain: jadlog-pickup
+ * Text Domain: jadlog-shipping
  */
 
 session_start();
@@ -1003,7 +1003,7 @@ class Jadlog
 
         <div class="dpdfrance-wrap">
             <h2><img src="<?php echo JADLOG_ROOT_URL; ?>/logo.png"/></h2>
-            <h2>Pedidos Jadlog Pickup</h2>
+            <h2>Pedidos Jadlog</h2>
 
             <?php
             /* Table header */
