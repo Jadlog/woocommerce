@@ -91,7 +91,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                                 $rate = array(
                                     'id' => $value['PUDO_ID'],
                                     'label' => 'Jadlog - Pickup - ' . $value['NAME'],
-                                    'cost' => jadlog_get_pudo_price(jadlog_getPackage($package)->preco,$value,jadlog_getPackage($package)->volume),
+                                    'cost' => jadlog_get_pudo_price(jadlog_getPackage($package)->preco,$value,jadlog_getPackage($package)->peso_cubado),
                                     'meta_data' => [
                                         'id_pudo' => $value['PUDO_ID'],
                                         'name_pudo' => $value['NAME'],
@@ -127,8 +127,14 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
             $volume  = $volume +  (float) ($width * $length * $height) * $item['quantity'];
             $total =+ $valor ;
         }
-        $pacote->volume = (float) $volume/3333;
+        $pacote->volume = (float) $volume/6000;
+        $pacote->peso = $weight;
         $pacote->preco = $valor;
+        $pacote->peso_cubado = $pacote->volume;
+        if($pacote->peso > $pacote->peso_cubado) {
+            $pacote->peso_cubado = $pacote->peso;
+        }
+        error_log( 'In ' . __FUNCTION__ . '(), $pacote = ' . var_export( $pacote, true ) );
 
         return $pacote;
     }
@@ -154,6 +160,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
         $response = curl_exec($curl);
         $err = curl_error($curl);
+        error_log( 'In ' . __FUNCTION__ . '(), $url = ' . var_export( $url, true ) );
+        error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
+        error_log( 'In ' . __FUNCTION__ . '(), $err = ' . var_export( $err, true ) );
         curl_close($curl);
         $resposta = convertXmlToJson($response,"Jadlog_Valor_Frete");
         $resposta = json_decode($resposta);

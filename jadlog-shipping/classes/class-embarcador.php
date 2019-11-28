@@ -65,12 +65,39 @@ class JadLogEmbarcador {
 
         $order = new WC_Order( $order_id[0] );
 
+        //calculo do peso cubado
+        $total_volume = 0.0;
+        $total_weight = 0.0;
+        $total  = 0.0;
+        foreach( $order->get_items() as $item_id => $product_item ){
+            $quantity = $product_item->get_quantity(); // get quantity
+            $product = $product_item->get_product(); // get the WC_Product object
+            $product_weight = $product->get_weight(); // get the product weight
+            // Add the line item weight to the total weight calculation
+            $total_weight += floatval( $product_weight * $quantity );
+
+            //valor dos produtos
+            $valor = $product->get_price() * $quantity;
+            $total += $valor;
+
+            // dimensions
+            $width = $product->get_width();
+            $height = $product->get_height();
+            $length = $product->get_length();
+            $total_volume = $total_volume + (float) ($width * $length * $height * $quantity);
+        }
+        $peso_cubado = (float) $total_volume/6000;
+        if($total_weight > $peso_cubado) {
+            $peso_cubado = $total_weight;
+        }
+
+
         $jadlog_request = new stdClass();
         $jadlog_request->codCliente      = $this->codigo_cliente;
         $jadlog_request->conteudo        = 'PLUGIN JADLOG';
         $jadlog_request->pedido          = $order->get_order_number();
-        $jadlog_request->totPeso         = 1;
-        $jadlog_request->totValor        = $order->get_total();
+        $jadlog_request->totPeso         = $peso_cubado;
+        $jadlog_request->totValor        = $total; //$order->get_total();
         $jadlog_request->obs             = null;
         $jadlog_request->modalidade      = $this->modalidade;
         $jadlog_request->contaCorrente   = $this->conta_corrente;
@@ -118,16 +145,16 @@ class JadLogEmbarcador {
         $jadlog_request->des->contato      = $order->get_formatted_billing_full_name();
 
         $jadlog_request->volume = new stdClass();
-        $jadlog_request->volume->altura         = 10;
-        $jadlog_request->volume->comprimento    = 10;
-        $jadlog_request->volume->largura        = 10;
-        $jadlog_request->volume->peso           = 1.0;
-        $jadlog_request->volume->identificador  = '242424887';
+        $jadlog_request->volume->altura         = pow($total_volume, 1/3);
+        $jadlog_request->volume->comprimento    = pow($total_volume, 1/3);
+        $jadlog_request->volume->largura        = pow($total_volume, 1/3);
+        $jadlog_request->volume->peso           = $peso_cubado;
+        $jadlog_request->volume->identificador  = $order->get_order_number();
         $jadlog_request->volume->lacre          = null;
 
         $jadlog_request->dfe = new stdClass();
         $jadlog_request->dfe->danfeCte          = null;
-        $jadlog_request->dfe->valor             = 20.2;
+        $jadlog_request->dfe->valor             = $total; //$order->get_total();
         $jadlog_request->dfe->nrDoc             = 'DECLARACAO';
         $jadlog_request->dfe->serie             = null;
         $jadlog_request->dfe->cfop              = '6909';
@@ -142,11 +169,14 @@ class JadLogEmbarcador {
                 'cookies' => array()
             )
         );
+        error_log( 'In ' . __FUNCTION__ . '(), $jadlog_request = ' . var_export( $jadlog_request, true ) );
+        error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
 
         if ( is_wp_error( $response ) ) {
             $error_message = $response->get_error_message();
             return $error_message;
         } else {
+            //TODO: save shipment id
             $this->_saveStatus($response['body']);
             return $response['body'];
         }

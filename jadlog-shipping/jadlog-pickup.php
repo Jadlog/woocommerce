@@ -1041,7 +1041,7 @@ class Jadlog
 
                 $order_data[$order_id] = [
                     'order_id'          => $order->get_order_number(),
-                    'order_date'        => date('d/m/Y H:i:s', strtotime($order->order_date)),
+                    'order_date'        => date('d/m/Y H:i:s', strtotime($order->get_date_created())),
                     'full_name'         => $order->get_formatted_billing_full_name(),
                 ];
 
