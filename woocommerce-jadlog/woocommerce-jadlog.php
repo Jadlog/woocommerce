@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: Jadlog Shipping
+ * Plugin Name: WooCommerce Jadlog
  * Plugin URI: https://www.jadlog.com.br/
- * Description: JadLog Shipping Module for WooCommerce 2 & 3
- * Version: 1.0.0
- * Author: JadLog
+ * Description: Jadlog Shipping Module for WooCommerce 2 & 3
+ * Version: 0.0.1
+ * Author: Jadlog Logística
  * Author URI: https://www.jadlog.com.br/
  * License: Open Software License (OSL 3.0) - http://opensource.org/licenses/osl-3.0.php
- * Text Domain: jadlog-shipping
+ * Text Domain: woocommerce-jadlog
  */
 
 session_start();
@@ -16,7 +16,7 @@ session_start();
 if (!defined('ABSPATH'))
     exit;
 
-class Jadlog
+class WooCommerceJadlog
 {
     function Jadlog_main()
     {
@@ -1090,7 +1090,7 @@ class Jadlog
 
 }
 
-$module = new Jadlog();
+$module = new WooCommerceJadlog();
 
 /* Register plugin status hooks */
 register_activation_hook(__FILE__, array($module, 'install'));

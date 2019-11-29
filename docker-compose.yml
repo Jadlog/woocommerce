@@ -11,7 +11,7 @@ services:
       - WORDPRESS_TABLE_PREFIX=
     volumes:
       - ./src:/var/www/html
-      - ./jadlog-shipping:/var/www/html/wp-content/plugins/jadlog-shipping
+      - ./woocommerce-jadlog:/var/www/html/wp-content/plugins/woocommerce-jadlog
     ports:
       - 8080:80
     depends_on:
