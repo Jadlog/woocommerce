@@ -24,7 +24,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->enabled = isset( $this->settings['enabled'] ) ? $this->settings['enabled'] : 'yes';
                     $this->title = isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'Melhor Envio', 'melhorenvio' );
 
-                    include_once('class-mypudo.php');
+                    include_once('jadlog-mypudo.php');
                 }
 
                 /**
