@@ -20,7 +20,7 @@ class JadLogMyPudo {
         $this->url      = get_option('wc_settings_tab_jadlog_my_pudo');
         $this->key      = get_option('wc_settings_tab_jadlog_key_pudo');
 
-        include_once('class-viacep.php');
+        include_once('postal-code-helper.php');
     }
 
     /**
@@ -32,7 +32,7 @@ class JadLogMyPudo {
      */
     public function getPudos($postalcode = null) {
 
-        $MEgetCep = new MelhorEnvioGetCep();
+        $MEgetCep = new PostalCodeHelper();
 
         $postalcode = str_replace('-', '', $postalcode);
 
@@ -62,7 +62,7 @@ class JadLogMyPudo {
      */
     public function getLatLongPudo($pudo_id = null) {
 
-        $MEgetCep = new MelhorEnvioGetCep();
+        $MEgetCep = new PostalCodeHelper();
 
         $postalcode = str_replace('-', '', $postalcode);
 

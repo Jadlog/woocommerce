@@ -6,9 +6,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
     function jadlogShippingInit(){
         if ( ! class_exists( 'WC_Jadlog_Shipping_Method' ) ) {
 
-            /**
-             * Class WC_MelhorEnvioShippingMethod
-             */
             class WC_Jadlog_Shipping_Method extends WC_Shipping_Method {
 
                 /**
@@ -58,7 +55,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                     $JDgetPudos = new JadLogMyPudo();
 
-                    $pudos = $JDgetPudos->getPudos($woocommerce->customer->get_shipping_postcode());
+                    $postcode = $woocommerce->customer->get_shipping_postcode();
+                    $pudos    = $JDgetPudos->getPudos($postcode);
+                    // echo "<pre>";
+                    // print_r($pudos);
+                    // echo "</pre>";
 
                     if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM'])) {
                         if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM']['PUDO_ID'])) {
