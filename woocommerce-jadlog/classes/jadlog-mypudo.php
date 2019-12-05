@@ -32,14 +32,16 @@ class JadLogMyPudo {
      */
     public function getPudos($postalcode = null) {
 
-        $MEgetCep = new PostalCodeHelper();
+        $postalCodeHelper = new PostalCodeHelper();
 
         $postalcode = str_replace('-', '', $postalcode);
+        $city = $postalCodeHelper->getCityName($postalcode);
+        $city = empty($city) ? ' ' : $city; //if cannot get city, uses string with spaces - API bug
 
         $url       = $this->url;
-        $url      .= '?carrier=JAD&key='.$this->key;
-        $url      .= '&address=&city='.$MEgetCep->getCityName($postalcode);
-        $url      .= '&zipCode='.$postalcode;
+        $url      .= '?carrier=JAD&key='.urlencode($this->key);
+        $url      .= '&address=&city='.urlencode($city);
+        $url      .= '&zipCode='.urlencode($postalcode);
         $url      .= '&countrycode=BRA&requestID=12&date_from=&max_pudo_number=100';
         $url      .= '&max_distance_search=&weight=&category=&holiday_tolerant=';
         $response = wp_remote_get($url);
@@ -50,7 +52,6 @@ class JadLogMyPudo {
         $array = json_decode($json,TRUE);
 
         return $array;
-
     }
 
     /**
@@ -62,14 +63,16 @@ class JadLogMyPudo {
      */
     public function getLatLongPudo($pudo_id = null) {
 
-        $MEgetCep = new PostalCodeHelper();
+        $postalCodeHelper = new PostalCodeHelper();
 
         $postalcode = str_replace('-', '', $postalcode);
+        $city = $postalCodeHelper->getCityName($postalcode);
+        $city = empty($city) ? ' ' : $city; //if cannot get city, uses string with spaces - API bug
 
         $url       = $this->url;
-        $url      .= '?carrier=JAD&key='.$this->key;
-        $url      .= '&address=&city='.$MEgetCep->getCityName($postalcode);
-        $url      .= '&zipCode='.$postalcode;
+        $url      .= '?carrier=JAD&key='.urlencode($this->key);
+        $url      .= '&address=&city='.urlencode($city);
+        $url      .= '&zipCode='.urlencode($postalcode);
         $url      .= '&countrycode=BRA&requestID=12&date_from=&max_pudo_number=100';
         $url      .= '&max_distance_search=&weight=&category=&holiday_tolerant=';
         $response = wp_remote_get($url);
