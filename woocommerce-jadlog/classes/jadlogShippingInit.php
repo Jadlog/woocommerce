@@ -53,84 +53,63 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                     global $woocommerce;
 
-                    $JDgetPudos = new JadLogMyPudo();
+                    $jadlog_package = jadlog_getPackage($package);
+                    $preco       = $jadlog_package->preco;
+                    $peso_cubado = $jadlog_package->peso_cubado;
 
-                    $postcode = $woocommerce->customer->get_shipping_postcode();
-                    $pudos    = $JDgetPudos->getPudos($postcode);
-                    // echo "<pre>";
-                    // print_r($pudos);
-                    // echo "</pre>";
+                    $jadlogMyPudo = new JadLogMyPudo();
+                    $postcode     = $woocommerce->customer->get_shipping_postcode();
+                    $pudos        = $jadlogMyPudo->getPudos($postcode);
 
                     if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM'])) {
-                        if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM']['PUDO_ID'])) {
-                            $_SESSION[$pudos['PUDO_ITEMS']['PUDO_ITEM']['PUDO_ID']]['latitude'] = $pudos['PUDO_ITEMS']['PUDO_ITEM']['LATITUDE'];
-                            $_SESSION[$pudos['PUDO_ITEMS']['PUDO_ITEM']['PUDO_ID']]['longitude'] = $pudos['PUDO_ITEMS']['PUDO_ITEM']['LONGITUDE'];
-                            $_SESSION[$pudos['PUDO_ITEMS']['PUDO_ITEM']['PUDO_ID']]['address'] = $pudos['PUDO_ITEMS']['PUDO_ITEM']['ADDRESS1'] . ' - ' . $pudos['PUDO_ITEMS']['PUDO_ITEM']['STREETNUM'] . ' - Cep ' . $pudos['PUDO_ITEMS']['PUDO_ITEM']['ZIPCODE']. ' - ' . $pudos['PUDO_ITEMS']['PUDO_ITEM']['CITY'];
-                            $_SESSION[$pudos['PUDO_ITEMS']['PUDO_ITEM']['PUDO_ID']]['time'] = $pudos['PUDO_ITEMS']['PUDO_ITEM']['OPENING_HOURS_ITEMS'];
+                        $count = 0;
+                        foreach ($pudos['PUDO_ITEMS']['PUDO_ITEM'] as $key => $pudo_item ) {
+                            $pudo_id = $pudo_item['PUDO_ID'];
+                            $_SESSION[$pudo_id]['latitude']  = $pudo_item['LATITUDE'];
+                            $_SESSION[$pudo_id]['longitude'] = $pudo_item['LONGITUDE'];
+                            $_SESSION[$pudo_id]['address']   = $pudo_item['ADDRESS1'].' - '.$pudo_item['STREETNUM'].' - CEP '.$pudo_item['ZIPCODE'].' - '.$pudo_item['CITY'];
+                            $_SESSION[$pudo_id]['time']      = $pudo_item['OPENING_HOURS_ITEMS'];
+                            $cost = jadlog_get_pudo_price($preco, $pudo_item, $peso_cubado);
+                            $distance = round(intval($pudo_item['DISTANCE']) / 1000.0, 1);
                             $rate = array(
-                                'id' => $pudos['PUDO_ITEMS']['PUDO_ITEM']['PUDO_ID'],
-                                'label' => 'Jadlog - Pickup - ' . $pudos['PUDO_ITEMS']['PUDO_ITEM']['NAME'],
-                                'cost' => 0,
+                                'id'    => $pudo_id,
+                                'label' => 'Jadlog Pickup - '.$pudo_item['NAME'].' - '.$pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' ('.number_format($distance, 1, ',', '.').' km)',
+                                'cost'  => $cost,
                                 'meta_data' => [
-                                    'id_pudo' => $pudos['PUDO_ITEMS']['PUDO_ITEM']['PUDO_ID'],
-                                    'name_pudo' => $pudos['PUDO_ITEMS']['PUDO_ITEM']['NAME'],
-                                    'address_pudo' => $pudos['PUDO_ITEMS']['PUDO_ITEM']['ADDRESS1'] . ' - ' .
-                                        $pudos['PUDO_ITEMS']['PUDO_ITEM']['STREETNUM'] . ' - ' .
-                                        $pudos['PUDO_ITEMS']['PUDO_ITEM']['CITY'],
-                                    'zipcode_pudo'     => $pudos['PUDO_ITEMS']['PUDO_ITEM']['ZIPCODE'],
+                                    'id_pudo'      => $pudo_item['PUDO_ID'],
+                                    'name_pudo'    => $pudo_item['NAME'],
+                                    'address_pudo' => $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' - '.$pudo_item['CITY'],
+                                    'zipcode_pudo' => $pudo_item['ZIPCODE'],
                                 ],
                             );
                             $this->add_rate($rate);
-                        } else {
-                            $count = 0;
-                            foreach ($pudos['PUDO_ITEMS']['PUDO_ITEM'] as $key => $value ) {
-                                $count++;
-                                $_SESSION[$value['PUDO_ID']]['latitude'] = $value['LATITUDE'];
-                                $_SESSION[$value['PUDO_ID']]['longitude'] = $value['LONGITUDE'];
-                                $_SESSION[$value['PUDO_ID']]['address'] = $value['ADDRESS1'] . ' - ' . $value['STREETNUM'] . ' - Cep ' . $value['ZIPCODE']. ' - ' . $value['CITY'];
-                                $_SESSION[$value['PUDO_ID']]['time'] = $value['OPENING_HOURS_ITEMS'];
-                                $rate = array(
-                                    'id' => $value['PUDO_ID'],
-                                    'label' => 'Jadlog - Pickup - ' . $value['NAME'],
-                                    'cost' => jadlog_get_pudo_price(jadlog_getPackage($package)->preco,$value,jadlog_getPackage($package)->peso_cubado),
-                                    'meta_data' => [
-                                        'id_pudo' => $value['PUDO_ID'],
-                                        'name_pudo' => $value['NAME'],
-                                        'address_pudo' => $value['ADDRESS1'] . ' - ' . $value['STREETNUM'] . ' - ' .
-                                                          $value['CITY'],
-                                        'zipcode_pudo'     => $value['ZIPCODE'],
-                                    ],
-                                );
-                                $this->add_rate($rate);
-                            }
+                            if (++$count > 5) break;
                         }
                     }
-
                 }
-
             }
-
         }
-
     }
 
-    function jadlog_getPackage($package){
-        $volume =0;
-        $weight =0;
-        $total  =0;
+    function jadlog_getPackage($package) {
+        $volume = 0;
+        $weight = 0;
+        $total  = 0;
         $pacote = new stdClass();
-        foreach ($package['contents'] as $item){
-            $width = wc_get_product($item['product_id'])->get_width();
+        foreach ($package['contents'] as $item) {
+            $width  = wc_get_product($item['product_id'])->get_width();
             $height = wc_get_product($item['product_id'])->get_height();
             $length = wc_get_product($item['product_id'])->get_length();
-            $weight = $weight + wc_get_product($item['product_id'])->get_weight()  * $item['quantity'];
-            $valor = wc_get_product($item['product_id'])->get_price() * $item['quantity'];
-            $volume  = $volume +  (float) ($width * $length * $height) * $item['quantity'];
-            $total =+ $valor ;
+            $volume = $volume + (float)($width * $length * $height) * $item['quantity'];
+
+            $weight = $weight + wc_get_product($item['product_id'])->get_weight() * $item['quantity'];
+
+            $valor  = wc_get_product($item['product_id'])->get_price() * $item['quantity'];
+            $total  = $total + $valor;
         }
-        $pacote->volume = (float) $volume/6000;
+        $pacote->volume = (float) $volume / 6000.0;
         $pacote->peso = $weight;
-        $pacote->preco = $valor;
+        $pacote->preco = $total;
         $pacote->peso_cubado = $pacote->volume;
         if($pacote->peso > $pacote->peso_cubado) {
             $pacote->peso_cubado = $pacote->peso;
@@ -213,13 +192,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         return json_encode($response);
     }
 
-    function jadlog_get_pudo_price($valor,$pudo,$peso){
-
-        return getShipPrice($valor,$pudo['ZIPCODE'],$peso);
+    function jadlog_get_pudo_price($valor, $pudo, $peso) {
+        return getShipPrice($valor, $pudo['ZIPCODE'], $peso);
     }
-
-
-
 
     function jadlog_save_pudos ($order_id) {
 
