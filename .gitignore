@@ -1,2 +1,3 @@
 /src/wp-content/upgrade/
 /src/wp-content/uploads/wc-logs/*.log
+/src/wp-content/uploads/20*
