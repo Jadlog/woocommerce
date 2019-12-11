@@ -333,7 +333,9 @@ class WooCommerceJadlog
 
             <?php
         }
-        add_action('woocommerce_checkout_shipping', 'woocommerce_jadlog_show_map_pudos');
+
+        // [10/12/2019] Do not show maps for now
+        // add_action('woocommerce_checkout_shipping', 'woocommerce_jadlog_show_map_pudos');
 
         function test( ) {
             wp_enqueue_script( 'jadlog_custom_script',JADLOG_ROOT_URL.'/assets/js/front/relais/dpdfrance_relais.js', array('jquery'), '0.3' );
@@ -630,7 +632,9 @@ class WooCommerceJadlog
             <div id="marker" title="Marker" class="marker"></div>
             <?php
         };
-        add_action('woocommerce_cart_totals_after_shipping', 'test');
+
+        // [10/12/2019] Do not show maps for now
+        // add_action('woocommerce_cart_totals_after_shipping', 'test');
     }
 
     /* Installs plugin */
