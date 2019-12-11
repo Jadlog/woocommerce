@@ -55,7 +55,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                     $jadlog_package = jadlog_getPackage($package);
                     $preco       = $jadlog_package->preco;
-                    $peso_cubado = $jadlog_package->peso_cubado;
+                    $peso_taxado = $jadlog_package->peso_taxado;
 
                     $jadlogMyPudo = new JadLogMyPudo();
                     $postcode     = $woocommerce->customer->get_shipping_postcode();
@@ -69,7 +69,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             $_SESSION[$pudo_id]['longitude'] = $pudo_item['LONGITUDE'];
                             $_SESSION[$pudo_id]['address']   = $pudo_item['ADDRESS1'].' - '.$pudo_item['STREETNUM'].' - CEP '.$pudo_item['ZIPCODE'].' - '.$pudo_item['CITY'];
                             $_SESSION[$pudo_id]['time']      = $pudo_item['OPENING_HOURS_ITEMS'];
-                            $cost = jadlog_get_pudo_price($preco, $pudo_item, $peso_cubado);
+                            $cost = jadlog_get_pudo_price($preco, $pudo_item, $peso_taxado);
                             $distance = round(intval($pudo_item['DISTANCE']) / 1000.0, 1);
                             $rate = array(
                                 'id'    => $pudo_id,
@@ -92,28 +92,33 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
     }
 
     function jadlog_getPackage($package) {
-        $volume = 0;
-        $weight = 0;
-        $total  = 0;
+        $volume = 0.0;
+        $weight = 0.0;
+        $total  = 0.0;
         $pacote = new stdClass();
         foreach ($package['contents'] as $item) {
-            $width  = wc_get_product($item['product_id'])->get_width();
-            $height = wc_get_product($item['product_id'])->get_height();
-            $length = wc_get_product($item['product_id'])->get_length();
-            $volume = $volume + (float)($width * $length * $height) * $item['quantity'];
+            $quantity = floatval($item['quantity']);
+            $product  = wc_get_product($item['product_id']);
 
-            $weight = $weight + wc_get_product($item['product_id'])->get_weight() * $item['quantity'];
+            $width  = floatval($product->get_width())  / 100.0; //in m3
+            $height = floatval($product->get_height()) / 100.0; //in m3
+            $length = floatval($product->get_length()) / 100.0; //in m3
+            $volume = $volume + ($width * $length * $height) * $quantity;
 
-            $valor  = wc_get_product($item['product_id'])->get_price() * $item['quantity'];
-            $total  = $total + $valor;
+            $weight = $weight + floatval($product->get_weight()) * $quantity;
+
+            $price  = floatval($product->get_price()) * $quantity;
+            $total  = $total + $price;
         }
-        $pacote->volume = (float) $volume / 6000.0;
-        $pacote->peso = $weight;
-        $pacote->preco = $total;
-        $pacote->peso_cubado = $pacote->volume;
-        if($pacote->peso > $pacote->peso_cubado) {
-            $pacote->peso_cubado = $pacote->peso;
-        }
+        // $pacote->volume = (float)$volume / 6000.0;   ## Por que 6000 ?
+        $pacote->preco  = $total;
+        $pacote->volume = $volume;
+        $pacote->peso   = $weight;
+        $pacote->peso_cubado = $pacote->volume * 300.0; //rodoviário
+        $pacote->peso_taxado = max($pacote->peso, $pacote->peso_cubado);
+        if ($pacote->peso_taxado == 0.0)
+            $pacote->peso_taxado = 1.0;
+
         error_log( 'In ' . __FUNCTION__ . '(), $pacote = ' . var_export( $pacote, true ) );
 
         return $pacote;
