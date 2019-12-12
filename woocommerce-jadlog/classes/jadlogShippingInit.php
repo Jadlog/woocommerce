@@ -52,6 +52,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 public function calculate_shipping($package = array()) {
 
                     global $woocommerce;
+                    $pickup_points_qty = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
 
                     $jadlog_package = jadlog_getPackage($package);
                     $preco       = $jadlog_package->preco;
@@ -83,7 +84,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                                 ],
                             );
                             $this->add_rate($rate);
-                            if (++$count > 5) break;
+
+                            if (++$count >= $pickup_points_qty)
+                                break;
                         }
                     }
                 }

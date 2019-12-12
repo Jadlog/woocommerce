@@ -804,6 +804,13 @@ class WooCommerceJadlog
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_servico'
             ),
+            'JADLOG_QTD_PONTOS_PICKUP' => array(
+                'name'     => __( 'Qtd de pontos pickup a mostrar', 'jadlog' ),
+                'type'     => 'text',
+                'css'      => 'width: 400px;',
+                'desc'     => '',
+                'id'       => 'wc_settings_tab_jadlog_qtd_pontos_pickup'
+            ),
         );
         return $settings;
     }
