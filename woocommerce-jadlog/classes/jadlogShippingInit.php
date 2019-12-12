@@ -113,11 +113,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
             $price  = floatval($product->get_price()) * $quantity;
             $total  = $total + $price;
         }
-        // $pacote->volume = (float)$volume / 6000.0;   ## Por que 6000 ?
         $pacote->preco  = $total;
         $pacote->volume = $volume;
         $pacote->peso   = $weight;
-        $pacote->peso_cubado = $pacote->volume * 300.0; //rodoviário
+        $pacote->peso_cubado = $pacote->volume * 166.667;
         $pacote->peso_taxado = max($pacote->peso, $pacote->peso_cubado);
         if ($pacote->peso_taxado == 0.0)
             $pacote->peso_taxado = 1.0;
