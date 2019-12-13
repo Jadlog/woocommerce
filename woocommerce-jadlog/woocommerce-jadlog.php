@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WooCommerce Jadlog
  * Plugin URI: https://www.jadlog.com.br/
- * Description: Jadlog Shipping Module for WooCommerce 2 & 3
+ * Description: Jadlog Shipping Module for WooCommerce 3
  * Version: 0.0.1
  * Author: Jadlog Logística
  * Author URI: https://www.jadlog.com.br/
@@ -645,21 +645,21 @@ class WooCommerceJadlog
         if (!is_plugin_active('woocommerce/woocommerce.php'))
         {
             deactivate_plugins(plugin_basename(__FILE__)); /* Deactivate plugin */
-            wp_die(__('You must run WooCommerce 2.x to install Jadlog plugin', 'jadlog'), __('WC not activated', 'jadlog'), array('back_link' => true));
+            wp_die(__('You must run WooCommerce 3.x to install WooCommerce Jadlog plugin', 'jadlog'), __('WC not activated', 'jadlog'), array('back_link' => true));
             return;
         }
 
         if (!is_plugin_active('woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php'))
         {
             deactivate_plugins(plugin_basename(__FILE__)); /* Deactivate plugin */
-            wp_die(__('You must run WooCommerce Extra Checkout Fields for Brazil 3.6.x to install Jadlog plugin', 'jadlog'), __('WC Extra Checkout Fields not activated', 'jadlog'), array('back_link' => true));
+            wp_die(__('You must run Brazilian Market on WooCommerce 3.7.x to install WooCommerce Jadlog plugin', 'jadlog'), __('Brazilian Market on WooCommerce not activated', 'jadlog'), array('back_link' => true));
             return;
         }
 
         if ((float)$wp_version < 3.5)
         {
             deactivate_plugins(plugin_basename(__FILE__)); /* Deactivate plugin */
-            wp_die(__('You must run at least WordPress version 3.5 to install Jadlog plugin', 'jadlog'), __('WP not compatible', 'jadlog'), array('back_link' => true));
+            wp_die(__('You must run at least WordPress version 3.5 to install WooCommerce Jadlog plugin', 'jadlog'), __('WP not compatible', 'jadlog'), array('back_link' => true));
             return;
         }
 

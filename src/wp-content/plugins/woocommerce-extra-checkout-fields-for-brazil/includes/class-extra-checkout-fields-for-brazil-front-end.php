@@ -47,7 +47,7 @@ class Extra_Checkout_Fields_For_Brazil_Front_End {
 	 */
 	public function enqueue_scripts() {
         $suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-        
+
         wp_register_style( 'woocommerce-extra-checkout-fields-for-brazil-front', plugins_url( 'assets/css/frontend/frontend.css', plugin_dir_path( __FILE__ ) ), array(), Extra_Checkout_Fields_For_Brazil::VERSION, 'all' );
 
 		wp_register_script( 'jquery-mask', plugins_url( 'assets/js/jquery.mask/jquery.mask' . $suffix . '.js', plugin_dir_path( __FILE__ ) ), array( 'jquery' ), '1.14.10', true );
@@ -361,6 +361,7 @@ class Extra_Checkout_Fields_For_Brazil_Front_End {
 			'label' => __( 'Neighborhood', 'woocommerce-extra-checkout-fields-for-brazil' ),
 			'class' => array( 'form-row-first', 'address-field' ),
 			'clear' => true,
+			'priority' => 65,
 		);
 
 		if ( isset( $fields['shipping_city'] ) ) {
@@ -475,6 +476,11 @@ class Extra_Checkout_Fields_For_Brazil_Front_End {
 	 * @return array               New replacements.
 	 */
 	public function formatted_address_replacements( $replacements, $args ) {
+		$args = wp_parse_args( $args, array(
+			'number'       => '',
+			'neighborhood' => '',
+		) );
+
 		$replacements['{number}']       = $args['number'];
 		$replacements['{neighborhood}'] = $args['neighborhood'];
 
@@ -511,6 +517,10 @@ class Extra_Checkout_Fields_For_Brazil_Front_End {
 	 * @return array           New address format.
 	 */
 	public function order_formatted_shipping_address( $address, $order ) {
+		if ( ! is_array( $address ) ) {
+			return $address;
+		}
+
 		// WooCommerce 3.0 or later.
 		if ( method_exists( $order, 'get_meta' ) ) {
 			$address['number']       = $order->get_meta( '_shipping_number' );

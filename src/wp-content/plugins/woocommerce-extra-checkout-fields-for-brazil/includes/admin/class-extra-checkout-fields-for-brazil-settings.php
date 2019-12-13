@@ -49,7 +49,7 @@ class Extra_Checkout_Fields_For_Brazil_Settings {
 	public function plugin_settings() {
 		$option = 'wcbcf_settings';
 
-		// Set Custom Fields cection.
+		// Set Custom Fields section.
 		add_settings_section(
 			'options_section',
 			__( 'Checkout Custom Fields:', 'woocommerce-extra-checkout-fields-for-brazil' ),
@@ -147,7 +147,7 @@ class Extra_Checkout_Fields_For_Brazil_Settings {
 			)
 		);
 
-		// Set Custom Fields cection.
+		// Set Custom Fields section.
 		add_settings_section(
 			'jquery_section',
 			__( 'jQuery Options:', 'woocommerce-extra-checkout-fields-for-brazil' ),
@@ -183,23 +183,7 @@ class Extra_Checkout_Fields_For_Brazil_Settings {
 			)
 		);
 
-		// Address Autocomplete option.
-		if ( ! apply_filters( 'woocommerce_correios_enable_autofill_addresses', false ) ) {
-			add_settings_field(
-				'addresscomplete',
-				__( 'Enable Address Autocomplete:', 'woocommerce-extra-checkout-fields-for-brazil' ),
-				array( $this, 'checkbox_element_callback' ),
-				$option,
-				'jquery_section',
-				array(
-					'menu'     => $option,
-					'id'       => 'addresscomplete',
-					'label'    => __( 'If checked automatically complete the address fields based on the zip code.', 'woocommerce-extra-checkout-fields-for-brazil' ),
-				)
-			);
-		}
-
-		// Set Custom Fields cection.
+		// Set Custom Fields section.
 		add_settings_section(
 			'validation_section',
 			__( 'Validation:', 'woocommerce-extra-checkout-fields-for-brazil' ),

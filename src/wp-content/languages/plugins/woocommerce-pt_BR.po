@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2019-11-05 12:00:19+0000\n"
+"PO-Revision-Date: 2019-11-19 20:34:49+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16728,10 +16728,6 @@ msgstr "Digite a senha da conta."
 msgid "An account is already registered with that username. Please choose another."
 msgstr "Já existe uma conta com este nome de usuário. Escolha outro."
 
-#: includes/wc-user-functions.php:57
-msgid "Please enter a valid account username."
-msgstr "Informe uma nome de usuário válido."
-
 #: includes/shortcodes/class-wc-shortcode-order-tracking.php:48
 msgid "Please enter a valid order ID"
 msgstr "Informe um ID de pedido válido"
@@ -16813,6 +16809,10 @@ msgstr[1] "Exibindo todos %d resultados"
 #: includes/widgets/class-wc-widget-top-rated-products.php:28
 msgid "Top rated products"
 msgstr "Produtos bem avaliados"
+
+#: includes/wc-user-functions.php:57
+msgid "Please enter a valid account username."
+msgstr "Informe um nome de usuário válido."
 
 #: includes/class-wc-product-variable.php:60
 msgid "Select options"
