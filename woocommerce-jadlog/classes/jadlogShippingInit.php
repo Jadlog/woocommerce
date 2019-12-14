@@ -65,21 +65,26 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM'])) {
                         $count = 0;
                         foreach ($pudos['PUDO_ITEMS']['PUDO_ITEM'] as $key => $pudo_item ) {
+
                             $pudo_id = $pudo_item['PUDO_ID'];
+                            $address = $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' '.join(" ", $pudo_item['ADDRESS2']).' - '.$pudo_item['ADDRESS3'].
+                                ' - CEP '.$pudo_item['ZIPCODE'].' - '.$pudo_item['CITY'];
                             $_SESSION[$pudo_id]['latitude']  = $pudo_item['LATITUDE'];
                             $_SESSION[$pudo_id]['longitude'] = $pudo_item['LONGITUDE'];
-                            $_SESSION[$pudo_id]['address']   = $pudo_item['ADDRESS1'].' - '.$pudo_item['STREETNUM'].' - CEP '.$pudo_item['ZIPCODE'].' - '.$pudo_item['CITY'];
+                            $_SESSION[$pudo_id]['address']   = $address;
                             $_SESSION[$pudo_id]['time']      = $pudo_item['OPENING_HOURS_ITEMS'];
-                            $cost = jadlog_get_pudo_price($preco, $pudo_item, $peso_taxado);
                             $distance = round(intval($pudo_item['DISTANCE']) / 1000.0, 1);
+                            $label = __('Retire no ponto Pickup Jadlog', 'jadlog').' '.$pudo_item['NAME'].' - '.
+                                $address.' ('.number_format($distance, 1, ',', '.').' km)';
+                            $cost = jadlog_get_pudo_price($preco, $pudo_item, $peso_taxado);
                             $rate = array(
                                 'id'    => $pudo_id,
-                                'label' => 'Jadlog Pickup - '.$pudo_item['NAME'].' - '.$pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' ('.number_format($distance, 1, ',', '.').' km)',
+                                'label' => $label,
                                 'cost'  => $cost,
                                 'meta_data' => [
                                     'id_pudo'      => $pudo_item['PUDO_ID'],
                                     'name_pudo'    => $pudo_item['NAME'],
-                                    'address_pudo' => $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' - '.$pudo_item['CITY'],
+                                    'address_pudo' => $address,
                                     'zipcode_pudo' => $pudo_item['ZIPCODE'],
                                 ],
                             );
@@ -116,7 +121,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         $pacote->preco  = $total;
         $pacote->volume = $volume;
         $pacote->peso   = $weight;
-        $pacote->peso_cubado = $pacote->volume * 166.667;
+        $pacote->peso_cubado = $pacote->volume * 166.667; //TODO Por enquanto é aéreo. Deve ser configurável.
         $pacote->peso_taxado = max($pacote->peso, $pacote->peso_cubado);
         if ($pacote->peso_taxado == 0.0)
             $pacote->peso_taxado = 1.0;

@@ -17,8 +17,9 @@ class JadLogMyPudo {
      * @return void
      */
     public function __construct() {
-        $this->url      = get_option('wc_settings_tab_jadlog_my_pudo');
-        $this->key      = get_option('wc_settings_tab_jadlog_key_pudo');
+        $this->url             = get_option('wc_settings_tab_jadlog_my_pudo');
+        $this->key             = get_option('wc_settings_tab_jadlog_key_pudo');
+        $this->max_pudo_number = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
 
         include_once('postal-code-helper.php');
     }
@@ -42,7 +43,7 @@ class JadLogMyPudo {
         $url      .= '?carrier=JAD&key='.urlencode($this->key);
         $url      .= '&address=&city='.urlencode($city);
         $url      .= '&zipCode='.urlencode($postalcode);
-        $url      .= '&countrycode=BRA&requestID=12&date_from=&max_pudo_number=100';
+        $url      .= '&countrycode=BRA&requestID=12&date_from=&max_pudo_number='.urlencode($this->max_pudo_number);
         $url      .= '&max_distance_search=&weight=&category=&holiday_tolerant=';
         $response = wp_remote_get($url);
         $body     = wp_remote_retrieve_body($response);
