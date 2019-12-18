@@ -135,87 +135,13 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         return $pacote;
     }
 
-    function getShipPrice($vldec,$cepdest,$peso){
-        $cepdest = str_replace("-","",$cepdest);
-        $curl = curl_init();
-        $url = "http://www.jadlog.com.br/JadlogEdiWs/services/ValorFreteBean?method=valorar&vModalidade=40&Password=".get_option("wc_settings_tab_jadlog_senha")."&vSeguro=N&vVlDec=".$vldec."&vVlColeta=&vCepOrig=".get_option("wc_settings_tab_jadlog_shipper_cep")."&vCepDest=".$cepdest."&vPeso=".$peso."&vFrap=N&vEntrega=D&vCnpj=".get_option("wc_settings_tab_jadlog_shipper_cnpj_cpf");
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "cache-control: no-cache",
-                "postman-token: cb80c09a-e569-be29-ea50-22054e786a98"
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        error_log( 'In ' . __FUNCTION__ . '(), $url = ' . var_export( $url, true ) );
-        error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
-        error_log( 'In ' . __FUNCTION__ . '(), $err = ' . var_export( $err, true ) );
-        curl_close($curl);
-        $resposta = convertXmlToJson($response,"Jadlog_Valor_Frete");
-        $resposta = json_decode($resposta);
-        if ($err) {
-            echo "cURL Error #:" . $err;
-        } else {
-            return $resposta->response->code;
-        }
-    }
-
-    function convertXmlToJson($xml, $type)
-    {
-        $p = xml_parser_create();
-        xml_parse_into_struct($p, $xml, $vals, $index);
-        xml_parser_free($p);
-        $xml = simplexml_load_string($vals[3]['value']);
-
-        $xml = (array) $xml->{$type};
-
-        $response = ["status" => false, "message" => "Falha ao coletar dados"];
-
-        if (isset($xml["ND"]))
-            $response = [
-                "response" => $xml["ND"],
-                "status" => true,
-            ];
-
-        if (isset($xml["Retorno"]) && $xml["Retorno"] < 0)
-            $response= [
-                "status" => false,
-                "error" => [
-                    "code" => (isset($xml["Retorno"]) ? $xml["Retorno"] : 9999),
-                    "message" => (isset($xml["Mensagem"]) ? $xml["Mensagem"] : "Não retornou dados."),
-                ]
-            ];
-
-        if (isset($xml["Retorno"]) && $xml["Retorno"] > 0)
-            $response= [
-                "status" => true,
-                "response" => [
-                    "code" => $xml["Retorno"],
-                    "message" => $xml["Mensagem"],
-                ]
-
-            ];
-
-        return json_encode($response);
-    }
-
     function jadlog_get_pudo_price($valor, $pudo, $peso) {
         $service = new ShippingPriceService();
         $result = $service->estimate($valor, $pudo['ZIPCODE'], $peso);
         return $result;
-        // return getShipPrice($valor, $pudo['ZIPCODE'], $peso);
     }
 
-    function jadlog_save_pudos ($order_id) {
+    function jadlog_save_pudos($order_id) {
 
         global $wpdb;
         $table =  $wpdb->prefix . 'woocommerce_jadlog';
