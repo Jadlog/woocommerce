@@ -718,6 +718,7 @@ class WooCommerceJadlog
                 'type'     => 'text',
                 'css'      => 'width:500px;',
                 'desc'     => '',
+                'default'  => 'http://mypudo.pickup-services.com/mypudo/mypudo.asmx/GetPudoList',
                 'id'       => 'wc_settings_tab_jadlog_my_pudo'
             ),
             'JADLOG_KEY_PUDO' => array(
@@ -730,16 +731,17 @@ class WooCommerceJadlog
             'JADLOG_URL_EMBARCADOR_SIMULADOR_FRETE' => array(
                 'name'     => __('URL da API de simulação de frete (Embarcador)', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width:500px',
+                'css'      => 'width:500px;',
                 'desc'     => '',
                 'default'  => 'http://www.jadlog.com.br/embarcador/api/frete/valor',
                 'id'       => 'wc_settings_tab_jadlog_url_simulador_frete'
             ),
-            'JADLOG_URL_EMBARCADOR' => array(
+            'JADLOG_URL_EMBARCADOR_INCLUSAO_PEDIDOS' => array(
                 'name'     => __('URL da API de inclusão de pedidos (Embarcador)', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:500px;',
                 'desc'     => '',
+                'default'  => 'http://www.jadlog.com.br/embarcador/api/pedido/incluir',
                 'id'       => 'wc_settings_tab_jadlog_url_embarcador'
             ),
             'JADLOG_KEY_EMBARCADOR' => array(
@@ -848,6 +850,7 @@ class WooCommerceJadlog
                 'type'     => 'text',
                 'css'      => 'width:200px;',
                 'desc'     => __('Quantidade de pontos pickup a serem mostrados no carrinho de compras', 'jadlog'),
+                'default'  => 5,
                 'id'       => 'wc_settings_tab_jadlog_qtd_pontos_pickup'
             ),
         );
