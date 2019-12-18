@@ -25,6 +25,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->title = isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'Melhor Envio', 'melhorenvio' );
 
                     include_once('jadlog-mypudo.php');
+                    include_once('ShippingPriceService.php');
                 }
 
                 /**
@@ -37,6 +38,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     // Load the settings API
                     $this->init_form_fields();
                     $this->init_settings();
+
+                    $this->pickup_points_number = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
 
                     // Save settings in admin if you have any defined
                     add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -52,7 +55,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 public function calculate_shipping($package = array()) {
 
                     global $woocommerce;
-                    $pickup_points_qty = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
 
                     $jadlog_package = jadlog_getPackage($package);
                     $preco       = $jadlog_package->preco;
@@ -74,13 +76,15 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             $_SESSION[$pudo_id]['address']   = $address;
                             $_SESSION[$pudo_id]['time']      = $pudo_item['OPENING_HOURS_ITEMS'];
                             $distance = round(intval($pudo_item['DISTANCE']) / 1000.0, 1);
+                            $estimated_values = jadlog_get_pudo_price($preco, $pudo_item, $peso_taxado);
+                            $time = isset($estimated_values['estimated_time']) ? ' - '.$estimated_values['estimated_time'].' dias úteis' : '';
                             $label = __('Retire no ponto Pickup Jadlog', 'jadlog').' '.$pudo_item['NAME'].' - '.
-                                $address.' ('.number_format($distance, 1, ',', '.').' km)';
-                            $cost = jadlog_get_pudo_price($preco, $pudo_item, $peso_taxado);
+                                $address.' ('.number_format($distance, 1, ',', '.').' km)'.$time;
                             $rate = array(
                                 'id'    => $pudo_id,
                                 'label' => $label,
-                                'cost'  => $cost,
+                                'cost'  => $estimated_values['estimated_value'],
+                                'taxes' => false,
                                 'meta_data' => [
                                     'id_pudo'      => $pudo_item['PUDO_ID'],
                                     'name_pudo'    => $pudo_item['NAME'],
@@ -90,7 +94,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             );
                             $this->add_rate($rate);
 
-                            if (++$count >= $pickup_points_qty)
+                            if (++$count >= $this->pickup_points_number)
                                 break;
                         }
                     }
@@ -205,7 +209,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
     }
 
     function jadlog_get_pudo_price($valor, $pudo, $peso) {
-        return getShipPrice($valor, $pudo['ZIPCODE'], $peso);
+        $service = new ShippingPriceService();
+        $result = $service->estimate($valor, $pudo['ZIPCODE'], $peso);
+        return $result;
+        // return getShipPrice($valor, $pudo['ZIPCODE'], $peso);
     }
 
     function jadlog_save_pudos ($order_id) {
