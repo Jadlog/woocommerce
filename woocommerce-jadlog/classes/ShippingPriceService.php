@@ -3,17 +3,17 @@
 class ShippingPriceService {
 
     public function __construct() {
-        $this->url        = 'http://www.jadlog.com.br/embarcador/api/frete/valor'; //get_option('wc_settings_tab_jadlog_url_simulador_frete');
+        $this->url        = get_option('wc_settings_tab_jadlog_url_simulador_frete');
         $this->key        = get_option('wc_settings_tab_jadlog_key_embarcador');
         $this->cepori     = get_option('wc_settings_tab_jadlog_shipper_cep');
         $this->cnpj       = get_option('wc_settings_tab_jadlog_shipper_cnpj_cpf');
-        $this->frap       = 'N'; //get_option('wc_settings_tab_jadlog_frap');
+        $this->frap       = get_option('wc_settings_tab_jadlog_frap');
         $this->conta      = get_option('wc_settings_tab_jadlog_conta_corrente');
         $this->contrato   = get_option('wc_settings_tab_jadlog_contrato');
-        $this->modalidade = get_option('wc_settings_tab_jadlog_modalidade');
-        $this->tpentrega  = 'D'; //get_option('wc_settings_tab_jadlog_tipo_entrega');
-        $this->tpseguro   = 'N'; //get_option('wc_settings_tab_jadlog_tipo_seguro');
-        $this->vlcoleta   = null;   //get_option('wc_settings_tab_jadlog_valor_coleta');
+        $this->modalidade = (int)get_option('wc_settings_tab_jadlog_modalidade');
+        $this->tpentrega  = get_option('wc_settings_tab_jadlog_tipo_entrega');
+        $this->tpseguro   = get_option('wc_settings_tab_jadlog_tipo_seguro');
+        $this->vlcoleta   = (double)get_option('wc_settings_tab_jadlog_valor_coleta');
     }
 
     public function estimate($declared_value, $dest_zipcode, $weight) {
@@ -27,7 +27,7 @@ class ShippingPriceService {
                 'cnpj'        => $this->cnpj,
                 'conta'       => $this->conta,
                 'contrato'    => $this->contrato,
-                'modalidade'  => (int)$this->modalidade,
+                'modalidade'  => $this->modalidade,
                 'tpentrega'   => $this->tpentrega,
                 'tpseguro'    => $this->tpseguro,
                 'vldeclarado' => $declared_value,

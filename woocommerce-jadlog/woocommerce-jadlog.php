@@ -714,101 +714,140 @@ class WooCommerceJadlog
     {
         $settings = array(
             'JADLOG_MY_PUDO' => array(
-                'name'     => __( 'URL PUDO', 'jadlog' ),
+                'name'     => __('URL da API de consulta de pontos Pickup', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:500px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_my_pudo'
             ),
             'JADLOG_KEY_PUDO' => array(
-                'name'     => __( 'Chave de acesso PUDO', 'jadlog' ),
+                'name'     => __('Chave de acesso Pickup', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:400px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_key_pudo'
             ),
-            'JADLOG_URL_EMBARCADOR' => array(
-                'name'     => __( 'URL Embarcador', 'jadlog' ),
+            'JADLOG_URL_EMBARCADOR_SIMULADOR_FRETE' => array(
+                'name'     => __('URL da API de simulação de frete (Embarcador)', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:500px',
+                'desc'     => '',
+                'default'  => 'http://www.jadlog.com.br/embarcador/api/frete/valor',
+                'id'       => 'wc_settings_tab_jadlog_url_simulador_frete'
+            ),
+            'JADLOG_URL_EMBARCADOR' => array(
+                'name'     => __('URL da API de inclusão de pedidos (Embarcador)', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:500px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_url_embarcador'
             ),
             'JADLOG_KEY_EMBARCADOR' => array(
-                'name'     => __( 'Chave de acesso ao Embarcador', 'jadlog' ),
+                'name'     => __('Chave de acesso ao Embarcador', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
-                'desc'     => '',
+                'css'      => 'width:500px;',
+                'desc'     => 'Deve começar com a palavra "Bearer"',
                 'id'       => 'wc_settings_tab_jadlog_key_embarcador'
             ),
             'JADLOG_CODIGO_CLIENTE' => array(
-                'name'     => __( 'Código do cliente Jadlog', 'jadlog' ),
+                'name'     => __('Código do cliente Jadlog', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_codigo_cliente'
             ),
             'JADLOG_MODALIDADE' => array(
-                'name'     => __( 'Modalidade Jadlog', 'jadlog' ),
+                'name'     => __('Modalidade de transporte Jadlog', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_modalidade'
             ),
             'JADLOG_CONTA_CORRENTE' => array(
-                'name'     => __( 'Conta Corrente JadLog', 'jadlog' ),
+                'name'     => __('Conta Corrente Jadlog', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_conta_corrente'
             ),
             'JADLOG_SENHA' => array(
-                'name'     => __( 'Senha Jadlog', 'jadlog' ),
+                'name'     => __('Senha Jadlog', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_senha'
             ),
+            'JADLOG_FRAP' => array(
+                'name'     => __('FRAP', 'jadlog'),
+                'type'     => 'radio',
+                'desc'     => __('Cobrança de frete no destino', 'jadlog'),
+                'options'  => array('S' => 'Sim', 'N' => 'Não'),
+                'default'  => 'N',
+                'id'       => 'wc_settings_tab_jadlog_frap'
+            ),
             'JADLOG_TIPO_COLETA' => array(
-                'name'     => __( 'Tipo de Coleta Jadlog', 'jadlog' ),
+                'name'     => __('Tipo de Coleta Jadlog', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_tipo_coleta'
             ),
-            'JADLOG_TIPO_FRETE' => array(
-                'name'     => __( 'Tipo de Frete Jadlog', 'jadlog' ),
+            'JADLOG_VALOR_COLETA' => array(
+                'name'     => __('Valor de coleta', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:200px;',
+                'desc'     => __('Valor de coleta negociado com a Jadlog', 'jadlog'),
+                'id'       => 'wc_settings_tab_jadlog_valor_coleta'
+            ),
+            'JADLOG_TIPO_ENTREGA' => array(
+                'name'     => __('Tipo de entrega', 'jadlog'),
+                'type'     => 'radio',
+                'desc'     => '',
+                'options'  => array('D' => 'Domicílio', 'R' => 'Retira'),
+                'default'  => 'D',
+                'id'       => 'wc_settings_tab_jadlog_tipo_entrega'
+            ),
+            'JADLOG_TIPO_FRETE' => array(
+                'name'     => __('Tipo de Frete Jadlog', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_tipo_frete'
             ),
+            'JADLOG_TIPO_SEGURO' => array(
+                'name'     => __('Tipo do seguro', 'jadlog'),
+                'type'     => 'radio',
+                'desc'     => '',
+                'options'  => array('N' => 'Normal', 'A' => 'Apólice'),
+                'default'  => 'N',
+                'id'       => 'wc_settings_tab_jadlog_tipo_seguro'
+            ),
             'JADLOG_UNIDADE_ORIGEM' => array(
-                'name'     => __( 'Unidade de Origem Jadlog', 'jadlog' ),
+                'name'     => __('Unidade de Origem Jadlog', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_unidade_origem'
             ),
             'JADLOG_CONTRATO' => array(
-                'name'     => __( 'Número do Contrato Jadlog', 'jadlog' ),
+                'name'     => __('Contrato', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
-                'desc'     => '',
+                'css'      => 'width:200px;',
+                'desc'     => __('Número do contrato JadLog', 'jadlog'),
                 'id'       => 'wc_settings_tab_jadlog_contrato'
             ),
             'JADLOG_SERVICO' => array(
-                'name'     => __( 'Serviço Jadlog', 'jadlog' ),
+                'name'     => __('Serviço Jadlog', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
+                'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_servico'
             ),
             'JADLOG_QTD_PONTOS_PICKUP' => array(
-                'name'     => __( 'Qtd de pontos pickup a mostrar', 'jadlog' ),
+                'name'     => __('Qtd de pontos pickup a mostrar', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width: 400px;',
-                'desc'     => '',
+                'css'      => 'width:200px;',
+                'desc'     => __('Quantidade de pontos pickup a serem mostrados no carrinho de compras', 'jadlog'),
                 'id'       => 'wc_settings_tab_jadlog_qtd_pontos_pickup'
             ),
         );
