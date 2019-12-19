@@ -784,11 +784,11 @@ class WooCommerceJadlog
                 'id'       => 'wc_settings_tab_jadlog_senha'
             ),
             'JADLOG_FRAP' => array(
-                'name'     => __('FRAP', 'jadlog'),
-                'type'     => 'radio',
-                'desc'     => __('Cobrança de frete no destino', 'jadlog'),
-                'options'  => array('S' => 'Sim', 'N' => 'Não'),
-                'default'  => 'N',
+                'name'     => '',
+                'desc'     => __('FRAP', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja que a cobrança de frete seja feita no destino', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
                 'id'       => 'wc_settings_tab_jadlog_frap'
             ),
             'JADLOG_TIPO_COLETA' => array(
@@ -858,7 +858,7 @@ class WooCommerceJadlog
                 'id'       => 'wc_settings_tab_jadlog_qtd_pontos_pickup'
             ),
             'JADLOG_CALCULAR_PESOS_CUBADOS' => array(
-                'name'     => __('Calcular pesos cubados', 'jadlog'),
+                'name'     => '',
                 'type'     => 'checkbox',
                 'desc'     => __('Calcular pesos cubados', 'jadlog'),
                 'default'  => 'yes',

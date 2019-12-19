@@ -7,7 +7,7 @@ class ShippingPriceService {
         $this->key        = get_option('wc_settings_tab_jadlog_key_embarcador');
         $this->cepori     = get_option('wc_settings_tab_jadlog_shipper_cep');
         $this->cnpj       = get_option('wc_settings_tab_jadlog_shipper_cnpj_cpf');
-        $this->frap       = get_option('wc_settings_tab_jadlog_frap');
+        $this->frap       = get_option('wc_settings_tab_jadlog_frap') == 'yes' ? 'S' : 'N';
         $this->conta      = get_option('wc_settings_tab_jadlog_conta_corrente');
         $this->contrato   = get_option('wc_settings_tab_jadlog_contrato');
         $this->modalidade = (int)get_option('wc_settings_tab_jadlog_modalidade');
