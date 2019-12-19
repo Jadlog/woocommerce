@@ -26,6 +26,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                     include_once('jadlog-mypudo.php');
                     include_once('ShippingPriceService.php');
+                    include_once('Modalidade.php');
+                    include_once('WeightConverter.php');
+                    $this->weight_converter = new WeightConverter();
+                    include_once('DimensionConverter.php');
+                    $this->dimension_converter = new DimensionConverter();
                 }
 
                 /**
@@ -56,7 +61,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                     global $woocommerce;
 
-                    $jadlog_package = jadlog_getPackage($package);
+                    $jadlog_package = jadlog_getPackage($package, $this->weight_converter, $this->dimension_converter);
                     $preco       = $jadlog_package->preco;
                     $peso_taxado = $jadlog_package->peso_taxado;
 
@@ -103,7 +108,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         }
     }
 
-    function jadlog_getPackage($package) {
+    function jadlog_getPackage($package, $weight_converter, $dimension_converter) {
         $volume = 0.0;
         $weight = 0.0;
         $total  = 0.0;
@@ -112,9 +117,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
             $quantity = floatval($item['quantity']);
             $product  = wc_get_product($item['product_id']);
 
-            $width  = floatval($product->get_width())  / 100.0; //in m3
-            $height = floatval($product->get_height()) / 100.0; //in m3
-            $length = floatval($product->get_length()) / 100.0; //in m3
+            $width  = $dimension_converter->to_meter(floatval($product->get_width()));
+            $height = $dimension_converter->to_meter(floatval($product->get_height()));
+            $length = $dimension_converter->to_meter(floatval($product->get_length()));
             $volume = $volume + ($width * $length * $height) * $quantity;
 
             $weight = $weight + floatval($product->get_weight()) * $quantity;
@@ -124,11 +129,15 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         }
         $pacote->preco  = $total;
         $pacote->volume = $volume;
-        $pacote->peso   = $weight;
-        $pacote->peso_cubado = $pacote->volume * 166.667; //TODO Por enquanto é aéreo. Deve ser configurável.
+        $pacote->peso   = $weight_converter->to_kg($weight);
+
+        $modalidade = get_option('wc_settings_tab_jadlog_modalidade');
+        $fator_cubagem = Modalidade::fator_cubagem(Modalidade::modal($modalidade));
+        $pacote->peso_cubado = $pacote->volume * $fator_cubagem;
+
         $pacote->peso_taxado = max($pacote->peso, $pacote->peso_cubado);
         if ($pacote->peso_taxado == 0.0)
-            $pacote->peso_taxado = 1.0;
+            $pacote->peso_taxado = 0.1;
 
         error_log( 'In ' . __FUNCTION__ . '(), $pacote = ' . var_export( $pacote, true ) );
 

@@ -712,6 +712,8 @@ class WooCommerceJadlog
     /* Set variables to set */
     public function get_shipments_settings()
     {
+        include_once('classes/Modalidade.php');
+
         $settings = array(
             'JADLOG_MY_PUDO' => array(
                 'name'     => __('URL da API de consulta de pontos Pickup', 'jadlog'),
@@ -760,9 +762,11 @@ class WooCommerceJadlog
             ),
             'JADLOG_MODALIDADE' => array(
                 'name'     => __('Modalidade de transporte Jadlog', 'jadlog'),
-                'type'     => 'text',
+                'type'     => 'select',
                 'css'      => 'width:200px;',
                 'desc'     => '',
+                'options'  => Modalidade::TODOS,
+                'default'  => Modalidade::COD_PICKUP,
                 'id'       => 'wc_settings_tab_jadlog_modalidade'
             ),
             'JADLOG_CONTA_CORRENTE' => array(
@@ -853,6 +857,14 @@ class WooCommerceJadlog
                 'default'  => 5,
                 'id'       => 'wc_settings_tab_jadlog_qtd_pontos_pickup'
             ),
+            'JADLOG_CALCULAR_PESOS_CUBADOS' => array(
+                'name'     => __('Calcular pesos cubados', 'jadlog'),
+                'type'     => 'checkbox',
+                'desc'     => __('Calcular pesos cubados', 'jadlog'),
+                'default'  => 'yes',
+                'desc_tip' => __('Se esta opção estiver marcada, cadastre os pesos reais dos produtos e suas dimensões -- assim será calculado o peso cubado de acordo com o modal (aéreo ou rodoviário) da(s) modalidade(s) contratada(s). Caso contrário, no cadastro de produtos informe como peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
+                'id'       => 'wc_settings_tab_jadlog_calcular_pesos_cubados'
+            )
         );
         return $settings;
     }
