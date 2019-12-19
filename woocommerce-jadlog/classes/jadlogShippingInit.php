@@ -135,7 +135,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         $fator_cubagem = Modalidade::fator_cubagem(Modalidade::modal($modalidade));
         $pacote->peso_cubado = $pacote->volume * $fator_cubagem;
 
-        $pacote->peso_taxado = max($pacote->peso, $pacote->peso_cubado);
+        $calcular_pesos_cubados = get_option('wc_settings_tab_jadlog_calcular_pesos_cubados');
+        $pacote->peso_taxado = $calcular_pesos_cubados == 'yes' ? max($pacote->peso, $pacote->peso_cubado) : $pacote->peso;
         if ($pacote->peso_taxado == 0.0)
             $pacote->peso_taxado = 0.1;
 
