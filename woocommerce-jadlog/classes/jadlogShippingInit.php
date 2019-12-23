@@ -25,13 +25,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->title = isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'Melhor Envio', 'melhorenvio' );
 
                     include_once('jadlog-mypudo.php');
-                    include_once('ShippingPriceService.php');
                     include_once('Modalidade.php');
-                    include_once('VolumetricWeight.php');
-                    include_once('WeightConverter.php');
-                    $this->weight_converter = new WeightConverter();
-                    include_once('DimensionConverter.php');
-                    $this->dimension_converter = new DimensionConverter();
+                    include_once('ShippingPriceService.php');
+                    include_once('ShippingPackage.php');
                 }
 
                 /**
@@ -68,9 +64,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         return;
 
                     if ($this->modalidade_expresso_ativa) {
-                        $jadlog_package = jadlog_getPackage($package, Modalidade::COD_EXPRESSO, $this->weight_converter, $this->dimension_converter);
-                        $preco       = $jadlog_package->preco;
-                        $peso_taxado = $jadlog_package->peso_taxado;
+                        $shipping_package = new ShippingPackage($package, Modalidade::COD_EXPRESSO);
+                        $preco       = $shipping_package->get_price();
+                        $peso_taxado = $shipping_package->get_effective_weight();
 
                         $estimated_values = jadlog_get_express_price($preco, $postcode, $peso_taxado);
                         $time = isset($estimated_values['estimated_time']) ? ' - '.$estimated_values['estimated_time'].' dias úteis' : '';
@@ -92,9 +88,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     }
 
                     if ($this->modalidade_pickup_ativa) {
-                        $jadlog_package = jadlog_getPackage($package, Modalidade::COD_PICKUP, $this->weight_converter, $this->dimension_converter);
-                        $preco       = $jadlog_package->preco;
-                        $peso_taxado = $jadlog_package->peso_taxado;
+                        $shipping_package = new ShippingPackage($package, Modalidade::COD_PICKUP);
+                        $preco       = $shipping_package->get_price();
+                        $peso_taxado = $shipping_package->get_effective_weight();
 
                         $jadlogMyPudo = new JadLogMyPudo();
                         $pudos        = $jadlogMyPudo->getPudos($postcode);
@@ -138,42 +134,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
             } //end of WC_Jadlog_Shipping_Method
         }
-    }
-
-    function jadlog_getPackage($package, $modalidade, $weight_converter, $dimension_converter) {
-        $volume = 0.0;
-        $weight = 0.0;
-        $total  = 0.0;
-        $pacote = new stdClass();
-        foreach ($package['contents'] as $item) {
-            $quantity = floatval($item['quantity']);
-            $product  = wc_get_product($item['product_id']);
-
-            $width  = $dimension_converter->to_meter(floatval($product->get_width()));
-            $height = $dimension_converter->to_meter(floatval($product->get_height()));
-            $length = $dimension_converter->to_meter(floatval($product->get_length()));
-            $volume = $volume + ($width * $length * $height) * $quantity;
-
-            $weight = $weight + floatval($product->get_weight()) * $quantity;
-
-            $price  = floatval($product->get_price()) * $quantity;
-            $total  = $total + $price;
-        }
-        $pacote->preco  = $total;
-        $pacote->volume = $volume;
-        $pacote->peso   = $weight_converter->to_kg($weight);
-
-        $volumetric_weight = new VolumetricWeight($modalidade, $pacote->volume);
-        $pacote->peso_cubado = $volumetric_weight->calculate();
-
-        $calcular_pesos_cubados = get_option('wc_settings_tab_jadlog_calcular_pesos_cubados');
-        $pacote->peso_taxado = $calcular_pesos_cubados == 'yes' ? max($pacote->peso, $pacote->peso_cubado) : $pacote->peso;
-        if ($pacote->peso_taxado == 0.0)
-            $pacote->peso_taxado = 0.1;
-
-        error_log( 'In ' . __FUNCTION__ . '(), $pacote = ' . var_export( $pacote, true ) );
-
-        return $pacote;
     }
 
     function jadlog_get_pudo_price($valor, $pudo, $peso) {
