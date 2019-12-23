@@ -696,8 +696,12 @@ class WooCommerceJadlog
             <div class=\"updated woocommerce-message\">
                 <p><strong>".__('Por favor, faça a configuraçao do plugin Jadlog', 'jadlog')."</strong></p>
             </div>";
-        echo "<h3>".__('Dados de configuração', 'jadlog')."</h3>";
+        echo "<h3>".__('Configuração gerais', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_shipments_settings() );
+        echo "<h3>".__('Modalidade Jadlog Expresso', 'jadlog')."</h3>";
+        woocommerce_admin_fields( $this->get_expresso_settings() );
+        echo "<h3>".__('Modalidade Jadlog Pickup', 'jadlog')."</h3>";
+        woocommerce_admin_fields( $this->get_pickup_settings() );
         echo "<h3>".__('Dados do remetente', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_shipperdata_settings() );
     }
@@ -706,30 +710,16 @@ class WooCommerceJadlog
     public function update_settings()
     {
         woocommerce_update_options( $this->get_shipments_settings() );
+        woocommerce_update_options( $this->get_expresso_settings() );
+        woocommerce_update_options( $this->get_pickup_settings() );
         woocommerce_update_options( $this->get_shipperdata_settings() );
     }
 
-    /* Set variables to set */
     public function get_shipments_settings()
     {
         include_once('classes/Modalidade.php');
 
         $settings = array(
-            'JADLOG_MY_PUDO' => array(
-                'name'     => __('URL da API de consulta de pontos Pickup', 'jadlog'),
-                'type'     => 'text',
-                'css'      => 'width:500px;',
-                'desc'     => '',
-                'default'  => 'http://mypudo.pickup-services.com/mypudo/mypudo.asmx/GetPudoList',
-                'id'       => 'wc_settings_tab_jadlog_my_pudo'
-            ),
-            'JADLOG_KEY_PUDO' => array(
-                'name'     => __('Chave de acesso Pickup', 'jadlog'),
-                'type'     => 'text',
-                'css'      => 'width:400px;',
-                'desc'     => '',
-                'id'       => 'wc_settings_tab_jadlog_key_pudo'
-            ),
             'JADLOG_URL_EMBARCADOR_SIMULADOR_FRETE' => array(
                 'name'     => __('URL da API de simulação de frete (Embarcador)', 'jadlog'),
                 'type'     => 'text',
@@ -768,22 +758,6 @@ class WooCommerceJadlog
                 'options'  => Modalidade::TODOS,
                 'default'  => Modalidade::COD_PICKUP,
                 'id'       => 'wc_settings_tab_jadlog_modalidade'
-            ),
-            'JADLOG_MODALIDADE_PICKUP' => array(
-                'name'     => '',
-                'desc'     => __('Modalidade de transporte Jadlog Pickup', 'jadlog'),
-                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Pickup', 'jadlog'),
-                'type'     => 'checkbox',
-                'default'  => 'no',
-                'id'       => 'wc_settings_tab_jadlog_modalidade_pickup'
-            ),
-            'JADLOG_MODALIDADE_EXPRESSO' => array(
-                'name'     => '',
-                'desc'     => __('Modalidade de transporte Jadlog Expresso', 'jadlog'),
-                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Expresso', 'jadlog'),
-                'type'     => 'checkbox',
-                'default'  => 'no',
-                'id'       => 'wc_settings_tab_jadlog_modalidade_expresso'
             ),
             'JADLOG_CONTA_CORRENTE' => array(
                 'name'     => __('Conta Corrente Jadlog', 'jadlog'),
@@ -865,14 +839,6 @@ class WooCommerceJadlog
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_servico'
             ),
-            'JADLOG_QTD_PONTOS_PICKUP' => array(
-                'name'     => __('Qtd de pontos pickup a mostrar', 'jadlog'),
-                'type'     => 'text',
-                'css'      => 'width:200px;',
-                'desc'     => __('Quantidade de pontos pickup a serem mostrados no carrinho de compras', 'jadlog'),
-                'default'  => 5,
-                'id'       => 'wc_settings_tab_jadlog_qtd_pontos_pickup'
-            ),
             'JADLOG_CALCULAR_PESOS_CUBADOS' => array(
                 'name'     => '',
                 'type'     => 'checkbox',
@@ -885,11 +851,60 @@ class WooCommerceJadlog
         return $settings;
     }
 
-    /* Set variables to set */
+    public function get_expresso_settings() {
+        $settings = array(
+            'JADLOG_MODALIDADE_EXPRESSO' => array(
+                'name'     => '',
+                'desc'     => __('Modalidade de transporte Jadlog Expresso', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Expresso', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_modalidade_expresso'
+            ),
+        );
+        return $settings;
+    }
+
+    public function get_pickup_settings() {
+        $settings = array(
+            'JADLOG_MODALIDADE_PICKUP' => array(
+                'name'     => '',
+                'desc'     => __('Modalidade de transporte Jadlog Pickup', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Pickup', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_modalidade_pickup'
+            ),
+            'JADLOG_MY_PUDO' => array(
+                'name'     => __('URL da API de consulta de pontos Pickup', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:500px;',
+                'desc'     => '',
+                'default'  => 'http://mypudo.pickup-services.com/mypudo/mypudo.asmx/GetPudoList',
+                'id'       => 'wc_settings_tab_jadlog_my_pudo'
+            ),
+            'JADLOG_KEY_PUDO' => array(
+                'name'     => __('Chave de acesso Pickup', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:400px;',
+                'desc'     => '',
+                'id'       => 'wc_settings_tab_jadlog_key_pudo'
+            ),
+            'JADLOG_QTD_PONTOS_PICKUP' => array(
+                'name'     => __('Qtd de pontos pickup a mostrar', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:200px;',
+                'desc'     => __('Quantidade de pontos pickup a serem mostrados no carrinho de compras', 'jadlog'),
+                'default'  => 5,
+                'id'       => 'wc_settings_tab_jadlog_qtd_pontos_pickup'
+            ),
+        );
+        return $settings;
+    }
+
     public function get_shipperdata_settings()
     {
         $settings = array(
-
             'shipper_name' => array(
                 'name'     => __( 'Nome da empresa', 'jadlog' ),
                 'type'     => 'text',
