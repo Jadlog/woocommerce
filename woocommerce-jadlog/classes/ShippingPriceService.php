@@ -3,6 +3,8 @@
 class ShippingPriceService {
 
     public function __construct($modalidade) {
+        include_once("Modalidade.php");
+
         $this->url        = get_option('wc_settings_tab_jadlog_url_simulador_frete');
         $this->key        = get_option('wc_settings_tab_jadlog_key_embarcador');
         $this->cepori     = get_option('wc_settings_tab_jadlog_shipper_cep');

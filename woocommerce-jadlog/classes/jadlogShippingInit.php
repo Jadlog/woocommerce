@@ -27,6 +27,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     include_once('jadlog-mypudo.php');
                     include_once('ShippingPriceService.php');
                     include_once('Modalidade.php');
+                    include_once('VolumetricWeight.php');
                     include_once('WeightConverter.php');
                     $this->weight_converter = new WeightConverter();
                     include_once('DimensionConverter.php');
@@ -162,8 +163,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         $pacote->volume = $volume;
         $pacote->peso   = $weight_converter->to_kg($weight);
 
-        $fator_cubagem = Modalidade::fator_cubagem(Modalidade::modal($modalidade));
-        $pacote->peso_cubado = $pacote->volume * $fator_cubagem;
+        $volumetric_weight = new VolumetricWeight($modalidade, $pacote->volume);
+        $pacote->peso_cubado = $volumetric_weight->calculate();
 
         $calcular_pesos_cubados = get_option('wc_settings_tab_jadlog_calcular_pesos_cubados');
         $pacote->peso_taxado = $calcular_pesos_cubados == 'yes' ? max($pacote->peso, $pacote->peso_cubado) : $pacote->peso;

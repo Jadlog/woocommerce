@@ -808,14 +808,6 @@ class WooCommerceJadlog
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_servico'
             ),
-            'JADLOG_CALCULAR_PESOS_CUBADOS' => array(
-                'name'     => '',
-                'type'     => 'checkbox',
-                'desc'     => __('Calcular pesos cubados', 'jadlog'),
-                'default'  => 'yes',
-                'desc_tip' => __('Os pesos cubados são utilizados no cálculo do frete. Se esta opção estiver marcada, cadastre os pesos reais dos produtos e suas dimensões -- assim será calculado o peso cubado de acordo com o modal (aéreo ou rodoviário) da(s) modalidade(s) contratada(s). Caso contrário, no cadastro de produtos informe como peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
-                'id'       => 'wc_settings_tab_jadlog_calcular_pesos_cubados'
-            )
         );
         return $settings;
     }
@@ -861,6 +853,21 @@ class WooCommerceJadlog
                 'default'  => 'N',
                 'id'       => 'wc_settings_tab_jadlog_tipo_seguro_expresso'
             ),
+            'JADLOG_CALCULAR_PESOS_CUBADOS_EXPRESSO' => array(
+                'name'     => __('Calcular pesos cubados na modalidade Expresso', 'jadlog'),
+                'type'     => 'select',
+                'options'  => array(
+                    'PADRAO'                     => __('Usar fator de cubagem padrão: ', 'jadlog').__(Modalidade::modal(Modalidade::COD_EXPRESSO), 'jadlog'),
+                    Modalidade::MODAL_RODOVIARIO => 'Usar fator de cubagem rodoviário',
+                    'NAO_CALCULAR'               => 'Não calcular cubagem'
+                ),
+                'default'  => 'PADRAO',
+                'desc' => 
+                    '<br/>'.__('Os pesos cubados são utilizados no cálculo do frete e dependem do modal contratado (aéreo ou rodoviário).', 'jadlog').
+                    '<br/>'.__('Caso selecione um modal, cadastre os pesos reais dos produtos e suas dimensões.', 'jadlog').
+                    '<br/>'.__('Caso selecione a opção para não calcular cubagem, no cadastro de produtos informe no campo peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
+                'id' => 'wc_settings_tab_jadlog_calcular_pesos_cubados_expresso'
+            )
         );
         return $settings;
     }
@@ -929,6 +936,21 @@ class WooCommerceJadlog
                 'default'  => 'N',
                 'id'       => 'wc_settings_tab_jadlog_tipo_seguro_pickup'
             ),
+            'JADLOG_CALCULAR_PESOS_CUBADOS_PICKUP' => array(
+                'name'     => __('Calcular pesos cubados na modalidade Pickup', 'jadlog'),
+                'type'     => 'select',
+                'options'  => array(
+                    'PADRAO'                     => __('Usar fator de cubagem padrão: ', 'jadlog').__(Modalidade::modal(Modalidade::COD_PICKUP), 'jadlog'),
+                    Modalidade::MODAL_RODOVIARIO => 'Usar fator de cubagem rodoviário',
+                    'NAO_CALCULAR'               => 'Não calcular cubagem'
+                ),
+                'default'  => 'PADRAO',
+                'desc' => 
+                    '<br/>'.__('Os pesos cubados são utilizados no cálculo do frete e dependem do modal contratado (aéreo ou rodoviário).', 'jadlog').
+                    '<br/>'.__('Caso selecione um modal, cadastre os pesos reais dos produtos e suas dimensões.', 'jadlog').
+                    '<br/>'.__('Caso selecione a opção para não calcular cubagem, no cadastro de produtos informe no campo peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
+                'id' => 'wc_settings_tab_jadlog_calcular_pesos_cubados_pickup'
+            )
         );
         return $settings;
     }
