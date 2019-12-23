@@ -62,13 +62,40 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 public function calculate_shipping($package = array()) {
                     global $woocommerce;
 
+                    $postcode = $woocommerce->customer->get_shipping_postcode();
+                    if (empty($postcode))
+                        return;
+
+                    if ($this->modalidade_expresso_ativa) {
+                        $jadlog_package = jadlog_getPackage($package, Modalidade::COD_EXPRESSO, $this->weight_converter, $this->dimension_converter);
+                        $preco       = $jadlog_package->preco;
+                        $peso_taxado = $jadlog_package->peso_taxado;
+
+                        $estimated_values = jadlog_get_express_price($preco, $postcode, $peso_taxado);
+                        $time = isset($estimated_values['estimated_time']) ? ' - '.$estimated_values['estimated_time'].' dias úteis' : '';
+                        $label = __('Jadlog Expresso', 'jadlog').$time;
+
+                        $rate = array(
+                            // 'id'    => $pudo_id,
+                            'label' => $label,
+                            'cost'  => $estimated_values['estimated_value'],
+                            'taxes' => false,
+                            // 'meta_data' => [
+                            //     'id_pudo'      => $pudo_item['PUDO_ID'],
+                            //     'name_pudo'    => $pudo_item['NAME'],
+                            //     'address_pudo' => $address,
+                            //     'zipcode_pudo' => $pudo_item['ZIPCODE'],
+                            // ],
+                        );
+                        $this->add_rate($rate);
+                    }
+
                     if ($this->modalidade_pickup_ativa) {
-                        $jadlog_package = jadlog_getPackage($package, $this->weight_converter, $this->dimension_converter);
+                        $jadlog_package = jadlog_getPackage($package, Modalidade::COD_PICKUP, $this->weight_converter, $this->dimension_converter);
                         $preco       = $jadlog_package->preco;
                         $peso_taxado = $jadlog_package->peso_taxado;
 
                         $jadlogMyPudo = new JadLogMyPudo();
-                        $postcode     = $woocommerce->customer->get_shipping_postcode();
                         $pudos        = $jadlogMyPudo->getPudos($postcode);
 
                         if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM'])) {
@@ -112,7 +139,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         }
     }
 
-    function jadlog_getPackage($package, $weight_converter, $dimension_converter) {
+    function jadlog_getPackage($package, $modalidade, $weight_converter, $dimension_converter) {
         $volume = 0.0;
         $weight = 0.0;
         $total  = 0.0;
@@ -135,7 +162,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         $pacote->volume = $volume;
         $pacote->peso   = $weight_converter->to_kg($weight);
 
-        $modalidade = get_option('wc_settings_tab_jadlog_modalidade');
         $fator_cubagem = Modalidade::fator_cubagem(Modalidade::modal($modalidade));
         $pacote->peso_cubado = $pacote->volume * $fator_cubagem;
 
@@ -150,8 +176,14 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
     }
 
     function jadlog_get_pudo_price($valor, $pudo, $peso) {
-        $service = new ShippingPriceService();
+        $service = new ShippingPriceService(Modalidade::COD_PICKUP);
         $result = $service->estimate($valor, $pudo['ZIPCODE'], $peso);
+        return $result;
+    }
+
+    function jadlog_get_express_price($valor, $zipcode, $peso) {
+        $service = new ShippingPriceService(Modalidade::COD_EXPRESSO);
+        $result = $service->estimate($valor, $zipcode, $peso);
         return $result;
     }
 

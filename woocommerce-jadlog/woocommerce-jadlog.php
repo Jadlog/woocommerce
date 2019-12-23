@@ -773,14 +773,6 @@ class WooCommerceJadlog
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_senha'
             ),
-            'JADLOG_FRAP' => array(
-                'name'     => '',
-                'desc'     => __('FRAP', 'jadlog'),
-                'desc_tip' => __('Marque esta opção se deseja que a cobrança de frete seja feita no destino', 'jadlog'),
-                'type'     => 'checkbox',
-                'default'  => 'no',
-                'id'       => 'wc_settings_tab_jadlog_frap'
-            ),
             'JADLOG_TIPO_COLETA' => array(
                 'name'     => __('Tipo de Coleta Jadlog', 'jadlog'),
                 'type'     => 'text',
@@ -788,35 +780,12 @@ class WooCommerceJadlog
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_tipo_coleta'
             ),
-            'JADLOG_VALOR_COLETA' => array(
-                'name'     => __('Valor de coleta', 'jadlog'),
-                'type'     => 'text',
-                'css'      => 'width:200px;',
-                'desc'     => __('Valor de coleta negociado com a Jadlog', 'jadlog'),
-                'id'       => 'wc_settings_tab_jadlog_valor_coleta'
-            ),
-            'JADLOG_TIPO_ENTREGA' => array(
-                'name'     => __('Tipo de entrega', 'jadlog'),
-                'type'     => 'radio',
-                'desc'     => '',
-                'options'  => array('D' => 'Domicílio', 'R' => 'Retira'),
-                'default'  => 'D',
-                'id'       => 'wc_settings_tab_jadlog_tipo_entrega'
-            ),
             'JADLOG_TIPO_FRETE' => array(
                 'name'     => __('Tipo de Frete Jadlog', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_tipo_frete'
-            ),
-            'JADLOG_TIPO_SEGURO' => array(
-                'name'     => __('Tipo do seguro', 'jadlog'),
-                'type'     => 'radio',
-                'desc'     => '',
-                'options'  => array('N' => 'Normal', 'A' => 'Apólice'),
-                'default'  => 'N',
-                'id'       => 'wc_settings_tab_jadlog_tipo_seguro'
             ),
             'JADLOG_UNIDADE_ORIGEM' => array(
                 'name'     => __('Unidade de Origem Jadlog', 'jadlog'),
@@ -861,6 +830,37 @@ class WooCommerceJadlog
                 'default'  => 'no',
                 'id'       => 'wc_settings_tab_jadlog_modalidade_expresso'
             ),
+            'JADLOG_FRAP_EXPRESSO' => array(
+                'name'     => '',
+                'desc'     => __('FRAP', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja que a cobrança de frete seja feita no destino na modalidade Expresso', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_frap_expresso'
+            ),
+            'JADLOG_VALOR_COLETA_EXPRESSO' => array(
+                'name'     => __('Valor de coleta', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:200px;',
+                'desc'     => __('Valor de coleta negociado com a Jadlog da modalidade Expresso', 'jadlog'),
+                'id'       => 'wc_settings_tab_jadlog_valor_coleta_expresso'
+            ),
+            'JADLOG_TIPO_ENTREGA_EXPRESSO' => array(
+                'name'     => __('Tipo de entrega', 'jadlog'),
+                'type'     => 'radio',
+                'desc'     => '<i>Da modalidade Expresso</i>',
+                'options'  => array('D' => 'Domicílio', 'R' => 'Retira'),
+                'default'  => 'D',
+                'id'       => 'wc_settings_tab_jadlog_tipo_entrega_expresso'
+            ),
+            'JADLOG_TIPO_SEGURO_EXPRESSO' => array(
+                'name'     => __('Tipo do seguro', 'jadlog'),
+                'type'     => 'radio',
+                'desc'     => '<i>Da modalidade Expresso</i>',
+                'options'  => array('N' => 'Normal', 'A' => 'Apólice'),
+                'default'  => 'N',
+                'id'       => 'wc_settings_tab_jadlog_tipo_seguro_expresso'
+            ),
         );
         return $settings;
     }
@@ -897,6 +897,37 @@ class WooCommerceJadlog
                 'desc'     => __('Quantidade de pontos pickup a serem mostrados no carrinho de compras', 'jadlog'),
                 'default'  => 5,
                 'id'       => 'wc_settings_tab_jadlog_qtd_pontos_pickup'
+            ),
+            'JADLOG_FRAP_PICKUP' => array(
+                'name'     => '',
+                'desc'     => __('FRAP', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja que a cobrança de frete seja feita no destino na modalidade Pickup', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_frap_pickup'
+            ),
+            'JADLOG_VALOR_COLETA_PICKUP' => array(
+                'name'     => __('Valor de coleta', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:200px;',
+                'desc'     => __('Valor de coleta negociado com a Jadlog da modalidade Pickup', 'jadlog'),
+                'id'       => 'wc_settings_tab_jadlog_valor_coleta_pickup'
+            ),
+            'JADLOG_TIPO_ENTREGA_PICKUP' => array(
+                'name'     => __('Tipo de entrega', 'jadlog'),
+                'type'     => 'radio',
+                'desc'     => '<i>Da modalidade Pickup</i>',
+                'options'  => array('D' => 'Domicílio', 'R' => 'Retira'),
+                'default'  => 'D',
+                'id'       => 'wc_settings_tab_jadlog_tipo_entrega_pickup'
+            ),
+            'JADLOG_TIPO_SEGURO_PICKUP' => array(
+                'name'     => __('Tipo do seguro', 'jadlog'),
+                'type'     => 'radio',
+                'desc'     => '<i>Da modalidade Pickup</i>',
+                'options'  => array('N' => 'Normal', 'A' => 'Apólice'),
+                'default'  => 'N',
+                'id'       => 'wc_settings_tab_jadlog_tipo_seguro_pickup'
             ),
         );
         return $settings;
