@@ -44,7 +44,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->init_form_fields();
                     $this->init_settings();
 
-                    $this->pickup_points_number = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
+                    $this->pickup_points_number      = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
+                    $this->modalidade_pickup_ativa   = get_option('wc_settings_tab_jadlog_modalidade_pickup')   == 'yes';
+                    $this->modalidade_expresso_ativa = get_option('wc_settings_tab_jadlog_modalidade_expresso') == 'yes';
 
                     // Save settings in admin if you have any defined
                     add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -58,53 +60,55 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                  * @return void
                  */
                 public function calculate_shipping($package = array()) {
-
                     global $woocommerce;
 
-                    $jadlog_package = jadlog_getPackage($package, $this->weight_converter, $this->dimension_converter);
-                    $preco       = $jadlog_package->preco;
-                    $peso_taxado = $jadlog_package->peso_taxado;
+                    if ($this->modalidade_pickup_ativa) {
+                        $jadlog_package = jadlog_getPackage($package, $this->weight_converter, $this->dimension_converter);
+                        $preco       = $jadlog_package->preco;
+                        $peso_taxado = $jadlog_package->peso_taxado;
 
-                    $jadlogMyPudo = new JadLogMyPudo();
-                    $postcode     = $woocommerce->customer->get_shipping_postcode();
-                    $pudos        = $jadlogMyPudo->getPudos($postcode);
+                        $jadlogMyPudo = new JadLogMyPudo();
+                        $postcode     = $woocommerce->customer->get_shipping_postcode();
+                        $pudos        = $jadlogMyPudo->getPudos($postcode);
 
-                    if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM'])) {
-                        $count = 0;
-                        foreach ($pudos['PUDO_ITEMS']['PUDO_ITEM'] as $key => $pudo_item ) {
+                        if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM'])) {
+                            $count = 0;
+                            foreach ($pudos['PUDO_ITEMS']['PUDO_ITEM'] as $key => $pudo_item ) {
 
-                            $pudo_id = $pudo_item['PUDO_ID'];
-                            $address = $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' '.join(" ", $pudo_item['ADDRESS2']).' - '.$pudo_item['ADDRESS3'].
-                                ' - CEP '.$pudo_item['ZIPCODE'].' - '.$pudo_item['CITY'];
-                            $_SESSION[$pudo_id]['latitude']  = $pudo_item['LATITUDE'];
-                            $_SESSION[$pudo_id]['longitude'] = $pudo_item['LONGITUDE'];
-                            $_SESSION[$pudo_id]['address']   = $address;
-                            $_SESSION[$pudo_id]['time']      = $pudo_item['OPENING_HOURS_ITEMS'];
-                            $distance = round(intval($pudo_item['DISTANCE']) / 1000.0, 1);
-                            $estimated_values = jadlog_get_pudo_price($preco, $pudo_item, $peso_taxado);
-                            $time = isset($estimated_values['estimated_time']) ? ' - '.$estimated_values['estimated_time'].' dias úteis' : '';
-                            $label = __('Retire no ponto Pickup Jadlog', 'jadlog').' '.$pudo_item['NAME'].' - '.
-                                $address.' ('.number_format($distance, 1, ',', '.').' km)'.$time;
-                            $rate = array(
-                                'id'    => $pudo_id,
-                                'label' => $label,
-                                'cost'  => $estimated_values['estimated_value'],
-                                'taxes' => false,
-                                'meta_data' => [
-                                    'id_pudo'      => $pudo_item['PUDO_ID'],
-                                    'name_pudo'    => $pudo_item['NAME'],
-                                    'address_pudo' => $address,
-                                    'zipcode_pudo' => $pudo_item['ZIPCODE'],
-                                ],
-                            );
-                            $this->add_rate($rate);
+                                $pudo_id = $pudo_item['PUDO_ID'];
+                                $address = $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' '.join(" ", $pudo_item['ADDRESS2']).' - '.$pudo_item['ADDRESS3'].
+                                    ' - CEP '.$pudo_item['ZIPCODE'].' - '.$pudo_item['CITY'];
+                                $_SESSION[$pudo_id]['latitude']  = $pudo_item['LATITUDE'];
+                                $_SESSION[$pudo_id]['longitude'] = $pudo_item['LONGITUDE'];
+                                $_SESSION[$pudo_id]['address']   = $address;
+                                $_SESSION[$pudo_id]['time']      = $pudo_item['OPENING_HOURS_ITEMS'];
+                                $distance = round(intval($pudo_item['DISTANCE']) / 1000.0, 1);
+                                $estimated_values = jadlog_get_pudo_price($preco, $pudo_item, $peso_taxado);
+                                $time = isset($estimated_values['estimated_time']) ? ' - '.$estimated_values['estimated_time'].' dias úteis' : '';
+                                $label = __('Retire no ponto Pickup Jadlog', 'jadlog').' '.$pudo_item['NAME'].' - '.
+                                    $address.' ('.number_format($distance, 1, ',', '.').' km)'.$time;
+                                $rate = array(
+                                    'id'    => $pudo_id,
+                                    'label' => $label,
+                                    'cost'  => $estimated_values['estimated_value'],
+                                    'taxes' => false,
+                                    'meta_data' => [
+                                        'id_pudo'      => $pudo_item['PUDO_ID'],
+                                        'name_pudo'    => $pudo_item['NAME'],
+                                        'address_pudo' => $address,
+                                        'zipcode_pudo' => $pudo_item['ZIPCODE'],
+                                    ],
+                                );
+                                $this->add_rate($rate);
 
-                            if (++$count >= $this->pickup_points_number)
-                                break;
+                                if (++$count >= $this->pickup_points_number)
+                                    break;
+                            }
                         }
                     }
                 }
-            }
+
+            } //end of WC_Jadlog_Shipping_Method
         }
     }
 

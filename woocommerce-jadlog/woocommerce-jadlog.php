@@ -769,6 +769,22 @@ class WooCommerceJadlog
                 'default'  => Modalidade::COD_PICKUP,
                 'id'       => 'wc_settings_tab_jadlog_modalidade'
             ),
+            'JADLOG_MODALIDADE_PICKUP' => array(
+                'name'     => '',
+                'desc'     => __('Modalidade de transporte Jadlog Pickup', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Pickup', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_modalidade_pickup'
+            ),
+            'JADLOG_MODALIDADE_EXPRESSO' => array(
+                'name'     => '',
+                'desc'     => __('Modalidade de transporte Jadlog Expresso', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Expresso', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_modalidade_expresso'
+            ),
             'JADLOG_CONTA_CORRENTE' => array(
                 'name'     => __('Conta Corrente Jadlog', 'jadlog'),
                 'type'     => 'text',
@@ -862,7 +878,7 @@ class WooCommerceJadlog
                 'type'     => 'checkbox',
                 'desc'     => __('Calcular pesos cubados', 'jadlog'),
                 'default'  => 'yes',
-                'desc_tip' => __('Se esta opção estiver marcada, cadastre os pesos reais dos produtos e suas dimensões -- assim será calculado o peso cubado de acordo com o modal (aéreo ou rodoviário) da(s) modalidade(s) contratada(s). Caso contrário, no cadastro de produtos informe como peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
+                'desc_tip' => __('Os pesos cubados são utilizados no cálculo do frete. Se esta opção estiver marcada, cadastre os pesos reais dos produtos e suas dimensões -- assim será calculado o peso cubado de acordo com o modal (aéreo ou rodoviário) da(s) modalidade(s) contratada(s). Caso contrário, no cadastro de produtos informe como peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
                 'id'       => 'wc_settings_tab_jadlog_calcular_pesos_cubados'
             )
         );
