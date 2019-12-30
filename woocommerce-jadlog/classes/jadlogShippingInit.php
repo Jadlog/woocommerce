@@ -8,6 +8,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
             class WC_Jadlog_Shipping_Method extends WC_Shipping_Method {
 
+                const METHOD_ID = "JADLOG";
+
                 /**
                  * Constructor for your shipping class
                  *
@@ -15,14 +17,14 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                  * @return void
                  */
                 public function __construct() {
-                    $this->id                 = 'melhorenvio';
-                    $this->method_title       = __( 'Melhor Envio', 'melhorenvio' );
-                    $this->method_description = __( 'Metodo de envio utilzando a Melhor Envio.', 'melhorenvio' );
+                    $this->id                 = self::METHOD_ID;
+                    $this->method_title       = __('Jadlog', 'jadlog');
+                    // $this->method_description = __('Jadlog', 'jadlog');
 
                     $this->init();
 
-                    $this->enabled = isset( $this->settings['enabled'] ) ? $this->settings['enabled'] : 'yes';
-                    $this->title = isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'Melhor Envio', 'melhorenvio' );
+                    $this->enabled = isset($this->settings['enabled']) ? $this->settings['enabled'] : 'yes';
+                    $this->title = isset($this->settings['title']) ? $this->settings['title'] : __('Jadlog', 'jadlog');
 
                     include_once('jadlog-mypudo.php');
                     include_once('Modalidade.php');
@@ -76,13 +78,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             // 'id'    => $pudo_id,
                             'label' => $label,
                             'cost'  => $estimated_values['estimated_value'],
-                            'taxes' => false,
-                            // 'meta_data' => [
-                            //     'id_pudo'      => $pudo_item['PUDO_ID'],
-                            //     'name_pudo'    => $pudo_item['NAME'],
-                            //     'address_pudo' => $address,
-                            //     'zipcode_pudo' => $pudo_item['ZIPCODE'],
-                            // ],
+                            'taxes' => true,
+                            'meta_data' => [
+                                'modalidade' => Modalidade::LABEL_EXPRESSO
+                            ],
                         );
                         $this->add_rate($rate);
                     }
@@ -101,7 +100,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                                 $pudo_id = $pudo_item['PUDO_ID'];
                                 $address = $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' '.join(" ", $pudo_item['ADDRESS2']).' - '.$pudo_item['ADDRESS3'].
-                                    ' - CEP '.$pudo_item['ZIPCODE'].' - '.$pudo_item['CITY'];
+                                    ' - '.$pudo_item['CITY'].' - '.$pudo_item['ZIPCODE'];
                                 $_SESSION[$pudo_id]['latitude']  = $pudo_item['LATITUDE'];
                                 $_SESSION[$pudo_id]['longitude'] = $pudo_item['LONGITUDE'];
                                 $_SESSION[$pudo_id]['address']   = $address;
@@ -115,8 +114,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                                     'id'    => $pudo_id,
                                     'label' => $label,
                                     'cost'  => $estimated_values['estimated_value'],
-                                    'taxes' => false,
+                                    'taxes' => true,
                                     'meta_data' => [
+                                        'modalidade'   => Modalidade::LABEL_PICKUP,
                                         'id_pudo'      => $pudo_item['PUDO_ID'],
                                         'name_pudo'    => $pudo_item['NAME'],
                                         'address_pudo' => $address,
@@ -148,45 +148,57 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         return $result;
     }
 
-    function jadlog_save_pudos($order_id) {
+    function format_address($raw_address) {
+        $address = $raw_address['address_1'].", ".$raw_address['number'];
+        foreach (array('address_2', 'neighborhood', 'city', 'state', 'postcode') as $key) {
+            $field = $raw_address[$key];
+            if (!empty($field))
+                $address = $address.' - '.$field;
+        }
+        return $address;
+    }
 
+    function jadlog_save_pudos($order_id) {
         global $wpdb;
         $table =  $wpdb->prefix . 'woocommerce_jadlog';
-        $order = new WC_Order( $order_id );
-        $shipping = explode('-', $order->get_shipping_method());
+        $order = wc_get_order($order_id);
 
-        foreach ($order->get_shipping_methods() as $key => $value) {
-            $shipping_method_data = $order->get_item_meta_array($key);
+        foreach ($order->get_shipping_methods() as $shipping_method) {
+            if ($shipping_method->get_method_id() == WC_Jadlog_Shipping_Method::METHOD_ID) {
+                $meta_data = array_reduce(
+                    $shipping_method->get_formatted_meta_data(),
+                    function($acc, $item) {
+                        $acc[$item->key] = $item->value;
+                        return $acc;
+                    },
+                    array());
+
+                $modalidade = $meta_data['modalidade'];
+                switch ($modalidade) {
+                case Modalidade::LABEL_EXPRESSO:
+                    $id_pudo = null;
+                    $name    = $order->get_formatted_shipping_full_name();
+                    $address = format_address($order->get_address('shipping'));
+                    $zipcode = $order->get_shipping_postcode();
+                    break;
+                case Modalidade::LABEL_PICKUP:
+                    $id_pudo = $meta_data['id_pudo'];
+                    $name    = $meta_data['name_pudo'];
+                    $address = $meta_data['address_pudo'];
+                    $zipcode = $meta_data['zipcode_pudo'];
+                    break;
+                }
+                $wpdb->insert($table, array(
+                    'order_id'        => $order_id,
+                    'shipping_method' => $modalidade,
+                    'pudo_id'         => $id_pudo,
+                    'name'            => $name,
+                    'address'         => $address,
+                    'postcode'        => $zipcode,
+                    'status'          => 'Pendente',
+                    'date_creation'   => $order->get_date_created()));
+            }
         }
-
-        foreach ($shipping_method_data as $key => $value) {
-            if ($value->key == 'id_pudo') {
-                $id_pudo = $value->value;
-            }
-            if ($value->key == 'address_pudo') {
-                $address = $value->value;
-            }
-            if ($value->key == 'name_pudo') {
-                $name = $value->value;
-            }
-            if ($value->key == 'zipcode_pudo') {
-                $zipcode = $value->value;
-            }
-        }
-
-        if (count($shipping) >= 3):
-            $wpdb->insert($table, array(
-                'order_id' => $order_id,
-                'shipping_method' => 'Jadlog - Pickup',
-                'pudo_id' => $id_pudo,
-                'name' => $name,
-                'address' => $address,
-                'postcode' => $zipcode,
-                'status' => 'Pendente',
-                'date_creation' => $order->get_date_created()
-            ));
-        endif;
-
     }
 
     add_action( 'woocommerce_shipping_init', 'jadlogShippingInit' );
