@@ -3,12 +3,11 @@
 class Delivery {
 
     public function __construct($order) {
+        include_once("DeliveryRepository.php");
         $this->order = $order;
     }
 
     public function create() {
-        global $wpdb;
-        $table =  $wpdb->prefix . 'woocommerce_jadlog';
 
         foreach ($this->order->get_shipping_methods() as $shipping_method) {
             if ($shipping_method->get_method_id() == WC_Jadlog_Shipping_Method::METHOD_ID) {
@@ -36,15 +35,15 @@ class Delivery {
                     break;
                 }
 
-                $wpdb->insert($table, array(
-                    'order_id'        => $this->order->get_id(),
-                    'shipping_method' => $modalidade,
-                    'pudo_id'         => $id_pudo,
-                    'name'            => $name,
-                    'address'         => $address,
-                    'postcode'        => $zipcode,
-                    'status'          => 'Pendente',
-                    'date_creation'   => strval($this->order->get_date_created())));
+                DeliveryRepository::create(
+                    $this->order,
+                    array(
+                        'shipping_method' => $modalidade,
+                        'pudo_id'         => $id_pudo,
+                        'name'            => $name,
+                        'address'         => $address,
+                        'postcode'        => $zipcode
+                    ));
             }
         }
     }
