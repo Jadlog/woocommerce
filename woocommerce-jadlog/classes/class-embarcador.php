@@ -160,6 +160,9 @@ class JadLogEmbarcador {
         $jadlog_request->dfe->cfop              = '6909';
         $jadlog_request->dfe->tpDocumento       = 2;
 
+        error_log('embarcador/coleta body: '.var_export($jadlog_request, true));
+        return;
+
         $response = wp_remote_post( $this->url, array(
                 'method' => 'POST',
                 'timeout' => 500,
