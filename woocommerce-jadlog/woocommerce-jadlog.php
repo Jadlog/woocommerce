@@ -1198,7 +1198,7 @@ class WooCommerceJadlog
                             <td class="pudo_id">'.htmlentities($delivery->status).'</td>
                             <td class="pudo_id">'.htmlentities($delivery->erro).'</td>
                             <td>
-                                <a href="#" class="jadlog_delivery_request" data-id="'.htmlentities($delivery->id).'" data-pudo="'.htmlentities($delivery->pudo_id).'">
+                                <a href="#" class="jadlog_delivery_request" data-id="'.htmlentities($delivery->id).'">
                                     Enviar
                                 </a>
                             </td>
@@ -1217,7 +1217,7 @@ class WooCommerceJadlog
                     type:     "POST",
                     dataType: "json",
                     url:      "<?= JADLOG_ROOT_URL ?>/ajax/send-embarcador.php",
-                    data:     { jadlog_id: $(this).data('id'), pudo_id: $(this).data('pudo') },
+                    data:     { id: $(this).data('id') },
                     success: function (response) {
                         console.log(response);
                         window.location.reload(); //TODO Fazer update com ajax

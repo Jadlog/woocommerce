@@ -13,7 +13,7 @@ require( $wp_root_path . '/wp-load.php' );
 /* Load Class Embarcador */
 include_once('../classes/class-embarcador.php');
 
-$embarcador = new JadLogEmbarcador($_POST['jadlog_id'], $_POST['pudo_id']);
+$embarcador = new JadLogEmbarcador($_POST['id']);
 
 $response = $embarcador->postRequestEmbarcador();
 

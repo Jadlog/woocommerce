@@ -16,13 +16,14 @@ class JadLogEmbarcador {
      * @access public
      * @return void
      */
-    public function __construct($jadlog_id, $pudo_id) {
+    public function __construct($jadlog_id) {
+        include_once("DeliveryRepository.php");
+
         global $wpdb;
 
         $this->table = $wpdb->prefix . 'woocommerce_jadlog';
 
         $this->jadlog_id        = $jadlog_id;
-        $this->pudo_id          = $pudo_id;
 
         $this->url              = get_option('wc_settings_tab_jadlog_url_embarcador');
         $this->key              = get_option('wc_settings_tab_jadlog_key_embarcador');
@@ -58,12 +59,8 @@ class JadLogEmbarcador {
      */
     public function postRequestEmbarcador()  {
 
-        global $wpdb;
-
-        $order_id = $wpdb->get_col("SELECT ORDER_ID FROM {$this->table}
-                                     WHERE id = {$this->jadlog_id}");
-
-        $order = new WC_Order( $order_id[0] );
+        $delivery = DeliveryRepository::get_by_id($this->jadlog_id);
+        $order    = wc_get_order($delivery->order_id);
 
         //calculo do peso cubado
         $total_volume = 0.0;
@@ -104,7 +101,7 @@ class JadLogEmbarcador {
         $jadlog_request->centroCusto     = null;
         $jadlog_request->tpColeta        = $this->tipo_coleta;
         $jadlog_request->cdPickupOri     = null;
-        $jadlog_request->cdPickupDes     = $this->pudo_id;
+        $jadlog_request->cdPickupDes     = $delivery->pudo_id;
         $jadlog_request->tipoFrete       = $this->tipo_frete;
         $jadlog_request->cdUnidadeOri    = $this->unidade_origem;
         $jadlog_request->cdUnidadeDes    = null;
