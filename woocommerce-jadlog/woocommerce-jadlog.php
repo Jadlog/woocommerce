@@ -1152,7 +1152,7 @@ class WooCommerceJadlog
 
         <div class="dpdfrance-wrap wrap">
             <h2 style="float:left; margin-top:20px">Envios Jadlog</h2>
-            <div style="float:right"><img src="<?php echo JADLOG_ROOT_URL; ?>/assets/img/jadlog_logo.png"/></div>
+            <div style="float:right"><img src="<?= JADLOG_ROOT_URL ?>/assets/img/jadlog_logo.png"/></div>
             <div style="clear:both"></div>
 
             <form id="exportform" action="admin.php?page=woocommerce-dpdfrance" method="POST" enctype="multipart/form-data">
@@ -1163,15 +1163,36 @@ class WooCommerceJadlog
                             <label class="screen-reader-text" for="cb-select-all-1"></label>
                             <input onchange="checkallboxes(this)" id="cb-select-all-1" type="checkbox"/>
                         </th>
-                        <th scope="col" id="order_id"        class="manage-column column-order_number">Número do Pedido</th>
-                        <th scope="col" id="order_date"      class="manage-column column-order_date">Data da compra</th>
-                        <th scope="col" id="order_full_name" class="manage-column column-order_receiver">Recebedor</th>
-                        <th scope="col" id="order_service"   class="manage-column column-order_service">Serviço</th>
-                        <th scope="col" id="order_address"   class="manage-column column-order_address">Destino</th>
-                        <th scope="col" id="order_postcode"  class="manage-column column-order_postcode">Cep</th>
-                        <th scope="col" id="order_status"    class="manage-column column-order_status">Status</th>
-                        <th scope="col" id="order_return"    class="manage-column column-order_result">Retorno</th>
-                        <th scope="col" id="order_actions"   class="manage-column column-order_actions">Ações</th>
+                        <th scope="col" id="order_id"        class="manage-column column-order_number">
+                            <?= __('Número do Pedido', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_date"      class="manage-column column-order_date">
+                            <?= __('Data da compra', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_customer" class="manage-column column-order_customer">
+                            <?= __('Cliente', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_service"   class="manage-column column-order_service">
+                            <?= __('Serviço', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_address"   class="manage-column column-order_address">
+                            <?= __('Destino', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_postcode"  class="manage-column column-order_postcode">
+                            <?= __('CEP', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_full_name" class="manage-column column-order_receiver">
+                            <?= __('Recebedor', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_status"    class="manage-column column-order_status">
+                            <?= __('Status', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_return"    class="manage-column column-order_result">
+                            <?= __('Retorno', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_actions"   class="manage-column column-order_actions">
+                            <?= __('Ações', 'jadlog') ?>
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="the-list">
@@ -1181,30 +1202,40 @@ class WooCommerceJadlog
                     include_once("classes/DeliveryRepository.php");
                     $deliveries = DeliveryRepository::get_all();
 
-                    foreach ($deliveries as $delivery) {
+                    foreach ($deliveries as $delivery):
                         $order              = wc_get_order($delivery->order_id);
                         $order_id           = $order->get_order_number();
                         $order_full_name    = $order->get_formatted_billing_full_name();
                         $order_date_created = date('d/m/Y H:i:s', strtotime($order->get_date_created()));
-                        echo '
+                        ?>
                         <tr>
-                            <td><input class="checkbox" type="checkbox" name="checkbox[]" value="'.htmlentities($order_id).'"></td>
-                            <td class="id">'.htmlentities($order_id).'</td>
-                            <td class="date">'.htmlentities($order_date_created).'</td>
-                            <td class="shipping">'.htmlentities($order_full_name).'</td>
-                            <td class="pudo_id">'.htmlentities($delivery->shipping_method).'</td>
-                            <td class="pudo_id">'.htmlentities($delivery->address).'</td>
-                            <td class="pudo_id">'.htmlentities($delivery->postcode).'</td>
-                            <td class="pudo_id">'.htmlentities($delivery->status).'</td>
-                            <td class="pudo_id">'.htmlentities($delivery->erro).'</td>
+                            <td><input class="checkbox" type="checkbox" name="checkbox[]" value="<?= htmlentities($order_id) ?>"></td>
+                            <td class="id"><?= htmlentities($order_id) ?></td>
+                            <td class="date"><?= htmlentities($order_date_created) ?></td>
+                            <td class="shipping"><?= htmlentities($order_full_name) ?></td>
+                            <td class="pudo_id"><?= htmlentities($delivery->shipping_method) ?></td>
+                            <td class="pudo_id"><?= htmlentities($delivery->address) ?></td>
+                            <td class="pudo_id"><?= htmlentities($delivery->postcode) ?></td>
+                            <td class="pudo_id"><?= htmlentities($delivery->name) ?></td>
+                            <td class="pudo_id"><?= htmlentities($delivery->status) ?></td>
+                            <td class="pudo_id"><?= htmlentities($delivery->erro) ?></td>
                             <td>
-                                <a href="#" class="jadlog_delivery_request" data-id="'.htmlentities($delivery->id).'">
-                                    Enviar
-                                </a>
+                                <?php if ($delivery->status == DeliveryRepository::INITIAL_STATUS): ?>
+                                    <a href="#" class="jadlog_delivery_request" data-id="<?= htmlentities($delivery->id) ?>">
+                                        <?= __('Enviar', 'jadlog') ?>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="#" class="jadlog_delivery_tracking" data-id="<?= htmlentities($delivery->id) ?>">
+                                        <?= __('Consultar', 'jadlog') ?>
+                                    </a>
+                                    <br/>
+                                    <a href="#" class="jadlog_delivery_cancel" data-id="<?= htmlentities($delivery->id) ?>">
+                                        <?= __('Cancelar', 'jadlog') ?>
+                                    </a>
+                                <?php endif ?>
                             </td>
-                        </tr>';
-                    }
-                    ?>
+                        </tr>
+                    <?php endforeach ?>
 
                 </tbody>
             </table>
@@ -1216,7 +1247,41 @@ class WooCommerceJadlog
                 $.ajax({
                     type:     "POST",
                     dataType: "json",
-                    url:      "<?= JADLOG_ROOT_URL ?>/ajax/send-embarcador.php",
+                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/Embarcador.php",
+                    data:     { id: $(this).data('id') },
+                    success: function (response) {
+                        console.log(response);
+                        window.location.reload(); //TODO Fazer update com ajax
+                    },
+                    error: function (e) {
+                        console.error(e);
+                        alert('Ocorreu um erro ao chamar o serviço Jadlog:\n' + JSON.stringify(e, null, 2));
+
+                    }
+                });
+            });
+            $('.jadlog_delivery_tracking').on("click", function () {
+                $.ajax({
+                    type:     "DELETE",
+                    dataType: "json",
+                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/Embarcador.php",
+                    data:     { id: $(this).data('id') },
+                    success: function (response) {
+                        console.log(response);
+                        window.location.reload(); //TODO Fazer update com ajax
+                    },
+                    error: function (e) {
+                        console.error(e);
+                        alert('Ocorreu um erro ao chamar o serviço Jadlog:\n' + JSON.stringify(e, null, 2));
+
+                    }
+                });
+            });
+            $('.jadlog_delivery_cancel').on("click", function () {
+                $.ajax({
+                    type:     "GET",
+                    dataType: "json",
+                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/Embarcador.php",
                     data:     { id: $(this).data('id') },
                     success: function (response) {
                         console.log(response);

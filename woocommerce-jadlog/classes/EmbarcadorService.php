@@ -1,21 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: quinho
- * Date: 26/10/17
- * Time: 14:54
- */
-/**
- * Class JadLogMyPudo
- */
-class JadLogEmbarcador {
+class EmbarcadorService {
 
-    /**
-     * Constructor for your shipping class
-     *
-     * @access public
-     * @return void
-     */
     public function __construct($jadlog_id) {
         include_once("DeliveryRepository.php");
 
@@ -57,7 +42,7 @@ class JadLogEmbarcador {
      * @access public
      * @return json
      */
-    public function postRequestEmbarcador()  {
+    public function create()  {
 
         $delivery = DeliveryRepository::get_by_id($this->jadlog_id);
         $order    = wc_get_order($delivery->order_id);
@@ -66,7 +51,7 @@ class JadLogEmbarcador {
         $total_volume = 0.0;
         $total_weight = 0.0;
         $total  = 0.0;
-        foreach( $order->get_items() as $item_id => $product_item ){
+        foreach( $order->get_items() as $item_id => $product_item ) {
             $quantity = $product_item->get_quantity(); // get quantity
             $product = $product_item->get_product(); // get the WC_Product object
             $product_weight = $product->get_weight(); // get the product weight

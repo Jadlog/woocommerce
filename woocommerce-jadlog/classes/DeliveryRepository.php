@@ -22,7 +22,7 @@ class DeliveryRepository {
         global $wpdb;
         $table_name = $wpdb->prefix.self::TABLE_NAME;
 
-        $result     = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY order_id DESC");
+        $result = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY order_id DESC");
         return $result;
     }
 
@@ -30,7 +30,7 @@ class DeliveryRepository {
         global $wpdb;
         $table_name = $wpdb->prefix.self::TABLE_NAME;
 
-        $result     = $wpdb->get_results("SELECT * FROM {$table_name} WHERE ID = {$id}");
+        $result = $wpdb->get_results("SELECT * FROM {$table_name} WHERE ID = {$id}");
         return $result[0];
     }
 }
