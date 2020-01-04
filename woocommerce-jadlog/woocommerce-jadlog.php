@@ -1063,6 +1063,9 @@ class WooCommerceJadlog
     /* [BO] Orders management page */
     function display_export_page()
     {
+        wp_enqueue_script( 'jquery-ui-dialog' );
+        wp_enqueue_style( 'wp-jquery-ui-dialog' );
+
         global $wpdb;
 
         /* Display build */
@@ -1155,7 +1158,6 @@ class WooCommerceJadlog
             <div style="float:right"><img src="<?= JADLOG_ROOT_URL ?>/assets/img/jadlog_logo.png"/></div>
             <div style="clear:both"></div>
 
-            <form id="exportform" action="admin.php?page=woocommerce-dpdfrance" method="POST" enctype="multipart/form-data">
             <table class="wp-list-table widefat fixed posts">
                 <thead>
                     <tr>
@@ -1164,7 +1166,7 @@ class WooCommerceJadlog
                             <input onchange="checkallboxes(this)" id="cb-select-all-1" type="checkbox"/>
                         </th>
                         <th scope="col" id="order_id"        class="manage-column column-order_number">
-                            <?= __('Número do Pedido', 'jadlog') ?>
+                            <?= __('Número do pedido', 'jadlog') ?>
                         </th>
                         <th scope="col" id="order_date"      class="manage-column column-order_date">
                             <?= __('Data da compra', 'jadlog') ?>
@@ -1197,15 +1199,49 @@ class WooCommerceJadlog
                 </thead>
                 <tbody id="the-list">
 
+                    <script>
+                        var jadlog_embarcador_service_request = function(dialog) {
+                            $.ajax({
+                                type:     "POST",
+                                dataType: "json",
+                                url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php",
+                                data:     $(dialog).children('form').serialize(),
+                                success: function (response) {
+                                    console.log(response);
+                                    $(dialog).dialog('close');
+                                    window.location.reload(); //TODO Fazer update com ajax
+                                },
+                                error: function (e) {
+                                    console.error(e);
+                                    alert('Ocorreu um erro ao chamar o serviço Jadlog:\n' + JSON.stringify(e, null, 2));
+                                    $(dialog).dialog('close');
+                                }
+                            });
+                        }
+                        var jadlog_embarcador_dialog_setup = function(dialog_id) {
+                            $(dialog_id).dialog({
+                                autoOpen: false,
+                                modal: true,
+                                width: 'auto',
+                                closeOnEscape: true,
+                                buttons: {
+                                    Cancelar: function() { $(this).dialog('close') },
+                                    Enviar:   function() { jadlog_embarcador_service_request(this) }
+                                }
+                            });
+                        };
+                    </script>
+
                     <?php
                     /* Collect order data */
                     include_once("classes/DeliveryRepository.php");
+                    include_once("classes/EmbarcadorService.php");
                     $deliveries = DeliveryRepository::get_all();
 
                     foreach ($deliveries as $delivery):
                         $order              = wc_get_order($delivery->order_id);
                         $order_id           = $order->get_order_number();
-                        $order_full_name    = $order->get_formatted_billing_full_name();
+                        $order_full_name    = $order->get_formatted_shipping_full_name();
                         $order_date_created = date('d/m/Y H:i:s', strtotime($order->get_date_created()));
                         ?>
                         <tr>
@@ -1221,15 +1257,56 @@ class WooCommerceJadlog
                             <td class="pudo_id"><?= htmlentities($delivery->erro) ?></td>
                             <td>
                                 <?php if ($delivery->status == DeliveryRepository::INITIAL_STATUS): ?>
-                                    <a href="#" class="jadlog_delivery_request" data-id="<?= htmlentities($delivery->id) ?>">
+                                    <?php $delivery_id = htmlentities($delivery->id) ?>
+                                    <div id="dialog-<?= $delivery_id ?>" title="<?= __('Preencha os dados do documento fiscal', 'jadlog') ?>" class="hidden wp-dialog">
+                                        <form class="form-wrap">
+                                            <input type="hidden" name="id" value="<?= $delivery_id ?>">
+                                            <p class="form-field">
+                                                <label for="tp_documento">Tipo do documento fiscal:</label>
+                                                <select name="tp_documento">
+                                                    <?php foreach (EmbarcadorService::TIPOS_DOCUMENTOS as $key => $value): ?>
+                                                        <?php $selected = $key == $delivery->tp_documento ? 'selected="selected"' : '' ?>
+                                                        <option value="<?= htmlentities($key) ?>" <?= $selected ?>>
+                                                            <?= htmlentities($value) ?>
+                                                        </option>
+                                                    <?php endforeach ?>
+                                                </select>
+                                            </p>
+                                            <p class="form-field">
+                                                <label for="nr_doc">Número do documento:</label>
+                                                <input type="text" name="nr_doc" value="<?= htmlentities($delivery->nr_doc) ?>" maxlength="20" style="width:80%">
+                                            </p>
+                                            <p class="form-field">
+                                                <label for="serie">Série do documento:</label>
+                                                <input type="text" name="serie" value="<?= htmlentities($delivery->serie) ?>" maxlength="3" style="width:30%">
+                                            </p>
+                                            <p class="form-field">
+                                                <label for="valor">Valor declarado:</label>
+                                                <?php $valor_declarado = empty($delivery->valor) ? $order->get_total() : $delivery->valor ?>
+                                                R$ <input type="text" name="valor" value="<?= htmlentities($valor_declarado) ?>" style="width:30%; text-align:right">
+                                            </p>
+                                            <p class="form-field">
+                                                <label for="danfe_cte">Número da DANFE ou CTE:</label>
+                                                <input type="text" name="danfe_cte" value="<?= htmlentities($delivery->danfe_cte) ?>" size="44" maxlength="44" style="width:100%">
+                                            </p>
+                                            <p class="form-field">
+                                                <label for="cfop">CFOP da NF-e:</label>
+                                                <input type="text" name="cfop" value="<?= htmlentities($delivery->cfop) ?>" maxlength="4" style="width:30%">
+                                            </p>
+                                        </form>
+                                    </div>
+                                    <script>
+                                        $(function() { jadlog_embarcador_dialog_setup("#dialog-<?= $delivery_id ?>") });
+                                    </script>
+                                    <a href="#" class="jadlog_delivery_request" data-id="<?= $delivery_id ?>">
                                         <?= __('Enviar', 'jadlog') ?>
                                     </a>
                                 <?php else: ?>
-                                    <a href="#" class="jadlog_delivery_tracking" data-id="<?= htmlentities($delivery->id) ?>">
+                                    <a href="#" class="jadlog_delivery_tracking" data-id="<?= $delivery_id ?>">
                                         <?= __('Consultar', 'jadlog') ?>
                                     </a>
                                     <br/>
-                                    <a href="#" class="jadlog_delivery_cancel" data-id="<?= htmlentities($delivery->id) ?>">
+                                    <a href="#" class="jadlog_delivery_cancel" data-id="<?= $delivery_id ?>">
                                         <?= __('Cancelar', 'jadlog') ?>
                                     </a>
                                 <?php endif ?>
@@ -1239,27 +1316,14 @@ class WooCommerceJadlog
 
                 </tbody>
             </table>
-        </form>
         </div>
 
         <script>
             $('.jadlog_delivery_request').on("click", function () {
-                $.ajax({
-                    type:     "POST",
-                    dataType: "json",
-                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/Embarcador.php",
-                    data:     { id: $(this).data('id') },
-                    success: function (response) {
-                        console.log(response);
-                        window.location.reload(); //TODO Fazer update com ajax
-                    },
-                    error: function (e) {
-                        console.error(e);
-                        alert('Ocorreu um erro ao chamar o serviço Jadlog:\n' + JSON.stringify(e, null, 2));
-
-                    }
-                });
+                var id = $(this).data('id');
+                $("#dialog-" + id).dialog("open");
             });
+
             $('.jadlog_delivery_tracking').on("click", function () {
                 $.ajax({
                     type:     "DELETE",
@@ -1277,6 +1341,7 @@ class WooCommerceJadlog
                     }
                 });
             });
+
             $('.jadlog_delivery_cancel').on("click", function () {
                 $.ajax({
                     type:     "GET",

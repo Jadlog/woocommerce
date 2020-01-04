@@ -1,6 +1,13 @@
 <?php
 class EmbarcadorService {
 
+    const TIPOS_DOCUMENTOS = array(
+        0 => 'Declaração',
+        1 => 'NF',
+        2 => 'NF-e',
+        4 => 'CT-e'
+    );
+
     public function __construct($jadlog_id) {
         include_once("DeliveryRepository.php");
 
@@ -42,7 +49,7 @@ class EmbarcadorService {
      * @access public
      * @return json
      */
-    public function create()  {
+    public function create($dfe) {
 
         $delivery = DeliveryRepository::get_by_id($this->jadlog_id);
         $order    = wc_get_order($delivery->order_id);
@@ -135,12 +142,12 @@ class EmbarcadorService {
         $jadlog_request->volume->lacre          = null;
 
         $jadlog_request->dfe = new stdClass();
-        $jadlog_request->dfe->danfeCte          = null;
-        $jadlog_request->dfe->valor             = $total; //$order->get_total();
-        $jadlog_request->dfe->nrDoc             = 'DECLARACAO';
-        $jadlog_request->dfe->serie             = null;
-        $jadlog_request->dfe->cfop              = '6909';
-        $jadlog_request->dfe->tpDocumento       = 2;
+        $jadlog_request->dfe->danfeCte          = $dfe['danfe_cte'];
+        $jadlog_request->dfe->valor             = $dfe['valor'];
+        $jadlog_request->dfe->nrDoc             = $dfe['nr_doc'];
+        $jadlog_request->dfe->serie             = $dfe['serie'];
+        $jadlog_request->dfe->cfop              = $dfe['cfop'];
+        $jadlog_request->dfe->tpDocumento       = $dfe['tp_documento'];
 
         error_log('embarcador/coleta body: '.var_export($jadlog_request, true));
         return;
