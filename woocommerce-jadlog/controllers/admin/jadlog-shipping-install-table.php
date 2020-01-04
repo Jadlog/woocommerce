@@ -26,6 +26,12 @@ function install_table()
             `status` varchar(255) DEFAULT NULL,
             `erro` varchar(255) DEFAULT NULL,
             `date_creation` datetime DEFAULT NULL,
+            `tp_documento` int DEFAULT NULL,
+            `nr_doc` varchar(20) DEFAULT NULL,
+            `serie` varchar(3) DEFAULT NULL,
+            `valor` decimal(10,2) DEFAULT NULL,
+            `danfe_cte` varchar(44) DEFAULT NULL,
+            `cfop` varchar(4) DEFAULT NULL
             PRIMARY KEY (id)
         ) DEFAULT CHARSET=utf8";
     $wpdb->query($sql);
