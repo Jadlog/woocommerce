@@ -25,12 +25,16 @@ class OrderHelper {
     }
 
     public function get_cpf_or_cnpj() {
-        $property = $this->order->get_meta('_billing_persontype') == 1 ? '_billing_cpf' : '_billing_cnpj';
+        $property = $this->is_legal_entity() ?  '_billing_cnpj': '_billing_cpf';
         return $this->order->get_meta($property);
     }
 
+    private function is_legal_entity() {
+        return $this->order->get_meta('_billing_persontype') != 1;
+    }
+
     public function get_billing_ie() {
-        return $this->order->get_meta('_billing_ie');
+        return $this->is_legal_entity() ? $this->order->get_meta('_billing_ie') : null;
     }
 
     public function get_shipping_number() {

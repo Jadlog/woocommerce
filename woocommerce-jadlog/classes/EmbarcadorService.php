@@ -131,7 +131,7 @@ class EmbarcadorService {
         $jadlog_request->dfe = $this->build_dfe($dfe);
 
         error_log('embarcador/coleta body: '.var_export($jadlog_request, true));
-        // error_log(var_export($order->get_data(), true));
+        error_log(var_export($order->get_data(), true));
         return;
 
         $response = wp_remote_post( $this->url, array(
