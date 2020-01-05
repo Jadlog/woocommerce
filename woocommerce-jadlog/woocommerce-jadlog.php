@@ -959,10 +959,10 @@ class WooCommerceJadlog
     {
         $settings = array(
             'shipper_name' => array(
-                'name'     => __( 'Nome da empresa', 'jadlog' ),
+                'name'     => __( 'Nome', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(máximo de 60 caracteres)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_name'
             ),
             'shipper_cnpj_cpf' => array(
@@ -972,50 +972,57 @@ class WooCommerceJadlog
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_shipper_cnpj_cpf'
             ),
+            'shipper_ie' => array(
+                'name'     => __( 'Inscrição estadual', 'jadlog' ),
+                'type'     => 'text',
+                'css'      => 'width: 400px;',
+                'desc'     => '',
+                'id'       => 'wc_settings_tab_jadlog_shipper_ie'
+            ),
             'shipper_endereco' => array(
                 'name'     => __( 'Endereço', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(máximo de 80 caracteres)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_endereco'
             ),
             'shipper_numero' => array(
                 'name'     => __( 'Número', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(máximo de 10 caracteres)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_numero'
             ),
             'shipper_complemento' => array(
                 'name'     => __( 'Complemento', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(máximo de 20 caracteres)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_complemento'
             ),
             'shipper_bairro' => array(
                 'name'     => __( 'Bairro', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(máximo de 60 caracteres)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_bairro'
             ),
             'shipper_cidade' => array(
                 'name'     => __( 'Cidade', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(máximo de 60 caracteres)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_cidade'
             ),
             'shipper_uf' => array(
-                'name'     => __( 'UF', 'jadlog' ),
+                'name'     => __( 'Sigla da UF', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(2 caracteres)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_uf'
             ),
             'shipper_cep' => array(
-                'name'     => __( 'Cep', 'jadlog' ),
+                'name'     => __( 'CEP', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
                 'desc'     => '',
@@ -1025,28 +1032,28 @@ class WooCommerceJadlog
                 'name'     => __( 'Telefone', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(formato: (11) 999999999)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_fone'
             ),
             'shipper_cel' => array(
                 'name'     => __( 'Celular', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(formato: (11) 999999999)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_cel'
             ),
             'shipper_email' => array(
                 'name'     => __( 'E-mail', 'jadlog' ),
                 'type'     => 'email',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(máximo de 100 caracteres)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_email'
             ),
             'shipper_contato' => array(
                 'name'     => __( 'Pessoa para contato', 'jadlog' ),
                 'type'     => 'text',
                 'css'      => 'width: 400px;',
-                'desc'     => '',
+                'desc'     => '(máximo de 50 caracteres)',
                 'id'       => 'wc_settings_tab_jadlog_shipper_contato'
             ),
         );

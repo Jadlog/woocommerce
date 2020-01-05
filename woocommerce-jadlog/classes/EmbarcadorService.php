@@ -31,6 +31,7 @@ class EmbarcadorService {
 
         $this->rem_nome         = get_option('wc_settings_tab_jadlog_shipper_name');
         $this->rem_cpf_cnpj     = get_option('wc_settings_tab_jadlog_shipper_cnpj_cpf');
+        $this->rem_ie           = get_option('wc_settings_tab_jadlog_shipper_ie');
         $this->rem_endereco     = get_option('wc_settings_tab_jadlog_shipper_endereco');
         $this->rem_numero       = get_option('wc_settings_tab_jadlog_shipper_numero');
         $this->rem_complemento  = get_option('wc_settings_tab_jadlog_shipper_complemento');
@@ -102,21 +103,7 @@ class EmbarcadorService {
         $jadlog_request->servico         = $this->servico;
         $jadlog_request->shipmentId      = null;
 
-        $jadlog_request->rem = new stdClass();
-        $jadlog_request->rem->nome       = $this->rem_nome;
-        $jadlog_request->rem->cnpjCpf    = $this->rem_cpf_cnpj;
-        $jadlog_request->rem->ie         = null;
-        $jadlog_request->rem->endereco   = $this->rem_endereco;
-        $jadlog_request->rem->numero     = $this->rem_numero;
-        $jadlog_request->rem->compl      = $this->rem_complemento;
-        $jadlog_request->rem->bairro     = $this->rem_bairro;
-        $jadlog_request->rem->cidade     = $this->rem_cidade;
-        $jadlog_request->rem->uf         = $this->rem_uf;
-        $jadlog_request->rem->cep        = $this->rem_cep;
-        $jadlog_request->rem->fone       = $this->rem_fone;
-        $jadlog_request->rem->cel        = $this->rem_cel;
-        $jadlog_request->rem->email      = $this->rem_email;
-        $jadlog_request->rem->contato    = $this->rem_contato;
+        $jadlog_request->rem = $this->build_rem();
 
         $jadlog_request->des = $this->build_des($order);
 
@@ -155,6 +142,25 @@ class EmbarcadorService {
             return $response['body'];
         }
 
+    }
+
+    private function build_rem() {
+        $rem = new stdClass();
+        $rem->nome       = $this->rem_nome;
+        $rem->cnpjCpf    = $this->only_digits($this->rem_cpf_cnpj);
+        $rem->ie         = $this->rem_ie;
+        $rem->endereco   = $this->rem_endereco;
+        $rem->numero     = $this->rem_numero;
+        $rem->compl      = $this->rem_complemento;
+        $rem->bairro     = $this->rem_bairro;
+        $rem->cidade     = $this->rem_cidade;
+        $rem->uf         = $this->rem_uf;
+        $rem->cep        = $this->only_digits($this->rem_cep);
+        $rem->fone       = $this->rem_fone;
+        $rem->cel        = $this->rem_cel;
+        $rem->email      = $this->rem_email;
+        $rem->contato    = $this->rem_contato;
+        return $rem;
     }
 
     private function build_des($order) {
