@@ -694,7 +694,7 @@ class WooCommerceJadlog
             }
             </style>
             <div class=\"updated woocommerce-message\">
-                <p><strong>".__('Por favor, faça a configuraçao do plugin Jadlog', 'jadlog')."</strong></p>
+                <p><strong>".__('Por favor, faça a configuração do plugin Jadlog.', 'jadlog')."</strong></p>
             </div>";
         echo "<h3>".__('Configuração gerais', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_shipments_settings() );
@@ -737,12 +737,12 @@ class WooCommerceJadlog
                 'css'      => 'width:500px;',
                 'desc'     => '',
                 'default'  => 'http://www.jadlog.com.br/embarcador/api/pedido/incluir',
-                'id'       => 'wc_settings_tab_jadlog_url_embarcador'
+                'id'       => 'wc_settings_tab_jadlog_url_inclusao_pedidos'
             ),
             'JADLOG_KEY_EMBARCADOR' => array(
                 'name'     => __('Chave de acesso ao Embarcador', 'jadlog'),
                 'type'     => 'text',
-                'css'      => 'width:500px;',
+                'css'      => 'width:750px;',
                 'desc'     => 'Deve começar com a palavra "Bearer"',
                 'id'       => 'wc_settings_tab_jadlog_key_embarcador'
             ),

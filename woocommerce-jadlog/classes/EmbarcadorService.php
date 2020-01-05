@@ -18,7 +18,7 @@ class EmbarcadorService {
 
         $this->jadlog_delivery = DeliveryRepository::get_by_id($jadlog_id);
 
-        $this->url              = get_option('wc_settings_tab_jadlog_url_embarcador');
+        $this->url_inclusao     = get_option('wc_settings_tab_jadlog_url_inclusao_pedidos');
         $this->key              = get_option('wc_settings_tab_jadlog_key_embarcador');
         $this->codigo_cliente   = get_option('wc_settings_tab_jadlog_codigo_cliente');
         $this->modalidade       = Modalidade::codigo_modalidade($this->jadlog_delivery->modalidade);
@@ -54,6 +54,7 @@ class EmbarcadorService {
     public function create($dfe) {
 
         $order = wc_get_order($this->jadlog_delivery->order_id);
+        $order_helper = new OrderHelper($order);
 
         //calculo do peso cubado
         $total_volume = 0.0;
@@ -84,7 +85,7 @@ class EmbarcadorService {
 
         $jadlog_request = new stdClass();
         $jadlog_request->codCliente      = $this->codigo_cliente;
-        $jadlog_request->conteudo        = 'PLUGIN JADLOG';
+        $jadlog_request->conteudo        = substr($order_helper->get_items_names(), 0, 80);
         $jadlog_request->pedido          = $order->get_order_number();
         $jadlog_request->totPeso         = $peso_cubado;
         $jadlog_request->totValor        = $total; //$order->get_total();
@@ -120,7 +121,7 @@ class EmbarcadorService {
         error_log(var_export($order->get_data(), true));
         return;
 
-        $response = wp_remote_post( $this->url, array(
+        $response = wp_remote_post($this->url_inclusao, array(
                 'method' => 'POST',
                 'timeout' => 500,
                 'blocking' => true,

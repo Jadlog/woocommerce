@@ -48,4 +48,12 @@ class OrderHelper {
     public function get_billing_cellphone() {
         return $this->order->get_meta('_billing_cellphone');
     }
+
+    public function get_items_names() {
+        $names = array();
+        foreach ($this->order->get_items() as $item) {
+            $names[] = $item->get_name();
+        }
+        return join(' | ', $names);
+    }
 }
