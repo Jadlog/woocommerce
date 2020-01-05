@@ -10,6 +10,7 @@ class EmbarcadorService {
 
     public function __construct($jadlog_id) {
         include_once("DeliveryRepository.php");
+        include_once("OrderHelper.php");
 
         global $wpdb;
 
@@ -51,8 +52,8 @@ class EmbarcadorService {
      */
     public function create($dfe) {
 
-        $delivery = DeliveryRepository::get_by_id($this->jadlog_id);
-        $order    = wc_get_order($delivery->order_id);
+        $jadlog_delivery = DeliveryRepository::get_by_id($this->jadlog_id);
+        $order           = wc_get_order($jadlog_delivery->order_id);
 
         //calculo do peso cubado
         $total_volume = 0.0;
@@ -93,7 +94,7 @@ class EmbarcadorService {
         $jadlog_request->centroCusto     = null;
         $jadlog_request->tpColeta        = $this->tipo_coleta;
         $jadlog_request->cdPickupOri     = null;
-        $jadlog_request->cdPickupDes     = $delivery->pudo_id;
+        $jadlog_request->cdPickupDes     = $jadlog_delivery->pudo_id;
         $jadlog_request->tipoFrete       = $this->tipo_frete;
         $jadlog_request->cdUnidadeOri    = $this->unidade_origem;
         $jadlog_request->cdUnidadeDes    = null;
@@ -117,21 +118,7 @@ class EmbarcadorService {
         $jadlog_request->rem->email      = $this->rem_email;
         $jadlog_request->rem->contato    = $this->rem_contato;
 
-        $jadlog_request->des = new stdClass();
-        $jadlog_request->des->nome         = $order->get_formatted_billing_full_name();
-        $jadlog_request->des->cnpjCpf      = $order->get_meta( '_billing_persontype' ) == 1 ? str_replace('.', '', str_replace('-', '', $order->get_meta( '_billing_cpf' ))) : str_replace('.', '', str_replace('-', '', str_replace('/', '', $order->get_meta( '_billing_cnpj' ))));
-        $jadlog_request->des->ie           = null;
-        $jadlog_request->des->endereco     = $order->get_billing_address_1();
-        $jadlog_request->des->numero       = $order->get_meta( '_billing_number' );
-        $jadlog_request->des->compl        = null;
-        $jadlog_request->des->bairro       = $order->get_meta( '_billing_neighborhood' );
-        $jadlog_request->des->cidade       = $order->get_shipping_city();
-        $jadlog_request->des->uf           = $order->get_billing_state();
-        $jadlog_request->des->cep          = str_replace('-', '', $order->get_billing_postcode());
-        $jadlog_request->des->fone         = $order->get_billing_phone();
-        $jadlog_request->des->cel          = $order->get_meta( '_billing_cellphone' );
-        $jadlog_request->des->email        = $order->get_billing_email();
-        $jadlog_request->des->contato      = $order->get_formatted_billing_full_name();
+        $jadlog_request->des = $this->build_des($order);
 
         $jadlog_request->volume = new stdClass();
         $jadlog_request->volume->altura         = pow($total_volume, 1/3);
@@ -141,15 +128,10 @@ class EmbarcadorService {
         $jadlog_request->volume->identificador  = $order->get_order_number();
         $jadlog_request->volume->lacre          = null;
 
-        $jadlog_request->dfe = new stdClass();
-        $jadlog_request->dfe->danfeCte          = $dfe['danfe_cte'];
-        $jadlog_request->dfe->valor             = $dfe['valor'];
-        $jadlog_request->dfe->nrDoc             = $dfe['nr_doc'];
-        $jadlog_request->dfe->serie             = $dfe['serie'];
-        $jadlog_request->dfe->cfop              = $dfe['cfop'];
-        $jadlog_request->dfe->tpDocumento       = $dfe['tp_documento'];
+        $jadlog_request->dfe = $this->build_dfe($dfe);
 
         error_log('embarcador/coleta body: '.var_export($jadlog_request, true));
+        // error_log(var_export($order->get_data(), true));
         return;
 
         $response = wp_remote_post( $this->url, array(
@@ -173,6 +155,41 @@ class EmbarcadorService {
             return $response['body'];
         }
 
+    }
+
+    private function build_des($order) {
+        $order_helper = new OrderHelper($order);
+        $des = new stdClass();
+        $des->nome     = $order->get_formatted_shipping_full_name();
+        $des->cnpjCpf  = $this->only_digits($order_helper->get_cpf_or_cnpj());
+        $des->ie       = $order_helper->get_billing_ie();
+        $des->endereco = $order->get_shipping_address_1();
+        $des->numero   = $order_helper->get_shipping_number();
+        $des->compl    = $order->get_shipping_address_2();
+        $des->bairro   = $order_helper->get_shipping_neighborhood();
+        $des->cidade   = $order->get_shipping_city();
+        $des->uf       = $order->get_shipping_state();
+        $des->cep      = $this->only_digits($order->get_shipping_postcode());
+        $des->fone     = $order->get_billing_phone();
+        $des->cel      = $order_helper->get_billing_cellphone();
+        $des->email    = $order->get_billing_email();
+        $des->contato  = $order->get_formatted_billing_full_name();
+        return $des;
+    }
+
+    private function build_dfe($params) {
+        $dfe = new stdClass();
+        $dfe->danfeCte    = $params['danfe_cte'];
+        $dfe->valor       = $params['valor'];
+        $dfe->nrDoc       = $params['nr_doc'];
+        $dfe->serie       = $params['serie'];
+        $dfe->cfop        = $params['cfop'];
+        $dfe->tpDocumento = $params['tp_documento'];
+        return $dfe;
+    }
+
+    private function only_digits($string) {
+        return preg_replace('/[^0-9]/', '', $string);
     }
 
     /**

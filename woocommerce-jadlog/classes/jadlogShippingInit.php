@@ -80,9 +80,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             'label' => $label,
                             'cost'  => $estimated_values['estimated_value'],
                             'taxes' => true,
-                            'meta_data' => [
-                                'modalidade' => Modalidade::LABEL_EXPRESSO
-                            ],
+                            'meta_data' => [ 'modalidade' => Modalidade::LABEL_EXPRESSO ],
                         );
                         $this->add_rate($rate);
                     }
@@ -98,7 +96,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM'])) {
                             $count = 0;
                             foreach ($pudos['PUDO_ITEMS']['PUDO_ITEM'] as $key => $pudo_item ) {
-
                                 $pudo_id = $pudo_item['PUDO_ID'];
                                 $address = $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' '.join(" ", $pudo_item['ADDRESS2']).' - '.$pudo_item['ADDRESS3'].
                                     ' - '.$pudo_item['CITY'].' - '.$pudo_item['ZIPCODE'];
@@ -118,10 +115,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                                     'taxes' => true,
                                     'meta_data' => [
                                         'modalidade'   => Modalidade::LABEL_PICKUP,
-                                        'id_pudo'      => $pudo_item['PUDO_ID'],
-                                        'name_pudo'    => $pudo_item['NAME'],
-                                        'address_pudo' => $address,
-                                        'zipcode_pudo' => $pudo_item['ZIPCODE'],
+                                        'pudo_id'      => $pudo_item['PUDO_ID'],
+                                        'pudo_name'    => $pudo_item['NAME'],
+                                        'pudo_address' => $address
                                     ],
                                 );
                                 $this->add_rate($rate);

@@ -12,30 +12,27 @@ if (!defined('ABSPATH'))
 function install_table() 
 {
     global $wpdb;
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    $time = time();
+    require_once(ABSPATH.'wp-admin/includes/upgrade.php');
+
     $sql = "
         CREATE TABLE IF NOT EXISTS {$wpdb->prefix}woocommerce_jadlog (
-            `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-            `order_id` varchar(255) NOT NULL,
-            `shipping_method` varchar(255) DEFAULT NULL,
-            `pudo_id` varchar(255) DEFAULT NULL,
-            `name` varchar(255) DEFAULT NULL,
-            `address` varchar(255) DEFAULT NULL,
-            `postcode` varchar(30) DEFAULT NULL,
-            `status` varchar(255) DEFAULT NULL,
-            `erro` varchar(255) DEFAULT NULL,
-            `date_creation` datetime DEFAULT NULL,
-            `tp_documento` int DEFAULT NULL,
-            `nr_doc` varchar(20) DEFAULT NULL,
-            `serie` varchar(3) DEFAULT NULL,
-            `valor` decimal(10,2) DEFAULT NULL,
-            `danfe_cte` varchar(44) DEFAULT NULL,
-            `cfop` varchar(4) DEFAULT NULL
+            `id`               BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            `order_id`         VARCHAR(255)  NOT NULL,
+            `modalidade`       VARCHAR(255)  DEFAULT NULL,
+            `pudo_id`          VARCHAR(255)  DEFAULT NULL,
+            `pudo_name`        VARCHAR(255)  DEFAULT NULL,
+            `pudo_address`     VARCHAR(511)  DEFAULT NULL,
+            `status`           VARCHAR(255)  DEFAULT NULL,
+            `erro`             VARCHAR(2000) DEFAULT NULL,
+            `dfe_tp_documento` INT           DEFAULT NULL,
+            `dfe_nr_doc`       VARCHAR(255)  DEFAULT NULL,
+            `dfe_serie`        VARCHAR(255)  DEFAULT NULL,
+            `dfe_valor`        DECIMAL(10,2) DEFAULT NULL,
+            `dfe_danfe_cte`    VARCHAR(255)  DEFAULT NULL,
+            `dfe_cfop`         VARCHAR(255)  DEFAULT NULL,
             PRIMARY KEY (id)
         ) DEFAULT CHARSET=utf8";
     $wpdb->query($sql);
-    
 }
 
 /**
@@ -47,8 +44,8 @@ function install_table()
 function uninstall_table() 
 {
     global $wpdb;
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    
+    require_once(ABSPATH.'wp-admin/includes/upgrade.php');
+
     $sql = "DROP TABLE IF EXISTS {$wpdb->prefix}woocommerce_jadlog";
     $wpdb->query($sql);
 }

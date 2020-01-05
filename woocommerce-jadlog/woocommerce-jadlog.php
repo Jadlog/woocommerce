@@ -1169,22 +1169,22 @@ class WooCommerceJadlog
                             <?= __('Número do pedido', 'jadlog') ?>
                         </th>
                         <th scope="col" id="order_date"      class="manage-column column-order_date">
-                            <?= __('Data da compra', 'jadlog') ?>
+                            <?= __('Data do pedido', 'jadlog') ?>
                         </th>
                         <th scope="col" id="order_customer" class="manage-column column-order_customer">
-                            <?= __('Cliente', 'jadlog') ?>
-                        </th>
-                        <th scope="col" id="order_service"   class="manage-column column-order_service">
-                            <?= __('Serviço', 'jadlog') ?>
+                            <?= __('Destinatário', 'jadlog') ?>
                         </th>
                         <th scope="col" id="order_address"   class="manage-column column-order_address">
-                            <?= __('Destino', 'jadlog') ?>
+                            <?= __('Endereço', 'jadlog') ?>
+                        </th>
+                        <th scope="col" id="order_service"   class="manage-column column-order_service">
+                            <?= __('Modalidade', 'jadlog') ?>
                         </th>
                         <th scope="col" id="order_postcode"  class="manage-column column-order_postcode">
-                            <?= __('CEP', 'jadlog') ?>
+                            <?= __('PUDO', 'jadlog') ?>
                         </th>
                         <th scope="col" id="order_full_name" class="manage-column column-order_receiver">
-                            <?= __('Recebedor', 'jadlog') ?>
+                            <?= __('Endereço PUDO', 'jadlog') ?>
                         </th>
                         <th scope="col" id="order_status"    class="manage-column column-order_status">
                             <?= __('Status', 'jadlog') ?>
@@ -1233,28 +1233,30 @@ class WooCommerceJadlog
                     </script>
 
                     <?php
-                    /* Collect order data */
                     include_once("classes/DeliveryRepository.php");
                     include_once("classes/EmbarcadorService.php");
+                    include_once("classes/OrderHelper.php");
                     $deliveries = DeliveryRepository::get_all();
 
                     foreach ($deliveries as $delivery):
-                        $order              = wc_get_order($delivery->order_id);
+                        $order_helper       = new OrderHelper($delivery->order_id);
+                        $order              = $order_helper->get_order();
                         $order_id           = $order->get_order_number();
+                        $order_date_created = $order_helper->get_formatted_date_created();
                         $order_full_name    = $order->get_formatted_shipping_full_name();
-                        $order_date_created = date('d/m/Y H:i:s', strtotime($order->get_date_created()));
+                        $order_address      = $order_helper->get_formatted_address('shipping');
                         ?>
                         <tr>
                             <td><input class="checkbox" type="checkbox" name="checkbox[]" value="<?= htmlentities($order_id) ?>"></td>
                             <td class="id"><?= htmlentities($order_id) ?></td>
                             <td class="date"><?= htmlentities($order_date_created) ?></td>
                             <td class="shipping"><?= htmlentities($order_full_name) ?></td>
-                            <td class="pudo_id"><?= htmlentities($delivery->shipping_method) ?></td>
-                            <td class="pudo_id"><?= htmlentities($delivery->address) ?></td>
-                            <td class="pudo_id"><?= htmlentities($delivery->postcode) ?></td>
-                            <td class="pudo_id"><?= htmlentities($delivery->name) ?></td>
-                            <td class="pudo_id"><?= htmlentities($delivery->status) ?></td>
-                            <td class="pudo_id"><?= htmlentities($delivery->erro) ?></td>
+                            <td class="shipping"><?= htmlentities($order_address) ?></td>
+                            <td class="pudo"><?= htmlentities($delivery->modalidade) ?></td>
+                            <td class="pudo"><?= htmlentities($delivery->pudo_id.' - '.$delivery->pudo_name) ?></td>
+                            <td class="pudo"><?= htmlentities($delivery->pudo_address) ?></td>
+                            <td class="pudo"><?= htmlentities($delivery->status) ?></td>
+                            <td class="pudo"><?= htmlentities($delivery->erro) ?></td>
                             <td>
                                 <?php if ($delivery->status == DeliveryRepository::INITIAL_STATUS): ?>
                                     <?php $delivery_id = htmlentities($delivery->id) ?>
@@ -1265,7 +1267,7 @@ class WooCommerceJadlog
                                                 <label for="tp_documento">Tipo do documento fiscal:</label>
                                                 <select name="tp_documento">
                                                     <?php foreach (EmbarcadorService::TIPOS_DOCUMENTOS as $key => $value): ?>
-                                                        <?php $selected = $key == $delivery->tp_documento ? 'selected="selected"' : '' ?>
+                                                        <?php $selected = $key == $delivery->dfe_tp_documento ? 'selected="selected"' : '' ?>
                                                         <option value="<?= htmlentities($key) ?>" <?= $selected ?>>
                                                             <?= htmlentities($value) ?>
                                                         </option>
@@ -1274,24 +1276,24 @@ class WooCommerceJadlog
                                             </p>
                                             <p class="form-field">
                                                 <label for="nr_doc">Número do documento:</label>
-                                                <input type="text" name="nr_doc" value="<?= htmlentities($delivery->nr_doc) ?>" maxlength="20" style="width:80%">
+                                                <input type="text" name="nr_doc" value="<?= htmlentities($delivery->dfe_nr_doc) ?>" maxlength="20" style="width:80%">
                                             </p>
                                             <p class="form-field">
                                                 <label for="serie">Série do documento:</label>
-                                                <input type="text" name="serie" value="<?= htmlentities($delivery->serie) ?>" maxlength="3" style="width:30%">
+                                                <input type="text" name="serie" value="<?= htmlentities($delivery->dfe_serie) ?>" maxlength="3" style="width:30%">
                                             </p>
                                             <p class="form-field">
                                                 <label for="valor">Valor declarado:</label>
-                                                <?php $valor_declarado = empty($delivery->valor) ? $order->get_total() : $delivery->valor ?>
+                                                <?php $valor_declarado = empty($delivery->dfe_valor) ? $order->get_total() : $delivery->dfe_valor ?>
                                                 R$ <input type="text" name="valor" value="<?= htmlentities($valor_declarado) ?>" style="width:30%; text-align:right">
                                             </p>
                                             <p class="form-field">
                                                 <label for="danfe_cte">Número da DANFE ou CTE:</label>
-                                                <input type="text" name="danfe_cte" value="<?= htmlentities($delivery->danfe_cte) ?>" size="44" maxlength="44" style="width:100%">
+                                                <input type="text" name="danfe_cte" value="<?= htmlentities($delivery->dfe_danfe_cte) ?>" size="44" maxlength="44" style="width:100%">
                                             </p>
                                             <p class="form-field">
                                                 <label for="cfop">CFOP da NF-e:</label>
-                                                <input type="text" name="cfop" value="<?= htmlentities($delivery->cfop) ?>" maxlength="4" style="width:30%">
+                                                <input type="text" name="cfop" value="<?= htmlentities($delivery->dfe_cfop) ?>" maxlength="4" style="width:30%">
                                             </p>
                                         </form>
                                     </div>

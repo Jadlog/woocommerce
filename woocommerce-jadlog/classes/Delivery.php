@@ -8,7 +8,6 @@ class Delivery {
     }
 
     public function create() {
-
         foreach ($this->order->get_shipping_methods() as $shipping_method) {
             if ($shipping_method->get_method_id() == WC_Jadlog_Shipping_Method::METHOD_ID) {
                 $meta_data = array_reduce(
@@ -19,42 +18,16 @@ class Delivery {
                     },
                     array());
 
-                $modalidade = $meta_data['modalidade'];
-                switch ($modalidade) {
-                case Modalidade::LABEL_EXPRESSO:
-                    $id_pudo = null;
-                    $name    = $this->order->get_formatted_shipping_full_name();
-                    $address = $this->format_address($this->order->get_address('shipping'));
-                    $zipcode = $this->order->get_shipping_postcode();
-                    break;
-                case Modalidade::LABEL_PICKUP:
-                    $id_pudo = $meta_data['id_pudo'];
-                    $name    = $meta_data['name_pudo'];
-                    $address = $meta_data['address_pudo'];
-                    $zipcode = $meta_data['zipcode_pudo'];
-                    break;
-                }
-
                 DeliveryRepository::create(
                     $this->order,
                     array(
-                        'shipping_method' => $modalidade,
-                        'pudo_id'         => $id_pudo,
-                        'name'            => $name,
-                        'address'         => $address,
-                        'postcode'        => $zipcode
+                        'modalidade'   => $meta_data['modalidade'],
+                        'pudo_id'      => $meta_data['pudo_id'],
+                        'pudo_name'    => $meta_data['pudo_name'],
+                        'pudo_address' => $meta_data['pudo_address']
                     ));
             }
         }
     }
 
-    private function format_address($raw_address) {
-        $address = $raw_address['address_1'].", ".$raw_address['number'];
-        foreach (array('address_2', 'neighborhood', 'city', 'state', 'postcode') as $key) {
-            $field = $raw_address[$key];
-            if (!empty($field))
-                $address = $address.' - '.$field;
-        }
-        return $address;
-    }
 }
