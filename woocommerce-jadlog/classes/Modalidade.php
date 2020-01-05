@@ -61,6 +61,10 @@ class Modalidade {
         return self::MODAL[$modalidade];
     }
 
+    public static function codigo_modalidade($label) {
+        return array_search($label, self::TODOS);
+    }
+
     const FATOR_CUBAGEM_AEREO      = 166.667;
     const FATOR_CUBAGEM_RODOVIARIO = 300.0;
 

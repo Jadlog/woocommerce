@@ -750,15 +750,6 @@ class WooCommerceJadlog
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_codigo_cliente'
             ),
-            'JADLOG_MODALIDADE' => array(
-                'name'     => __('Modalidade de transporte Jadlog', 'jadlog'),
-                'type'     => 'select',
-                'css'      => 'width:200px;',
-                'desc'     => '',
-                'options'  => Modalidade::TODOS,
-                'default'  => Modalidade::COD_PICKUP,
-                'id'       => 'wc_settings_tab_jadlog_modalidade'
-            ),
             'JADLOG_CONTA_CORRENTE' => array(
                 'name'     => __('Conta Corrente Jadlog', 'jadlog'),
                 'type'     => 'text',
@@ -816,7 +807,7 @@ class WooCommerceJadlog
         $settings = array(
             'JADLOG_MODALIDADE_EXPRESSO' => array(
                 'name'     => '',
-                'desc'     => __('Modalidade de transporte Jadlog Expresso', 'jadlog'),
+                'desc'     => __('Ativar a modalidade de transporte Jadlog Expresso', 'jadlog'),
                 'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Expresso', 'jadlog'),
                 'type'     => 'checkbox',
                 'default'  => 'no',
@@ -876,7 +867,7 @@ class WooCommerceJadlog
         $settings = array(
             'JADLOG_MODALIDADE_PICKUP' => array(
                 'name'     => '',
-                'desc'     => __('Modalidade de transporte Jadlog Pickup', 'jadlog'),
+                'desc'     => __('Ativar a modalidade de transporte Jadlog Pickup', 'jadlog'),
                 'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Pickup', 'jadlog'),
                 'type'     => 'checkbox',
                 'default'  => 'no',

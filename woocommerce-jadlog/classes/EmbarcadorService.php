@@ -10,18 +10,18 @@ class EmbarcadorService {
 
     public function __construct($jadlog_id) {
         include_once("DeliveryRepository.php");
+        include_once("Modalidade.php");
         include_once("OrderHelper.php");
 
         global $wpdb;
-
         $this->table = $wpdb->prefix . 'woocommerce_jadlog';
 
-        $this->jadlog_id        = $jadlog_id;
+        $this->jadlog_delivery = DeliveryRepository::get_by_id($jadlog_id);
 
         $this->url              = get_option('wc_settings_tab_jadlog_url_embarcador');
         $this->key              = get_option('wc_settings_tab_jadlog_key_embarcador');
         $this->codigo_cliente   = get_option('wc_settings_tab_jadlog_codigo_cliente');
-        $this->modalidade       = get_option('wc_settings_tab_jadlog_modalidade');
+        $this->modalidade       = Modalidade::codigo_modalidade($this->jadlog_delivery->modalidade);
         $this->conta_corrente   = get_option('wc_settings_tab_jadlog_conta_corrente');
         $this->tipo_coleta      = get_option('wc_settings_tab_jadlog_tipo_coleta');
         $this->tipo_frete       = get_option('wc_settings_tab_jadlog_tipo_frete');
@@ -53,8 +53,7 @@ class EmbarcadorService {
      */
     public function create($dfe) {
 
-        $jadlog_delivery = DeliveryRepository::get_by_id($this->jadlog_id);
-        $order           = wc_get_order($jadlog_delivery->order_id);
+        $order = wc_get_order($this->jadlog_delivery->order_id);
 
         //calculo do peso cubado
         $total_volume = 0.0;
@@ -95,7 +94,7 @@ class EmbarcadorService {
         $jadlog_request->centroCusto     = null;
         $jadlog_request->tpColeta        = $this->tipo_coleta;
         $jadlog_request->cdPickupOri     = null;
-        $jadlog_request->cdPickupDes     = $jadlog_delivery->pudo_id;
+        $jadlog_request->cdPickupDes     = $this->jadlog_delivery->pudo_id;
         $jadlog_request->tipoFrete       = $this->tipo_frete;
         $jadlog_request->cdUnidadeOri    = $this->unidade_origem;
         $jadlog_request->cdUnidadeDes    = null;
