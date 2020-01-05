@@ -718,6 +718,9 @@ class WooCommerceJadlog
     public function get_shipments_settings()
     {
         include_once('classes/Modalidade.php');
+        include_once('classes/TipoColeta.php');
+        include_once('classes/TipoFrete.php');
+        include_once('classes/TipoServico.php');
 
         $settings = array(
             'JADLOG_URL_EMBARCADOR_SIMULADOR_FRETE' => array(
@@ -744,7 +747,7 @@ class WooCommerceJadlog
                 'id'       => 'wc_settings_tab_jadlog_key_embarcador'
             ),
             'JADLOG_CODIGO_CLIENTE' => array(
-                'name'     => __('Código do cliente Jadlog', 'jadlog'),
+                'name'     => __('Código do Cliente Jadlog', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:200px;',
                 'desc'     => '',
@@ -766,37 +769,36 @@ class WooCommerceJadlog
             ),
             'JADLOG_TIPO_COLETA' => array(
                 'name'     => __('Tipo de Coleta Jadlog', 'jadlog'),
-                'type'     => 'text',
-                'css'      => 'width:200px;',
-                'desc'     => '',
+                'type'     => 'select',
+                'options'  => TipoColeta::TODOS,
+                'default'  => TipoColeta::COD_REMETENTE,
                 'id'       => 'wc_settings_tab_jadlog_tipo_coleta'
             ),
             'JADLOG_TIPO_FRETE' => array(
                 'name'     => __('Tipo de Frete Jadlog', 'jadlog'),
-                'type'     => 'text',
-                'css'      => 'width:200px;',
-                'desc'     => '',
+                'type'     => 'select',
+                'options'  => TipoFrete::TODOS,
+                'default'  => TipoFrete::COD_NORMAL,
                 'id'       => 'wc_settings_tab_jadlog_tipo_frete'
             ),
             'JADLOG_UNIDADE_ORIGEM' => array(
-                'name'     => __('Unidade de Origem Jadlog', 'jadlog'),
+                'name'     => __('Código da Unidade de Origem Jadlog', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:200px;',
                 'desc'     => '',
                 'id'       => 'wc_settings_tab_jadlog_unidade_origem'
             ),
             'JADLOG_CONTRATO' => array(
-                'name'     => __('Contrato', 'jadlog'),
+                'name'     => __('Número do Contrato Jadlog', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:200px;',
-                'desc'     => __('Número do contrato JadLog', 'jadlog'),
                 'id'       => 'wc_settings_tab_jadlog_contrato'
             ),
             'JADLOG_SERVICO' => array(
-                'name'     => __('Serviço Jadlog', 'jadlog'),
-                'type'     => 'text',
-                'css'      => 'width:200px;',
-                'desc'     => '',
+                'name'     => __('Tipo do Serviço Jadlog', 'jadlog'),
+                'type'     => 'select',
+                'options'  => TipoServico::TODOS,
+                'default'  => TipoServico::COD_COM_PIN,
                 'id'       => 'wc_settings_tab_jadlog_servico'
             ),
         );
@@ -804,6 +806,9 @@ class WooCommerceJadlog
     }
 
     public function get_expresso_settings() {
+        include_once('classes/TipoEntrega.php');
+        include_once('classes/TipoSeguro.php');
+
         $settings = array(
             'JADLOG_MODALIDADE_EXPRESSO' => array(
                 'name'     => '',
@@ -825,23 +830,23 @@ class WooCommerceJadlog
                 'name'     => __('Valor de coleta', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:200px;',
-                'desc'     => __('Valor de coleta negociado com a Jadlog da modalidade Expresso', 'jadlog'),
+                'desc'     => __('Valor de coleta negociado com a Jadlog na modalidade Expresso', 'jadlog'),
                 'id'       => 'wc_settings_tab_jadlog_valor_coleta_expresso'
             ),
             'JADLOG_TIPO_ENTREGA_EXPRESSO' => array(
                 'name'     => __('Tipo de entrega', 'jadlog'),
-                'type'     => 'radio',
-                'desc'     => '<i>Da modalidade Expresso</i>',
-                'options'  => array('D' => 'Domicílio', 'R' => 'Retira'),
-                'default'  => 'D',
+                'type'     => 'select',
+                'desc_tip' => 'Na modalidade Expresso',
+                'options'  => TipoEntrega::TODOS,
+                'default'  => TipoEntrega::COD_DOMICILIO,
                 'id'       => 'wc_settings_tab_jadlog_tipo_entrega_expresso'
             ),
             'JADLOG_TIPO_SEGURO_EXPRESSO' => array(
                 'name'     => __('Tipo do seguro', 'jadlog'),
-                'type'     => 'radio',
-                'desc'     => '<i>Da modalidade Expresso</i>',
-                'options'  => array('N' => 'Normal', 'A' => 'Apólice'),
-                'default'  => 'N',
+                'type'     => 'select',
+                'desc_tip' => 'Na modalidade Expresso',
+                'options'  => TipoSeguro::TODOS,
+                'default'  => TipoSeguro::COD_NORMAL,
                 'id'       => 'wc_settings_tab_jadlog_tipo_seguro_expresso'
             ),
             'JADLOG_CALCULAR_PESOS_CUBADOS_EXPRESSO' => array(
@@ -864,6 +869,8 @@ class WooCommerceJadlog
     }
 
     public function get_pickup_settings() {
+        include_once('classes/TipoSeguro.php');
+
         $settings = array(
             'JADLOG_MODALIDADE_PICKUP' => array(
                 'name'     => '',
@@ -908,23 +915,23 @@ class WooCommerceJadlog
                 'name'     => __('Valor de coleta', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:200px;',
-                'desc'     => __('Valor de coleta negociado com a Jadlog da modalidade Pickup', 'jadlog'),
+                'desc'     => __('Valor de coleta negociado com a Jadlog na modalidade Pickup', 'jadlog'),
                 'id'       => 'wc_settings_tab_jadlog_valor_coleta_pickup'
             ),
             'JADLOG_TIPO_ENTREGA_PICKUP' => array(
                 'name'     => __('Tipo de entrega', 'jadlog'),
-                'type'     => 'radio',
-                'desc'     => '<i>Da modalidade Pickup</i>',
-                'options'  => array('D' => 'Domicílio', 'R' => 'Retira'),
-                'default'  => 'D',
+                'type'     => 'select',
+                'desc_tip' => 'Na modalidade Pickup',
+                'options'  => TipoEntrega::TODOS,
+                'default'  => TipoEntrega::COD_DOMICILIO,
                 'id'       => 'wc_settings_tab_jadlog_tipo_entrega_pickup'
             ),
             'JADLOG_TIPO_SEGURO_PICKUP' => array(
                 'name'     => __('Tipo do seguro', 'jadlog'),
-                'type'     => 'radio',
-                'desc'     => '<i>Da modalidade Pickup</i>',
-                'options'  => array('N' => 'Normal', 'A' => 'Apólice'),
-                'default'  => 'N',
+                'type'     => 'select',
+                'desc_tip' => 'Na modalidade Pickup',
+                'options'  => TipoSeguro::TODOS,
+                'default'  => TipoSeguro::COD_NORMAL,
                 'id'       => 'wc_settings_tab_jadlog_tipo_seguro_pickup'
             ),
             'JADLOG_CALCULAR_PESOS_CUBADOS_PICKUP' => array(
