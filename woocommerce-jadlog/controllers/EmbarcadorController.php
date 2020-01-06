@@ -26,6 +26,7 @@ if (isset($response['erro'])) {
         'status' => $response['status'],
         'erro'   => $response['erro']['descricao'].' ('.$response['erro']['id'].')'
     ));
+    http_response_code(400);
 }
 else {
     DeliveryRepository::update($jadlog_id, array(
@@ -33,5 +34,9 @@ else {
         'codigo_inclusao' => $response['codigo'],
         'shipment_id'     => $response['shipmentId']
     ));
+    http_response_code(200);
 }
-echo $response;
+
+header('Content-type: application/json');
+echo json_encode($response);
+

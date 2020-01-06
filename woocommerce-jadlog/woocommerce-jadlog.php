@@ -1206,6 +1206,14 @@ class WooCommerceJadlog
 
                     <script>
                         var jadlog_embarcador_service_request = function(dialog) {
+                            var manage_response = function(json, build_retorno) {
+                                var status  = json['status'];
+                                var retorno = build_retorno(json);
+                                var tr      = $('#delivery_' + $(dialog).data('id'));
+                                $(tr).children('.status').html(status);
+                                $(tr).children('.retorno').html(retorno);
+                                alert(status + '\n' + retorno);
+                            };
                             $.ajax({
                                 type:     "POST",
                                 dataType: "json",
@@ -1213,12 +1221,14 @@ class WooCommerceJadlog
                                 data:     $(dialog).children('form').serialize(),
                                 success: function (response) {
                                     console.log(response);
+                                    manage_response(response, function(json) { 
+                                        return 'Shipment ID: ' + json['shipmentId'] + '\n' + 'Solicitação de coleta: ' + json['codigo'];
+                                    });
                                     $(dialog).dialog('close');
-                                    window.location.reload(); //TODO Fazer update com ajax
                                 },
                                 error: function (e) {
                                     console.error(e);
-                                    alert('Ocorreu um erro ao chamar o serviço Jadlog:\n' + JSON.stringify(e, null, 2));
+                                    manage_response(e['responseJSON'], function(json) { return json['erro']['descricao']; })
                                     $(dialog).dialog('close');
                                 }
                             });
@@ -1245,28 +1255,30 @@ class WooCommerceJadlog
                     $deliveries = DeliveryRepository::get_all();
 
                     foreach ($deliveries as $delivery):
+                        $delivery_id        = htmlentities($delivery->id);
                         $order_helper       = new OrderHelper($delivery->order_id);
                         $order              = $order_helper->get_order();
                         $order_id           = $order->get_order_number();
                         $order_date_created = $order_helper->get_formatted_date_created();
                         $order_full_name    = $order->get_formatted_shipping_full_name();
                         $order_address      = $order_helper->get_formatted_address('shipping');
+                        $status_color = $delivery->status == DeliveryRepository::INITIAL_STATUS ?
+                            'yellow' : empty($delivery->shipment_id) ? 'red' : 'green';
                         ?>
-                        <tr>
+                        <tr id="delivery_<?= $delivery_id ?>">
                             <td><input class="checkbox" type="checkbox" name="checkbox[]" value="<?= htmlentities($order_id) ?>"></td>
                             <td class="id"><?= htmlentities($order_id) ?></td>
                             <td class="date"><?= htmlentities($order_date_created) ?></td>
                             <td class="shipping"><?= htmlentities($order_full_name) ?></td>
                             <td class="shipping"><?= htmlentities($order_address) ?></td>
                             <td class="pudo"><?= htmlentities($delivery->modalidade) ?></td>
-                            <td class="pudo"><?= htmlentities($delivery->pudo_id.' - '.$delivery->pudo_name) ?></td>
+                            <td class="pudo"><?= isset($delivery->pudo_id) ? htmlentities($delivery->pudo_id.' - '.$delivery->pudo_name) : '' ?></td>
                             <td class="pudo"><?= htmlentities($delivery->pudo_address) ?></td>
-                            <td class="pudo"><?= htmlentities($delivery->status) ?></td>
-                            <td class="pudo"><?= nl2br(htmlentities(Delivery::retorno($delivery))) ?></td>
+                            <td class="status" style="color:<?= $status_color ?>"><?= htmlentities($delivery->status) ?></td>
+                            <td class="retorno"><?= nl2br(htmlentities(Delivery::retorno($delivery))) ?></td>
                             <td>
-                                <?php $delivery_id = htmlentities($delivery->id) ?>
                                 <?php if (empty($delivery->shipment_id)): ?>
-                                    <div id="dialog-<?= $delivery_id ?>" title="<?= __('Preencha os dados do documento fiscal', 'jadlog') ?>" class="hidden wp-dialog">
+                                    <div id="dialog-<?= $delivery_id ?>" data-id="<?= $delivery_id ?>" title="<?= __('Preencha os dados do documento fiscal', 'jadlog') ?>" class="hidden wp-dialog">
                                         <form class="form-wrap">
                                             <input type="hidden" name="id" value="<?= $delivery_id ?>">
                                             <p class="form-field">
