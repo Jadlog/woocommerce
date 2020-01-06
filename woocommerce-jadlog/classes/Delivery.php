@@ -22,6 +22,8 @@ class Delivery {
                     $this->order,
                     array(
                         'modalidade'   => $meta_data['modalidade'],
+                        'valor_total'  => $meta_data['valor_total'],
+                        'peso_taxado'  => $meta_data['peso_taxado'],
                         'pudo_id'      => $meta_data['pudo_id'],
                         'pudo_name'    => $meta_data['pudo_name'],
                         'pudo_address' => $meta_data['pudo_address']

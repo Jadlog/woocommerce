@@ -28,6 +28,8 @@ class EmbarcadorService {
         $this->unidade_origem   = get_option('wc_settings_tab_jadlog_unidade_origem');
         $this->contrato         = get_option('wc_settings_tab_jadlog_contrato');
         $this->servico          = get_option('wc_settings_tab_jadlog_servico');
+        $sufix = '_'.strtolower(Modalidade::TODOS[$this->modalidade]);
+        $this->valor_coleta     = get_option('wc_settings_tab_jadlog_valor_coleta'.$sufix);
 
         $this->rem_nome         = get_option('wc_settings_tab_jadlog_shipper_name');
         $this->rem_cpf_cnpj     = get_option('wc_settings_tab_jadlog_shipper_cnpj_cpf');
@@ -52,85 +54,29 @@ class EmbarcadorService {
      * @return json
      */
     public function create($dfe) {
-
         $order = wc_get_order($this->jadlog_delivery->order_id);
         $order_helper = new OrderHelper($order);
 
-        //calculo do peso cubado
-        $total_volume = 0.0;
-        $total_weight = 0.0;
-        $total  = 0.0;
-        foreach( $order->get_items() as $item_id => $product_item ) {
-            $quantity = $product_item->get_quantity(); // get quantity
-            $product = $product_item->get_product(); // get the WC_Product object
-            $product_weight = $product->get_weight(); // get the product weight
-            // Add the line item weight to the total weight calculation
-            $total_weight += floatval( $product_weight * $quantity );
+        $request_params         = $this->build_create_request_params($order);
+        $request_params->rem    = $this->build_rem();
+        $request_params->des    = $this->build_des($order);
+        $request_params->dfe    = $this->build_dfe($dfe);
+        $request_params->volume = $this->build_volume($order);
 
-            //valor dos produtos
-            $valor = $product->get_price() * $quantity;
-            $total += $valor;
-
-            // dimensions
-            $width = $product->get_width();
-            $height = $product->get_height();
-            $length = $product->get_length();
-            $total_volume = $total_volume + (float) ($width * $length * $height * $quantity);
-        }
-        $peso_cubado = (float) $total_volume/6000;
-        if($total_weight > $peso_cubado) {
-            $peso_cubado = $total_weight;
-        }
-
-
-        $jadlog_request = new stdClass();
-        $jadlog_request->codCliente      = $this->codigo_cliente;
-        $jadlog_request->conteudo        = substr($order_helper->get_items_names(), 0, 80);
-        $jadlog_request->pedido          = $order->get_order_number();
-        $jadlog_request->totPeso         = $peso_cubado;
-        $jadlog_request->totValor        = $total; //$order->get_total();
-        $jadlog_request->obs             = null;
-        $jadlog_request->modalidade      = $this->modalidade;
-        $jadlog_request->contaCorrente   = $this->conta_corrente;
-        $jadlog_request->centroCusto     = null;
-        $jadlog_request->tpColeta        = $this->tipo_coleta;
-        $jadlog_request->cdPickupOri     = null;
-        $jadlog_request->cdPickupDes     = $this->jadlog_delivery->pudo_id;
-        $jadlog_request->tipoFrete       = $this->tipo_frete;
-        $jadlog_request->cdUnidadeOri    = $this->unidade_origem;
-        $jadlog_request->cdUnidadeDes    = null;
-        $jadlog_request->nrContrato      = $this->contrato;
-        $jadlog_request->servico         = $this->servico;
-        $jadlog_request->shipmentId      = null;
-
-        $jadlog_request->rem = $this->build_rem();
-
-        $jadlog_request->des = $this->build_des($order);
-
-        $jadlog_request->volume = new stdClass();
-        $jadlog_request->volume->altura         = pow($total_volume, 1/3);
-        $jadlog_request->volume->comprimento    = pow($total_volume, 1/3);
-        $jadlog_request->volume->largura        = pow($total_volume, 1/3);
-        $jadlog_request->volume->peso           = $peso_cubado;
-        $jadlog_request->volume->identificador  = $order->get_order_number();
-        $jadlog_request->volume->lacre          = null;
-
-        $jadlog_request->dfe = $this->build_dfe($dfe);
-
-        error_log('embarcador/coleta body: '.var_export($jadlog_request, true));
+        error_log('embarcador/coleta body: '.var_export($request_params, true));
         error_log(var_export($order->get_data(), true));
         return;
 
         $response = wp_remote_post($this->url_inclusao, array(
-                'method' => 'POST',
-                'timeout' => 500,
-                'blocking' => true,
-                'headers' => ['Content-Type' => 'application/json; charset=utf-8', 'Authorization' => $this->key],
-                'body' => json_encode($jadlog_request),
-                'cookies' => array()
-            )
+            'method' => 'POST',
+            'timeout' => 500,
+            'blocking' => true,
+            'headers' => ['Content-Type' => 'application/json; charset=utf-8', 'Authorization' => $this->key],
+            'body' => json_encode($request_params),
+            'cookies' => array()
+        )
         );
-        error_log( 'In ' . __FUNCTION__ . '(), $jadlog_request = ' . var_export( $jadlog_request, true ) );
+        error_log( 'In ' . __FUNCTION__ . '(), $request_params = ' . var_export( $request_params, true ) );
         error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
 
         if ( is_wp_error( $response ) ) {
@@ -142,6 +88,31 @@ class EmbarcadorService {
             return $response['body'];
         }
 
+    }
+
+    private function build_create_request_params($order) {
+        $order_helper = new OrderHelper($order);
+        $params = new stdClass();
+        // $params->codCliente      = $this->codigo_cliente;
+        $params->conteudo        = substr($order_helper->get_items_names(), 0, 80);
+        $params->pedido          = array($order->get_order_number());
+        $params->totPeso         = floatval($this->jadlog_delivery->peso_taxado);
+        $params->totValor        = floatval($this->jadlog_delivery->valor_total);
+        $params->obs             = null;
+        $params->modalidade      = $this->modalidade;
+        $params->contaCorrente   = $this->conta_corrente;
+        // $params->centroCusto     = null;
+        $params->tpColeta        = $this->tipo_coleta;
+        $params->tipoFrete       = intval($this->tipo_frete);
+        $params->cdUnidadeOri    = $this->unidade_origem;
+        $params->cdUnidadeDes    = null;
+        $params->cdPickupOri     = null;
+        $params->cdPickupDes     = $this->jadlog_delivery->pudo_id;
+        $params->nrContrato      = intval($this->contrato);
+        $params->servico         = intval($this->servico);
+        $params->shipmentId      = null;
+        $params->vlColeta        = empty($this->valor_coleta) ? null : floatval($this->valor_coleta);
+        return $params;
     }
 
     private function build_rem() {
@@ -192,6 +163,17 @@ class EmbarcadorService {
         $dfe->cfop        = $params['cfop'];
         $dfe->tpDocumento = $params['tp_documento'];
         return $dfe;
+    }
+
+    private function build_volume($order) {
+        $volume = new stdClass();
+        $volume->altura        = null;
+        $volume->comprimento   = null;
+        $volume->largura       = null;
+        $volume->peso          = floatval($this->jadlog_delivery->peso_taxado);
+        $volume->identificador = $order->get_order_number();
+        // $volume->lacre          = null;
+        return $volume;
     }
 
     private function only_digits($string) {

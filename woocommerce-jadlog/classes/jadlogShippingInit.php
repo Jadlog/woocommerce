@@ -68,10 +68,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                     if ($this->modalidade_expresso_ativa) {
                         $shipping_package = new ShippingPackage($package, Modalidade::COD_EXPRESSO);
-                        $preco       = $shipping_package->get_price();
+                        $valor_total = $shipping_package->get_price();
                         $peso_taxado = $shipping_package->get_effective_weight();
 
-                        $estimated_values = $this->jadlog_get_express_price($preco, $postcode, $peso_taxado);
+                        $estimated_values = $this->jadlog_get_express_price($valor_total, $postcode, $peso_taxado);
                         $time = isset($estimated_values['estimated_time']) ? ' - '.$estimated_values['estimated_time'].' dias úteis' : '';
                         $label = __('Jadlog Expresso', 'jadlog').$time;
 
@@ -80,14 +80,18 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             'label' => $label,
                             'cost'  => $estimated_values['estimated_value'],
                             'taxes' => true,
-                            'meta_data' => [ 'modalidade' => Modalidade::LABEL_EXPRESSO ],
+                            'meta_data' => [
+                                'modalidade'  => Modalidade::LABEL_EXPRESSO,
+                                'valor_total' => $valor_total,
+                                'peso_taxado' => $peso_taxado
+                            ],
                         );
                         $this->add_rate($rate);
                     }
 
                     if ($this->modalidade_pickup_ativa) {
                         $shipping_package = new ShippingPackage($package, Modalidade::COD_PICKUP);
-                        $preco       = $shipping_package->get_price();
+                        $valor_total = $shipping_package->get_price();
                         $peso_taxado = $shipping_package->get_effective_weight();
 
                         $jadlogMyPudo = new JadLogMyPudo();
@@ -104,7 +108,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                                 $_SESSION[$pudo_id]['address']   = $address;
                                 $_SESSION[$pudo_id]['time']      = $pudo_item['OPENING_HOURS_ITEMS'];
                                 $distance = round(intval($pudo_item['DISTANCE']) / 1000.0, 1);
-                                $estimated_values = $this->jadlog_get_pudo_price($preco, $pudo_item, $peso_taxado);
+                                $estimated_values = $this->jadlog_get_pudo_price($valor_total, $pudo_item, $peso_taxado);
                                 $time = isset($estimated_values['estimated_time']) ? ' - '.$estimated_values['estimated_time'].' dias úteis' : '';
                                 $label = __('Retire no ponto Pickup Jadlog', 'jadlog').' '.$pudo_item['NAME'].' - '.
                                     $address.' ('.number_format($distance, 1, ',', '.').' km)'.$time;
@@ -115,6 +119,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                                     'taxes' => true,
                                     'meta_data' => [
                                         'modalidade'   => Modalidade::LABEL_PICKUP,
+                                        'valor_total'  => $valor_total,
+                                        'peso_taxado'  => $peso_taxado,
                                         'pudo_id'      => $pudo_item['PUDO_ID'],
                                         'pudo_name'    => $pudo_item['NAME'],
                                         'pudo_address' => $address
