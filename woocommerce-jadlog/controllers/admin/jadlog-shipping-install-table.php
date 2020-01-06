@@ -19,6 +19,8 @@ function install_table()
             `id`               BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             `order_id`         VARCHAR(255)  NOT NULL,
             `modalidade`       VARCHAR(255)  DEFAULT NULL,
+            `valor_total`      decimal(10,2) DEFAULT NULL,
+            `peso_taxado`      decimal(10,2) DEFAULT NULL,
             `pudo_id`          VARCHAR(255)  DEFAULT NULL,
             `pudo_name`        VARCHAR(255)  DEFAULT NULL,
             `pudo_address`     VARCHAR(511)  DEFAULT NULL,
