@@ -32,4 +32,11 @@ class DeliveryRepository {
         $result = $wpdb->get_results("SELECT * FROM {$table_name} WHERE id = {$id}");
         return $result[0];
     }
+
+    public static function update($id, $values) {
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::TABLE_NAME;
+
+        $wpdb->update($table_name, $values, array('id' => $id));
+    }
 }
