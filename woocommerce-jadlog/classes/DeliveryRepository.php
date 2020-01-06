@@ -21,7 +21,7 @@ class DeliveryRepository {
         global $wpdb;
         $table_name = $wpdb->prefix.self::TABLE_NAME;
 
-        $result = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY order_id DESC");
+        $result = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY id DESC");
         return $result;
     }
 
