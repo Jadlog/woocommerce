@@ -747,6 +747,14 @@ class WooCommerceJadlog
                 'default'  => 'http://www.jadlog.com.br/embarcador/api/pedido/cancelar',
                 'id'       => 'wc_settings_tab_jadlog_url_cancelamento_pedidos'
             ),
+            'JADLOG_URL_EMBARCADOR_CONSULTA_PEDIDOS' => array(
+                'name'     => __('URL da API de consulta de pedidos (Embarcador)', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:500px;',
+                'desc'     => '',
+                'default'  => 'http://www.jadlog.com.br/embarcador/api/tracking/consultar',
+                'id'       => 'wc_settings_tab_jadlog_url_consulta_pedidos'
+            ),
             'JADLOG_KEY_EMBARCADOR' => array(
                 'name'     => __('Chave de acesso ao Embarcador', 'jadlog'),
                 'type'     => 'text',
@@ -1293,8 +1301,8 @@ class WooCommerceJadlog
                             <td class="retorno"><?= nl2br(htmlentities(Delivery::retorno($delivery))) ?></td>
                             <td>
                                 <div>
-                                    <a href="#" class="jadlog_delivery_tracking" data-id="<?= $delivery_id ?>">
-                                        <?= __('Consultar', 'jadlog') ?>
+                                    <a href="#" class="jadlog_delivery_tracking" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
+                                        <?#= __('Consultar', 'jadlog') ?>
                                     </a>
                                 </div>
                                 <div>
@@ -1400,20 +1408,22 @@ class WooCommerceJadlog
             });
 
             $('.jadlog_delivery_tracking').on("click", function () {
-                alert('Ainda não implementado!');
-                return;
+                var id = $(this).data('id');
+                var params = $.param({
+                    id:          id,
+                    shipment_id: $(this).data('shipment-id')
+                });
                 $.ajax({
                     type:     "GET",
                     dataType: "json",
-                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php",
-                    data:     { id: $(this).data('id') },
+                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php?" + params,
                     success: function (response) {
                         console.log(response);
-                        window.location.reload(); //TODO Fazer update com ajax
+                        alert(JSON.stringify(response, null, 2));
                     },
                     error: function (e) {
-                        console.error(e);
-                        alert('Ocorreu um erro ao chamar o serviço Jadlog:\n' + JSON.stringify(e, null, 2));
+                        var json = e['responseJSON'];
+                        alert(json['consulta'][0]['error']['descricao']);
                     }
                 });
             });

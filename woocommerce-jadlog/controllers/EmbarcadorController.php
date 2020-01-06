@@ -61,4 +61,19 @@ case 'DELETE':
     header('Content-type: application/json');
     echo json_encode($response);
     break;
+
+case 'GET':
+    $shipment_id = $_GET['shipment_id'];
+    $response = $embarcador->get($shipment_id);
+
+    if (isset($response['consulta'][0]['error'])) {
+        Logger::log_error($response, __FILE__, $response);
+        http_response_code(400);
+    }
+    else
+        http_response_code(200);
+
+    header('Content-type: application/json');
+    echo json_encode($response);
+    break;
 }
