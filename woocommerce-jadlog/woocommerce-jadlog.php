@@ -1262,8 +1262,9 @@ class WooCommerceJadlog
                         $order_date_created = $order_helper->get_formatted_date_created();
                         $order_full_name    = $order->get_formatted_shipping_full_name();
                         $order_address      = $order_helper->get_formatted_address('shipping');
-                        $status_color = $delivery->status == DeliveryRepository::INITIAL_STATUS ?
-                            'yellow' : empty($delivery->shipment_id) ? 'red' : 'green';
+                        $status_color = ($delivery->status == DeliveryRepository::INITIAL_STATUS) ?
+                            'orange' :
+                            (empty($delivery->shipment_id) ? 'red' : 'green');
                         ?>
                         <tr id="delivery_<?= $delivery_id ?>">
                             <td><input class="checkbox" type="checkbox" name="checkbox[]" value="<?= htmlentities($order_id) ?>"></td>
