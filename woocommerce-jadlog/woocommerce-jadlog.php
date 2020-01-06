@@ -739,6 +739,14 @@ class WooCommerceJadlog
                 'default'  => 'http://www.jadlog.com.br/embarcador/api/pedido/incluir',
                 'id'       => 'wc_settings_tab_jadlog_url_inclusao_pedidos'
             ),
+            'JADLOG_URL_EMBARCADOR_CANCELAMENTO_PEDIDOS' => array(
+                'name'     => __('URL da API de cancelamento de pedidos (Embarcador)', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:500px;',
+                'desc'     => '',
+                'default'  => 'http://www.jadlog.com.br/embarcador/api/pedido/cancelar',
+                'id'       => 'wc_settings_tab_jadlog_url_cancelamento_pedidos'
+            ),
             'JADLOG_KEY_EMBARCADOR' => array(
                 'name'     => __('Chave de acesso ao Embarcador', 'jadlog'),
                 'type'     => 'text',
@@ -1158,7 +1166,7 @@ class WooCommerceJadlog
             }
         </script>
 
-        <div class="dpdfrance-wrap wrap">
+        <div class="wrap">
             <h2 style="float:left; margin-top:20px">Envios Jadlog</h2>
             <div style="float:right"><img src="<?= JADLOG_ROOT_URL ?>/assets/img/jadlog_logo.png"/></div>
             <div style="clear:both"></div>
@@ -1206,10 +1214,10 @@ class WooCommerceJadlog
 
                     <script>
                         var jadlog_embarcador_service_request = function(dialog) {
-                            var manage_response = function(json, build_retorno) {
+                            var id = $(dialog).data('id');
+                            var manage_response = function(json, retorno) {
                                 var status  = json['status'];
-                                var retorno = build_retorno(json);
-                                var tr      = $('#delivery_' + $(dialog).data('id'));
+                                var tr      = $('#delivery_' + id);
                                 $(tr).children('.status').html(status);
                                 $(tr).children('.retorno').html(retorno);
                                 alert(status + '\n' + retorno);
@@ -1221,14 +1229,17 @@ class WooCommerceJadlog
                                 data:     $(dialog).children('form').serialize(),
                                 success: function (response) {
                                     console.log(response);
-                                    manage_response(response, function(json) { 
-                                        return 'Shipment ID: ' + json['shipmentId'] + '\n' + 'Solicitação de coleta: ' + json['codigo'];
-                                    });
+                                    manage_response(
+                                        response, 
+                                        'Shipment ID: ' + response['shipmentId'] + '\n' + 'Solicitação de coleta: ' + response['codigo']);
+                                    $('#delivery_' + id + ' .jadlog_delivery_request').hide();
+                                    $('#delivery_' + id + ' .jadlog_delivery_tracking').show();
+                                    $('#delivery_' + id + ' .jadlog_delivery_cancel').show();
                                     $(dialog).dialog('close');
                                 },
                                 error: function (e) {
                                     console.error(e);
-                                    manage_response(e['responseJSON'], function(json) { return json['erro']['descricao']; })
+                                    manage_response(e['responseJSON'], e['responseJSON']['erro']['descricao']);
                                     $(dialog).dialog('close');
                                 }
                             });
@@ -1241,7 +1252,10 @@ class WooCommerceJadlog
                                 closeOnEscape: true,
                                 buttons: {
                                     Cancelar: function() { $(this).dialog('close') },
-                                    Enviar:   function() { jadlog_embarcador_service_request(this) }
+                                    Enviar:   function(target) {
+                                                  $(target.currentTarget).prop('disabled', true);
+                                                  jadlog_embarcador_service_request(this);
+                                              }
                                 }
                             });
                         };
@@ -1278,6 +1292,16 @@ class WooCommerceJadlog
                             <td class="status" style="color:<?= $status_color ?>"><?= htmlentities($delivery->status) ?></td>
                             <td class="retorno"><?= nl2br(htmlentities(Delivery::retorno($delivery))) ?></td>
                             <td>
+                                <div>
+                                    <a href="#" class="jadlog_delivery_tracking" data-id="<?= $delivery_id ?>">
+                                        <?= __('Consultar', 'jadlog') ?>
+                                    </a>
+                                </div>
+                                <div>
+                                    <a href="#" class="jadlog_delivery_cancel" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
+                                        <?= __('Cancelar', 'jadlog') ?>
+                                    </a>
+                                </div>
                                 <?php if (empty($delivery->shipment_id)): ?>
                                     <div id="dialog-<?= $delivery_id ?>" data-id="<?= $delivery_id ?>" title="<?= __('Preencha os dados do documento fiscal', 'jadlog') ?>" class="hidden wp-dialog">
                                         <form class="form-wrap">
@@ -1316,20 +1340,23 @@ class WooCommerceJadlog
                                             </p>
                                         </form>
                                     </div>
-                                    <script>
-                                        $(function() { jadlog_embarcador_dialog_setup("#dialog-<?= $delivery_id ?>") });
-                                    </script>
                                     <a href="#" class="jadlog_delivery_request" data-id="<?= $delivery_id ?>">
                                         <?= __('Enviar', 'jadlog') ?>
                                     </a>
-                                <?php else: ?>
-                                    <a href="#" class="jadlog_delivery_tracking" data-id="<?= $delivery_id ?>">
-                                        <?= __('Consultar', 'jadlog') ?>
-                                    </a>
-                                    <br/>
-                                    <a href="#" class="jadlog_delivery_cancel" data-id="<?= $delivery_id ?>">
-                                        <?= __('Cancelar', 'jadlog') ?>
-                                    </a>
+                                    <script>
+                                        $(function() {
+                                            jadlog_embarcador_dialog_setup("#dialog-<?= $delivery_id ?>");
+                                            $('#delivery_<?= $delivery_id ?> .jadlog_delivery_tracking').hide();
+                                            $('#delivery_<?= $delivery_id ?> .jadlog_delivery_cancel').hide();
+                                        });
+                                    </script>
+                                <?php elseif ($delivery->status == DeliveryRepository::CANCELED_STATUS): ?>
+                                    <script>
+                                        $(function() {
+                                            $('#delivery_<?= $delivery_id ?> .jadlog_delivery_tracking').hide();
+                                            $('#delivery_<?= $delivery_id ?> .jadlog_delivery_cancel').hide();
+                                        });
+                                    </script>
                                 <?php endif ?>
                             </td>
                         </tr>
@@ -1345,29 +1372,40 @@ class WooCommerceJadlog
                 $("#dialog-" + id).dialog("open");
             });
 
-            $('.jadlog_delivery_tracking').on("click", function () {
+            $('.jadlog_delivery_cancel').on("click", function () {
+                var id = $(this).data('id');
+                var params = $.param({
+                    id:          id,
+                    shipment_id: $(this).data('shipment-id')
+                });
                 $.ajax({
                     type:     "DELETE",
                     dataType: "json",
-                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/Embarcador.php",
-                    data:     { id: $(this).data('id') },
+                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php?" + params,
                     success: function (response) {
+                        $('#delivery_' + id + ' .jadlog_delivery_request').hide();
+                        $('#delivery_' + id + ' .jadlog_delivery_tracking').hide();
+                        $('#delivery_' + id + ' .jadlog_delivery_cancel').hide();
+                        var status = response['status'];
+                        $('#delivery_' + id + ' .status').html(status);
+                        alert(status);
                         console.log(response);
-                        window.location.reload(); //TODO Fazer update com ajax
                     },
                     error: function (e) {
+                        var json = e['responseJSON'];
+                        alert(json['status'] + '\n' + json['erro']['descricao'] + '\n' + json['erro']['detalhe']);
                         console.error(e);
-                        alert('Ocorreu um erro ao chamar o serviço Jadlog:\n' + JSON.stringify(e, null, 2));
-
                     }
                 });
             });
 
-            $('.jadlog_delivery_cancel').on("click", function () {
+            $('.jadlog_delivery_tracking').on("click", function () {
+                alert('Ainda não implementado!');
+                return;
                 $.ajax({
                     type:     "GET",
                     dataType: "json",
-                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/Embarcador.php",
+                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php",
                     data:     { id: $(this).data('id') },
                     success: function (response) {
                         console.log(response);
@@ -1376,7 +1414,6 @@ class WooCommerceJadlog
                     error: function (e) {
                         console.error(e);
                         alert('Ocorreu um erro ao chamar o serviço Jadlog:\n' + JSON.stringify(e, null, 2));
-
                     }
                 });
             });

@@ -18,6 +18,7 @@ class EmbarcadorService {
         $this->jadlog_delivery = DeliveryRepository::get_by_id($jadlog_id);
 
         $this->url_inclusao     = get_option('wc_settings_tab_jadlog_url_inclusao_pedidos');
+        $this->url_cancelamento = get_option('wc_settings_tab_jadlog_url_cancelamento_pedidos');
         $this->key              = get_option('wc_settings_tab_jadlog_key_embarcador');
         $this->codigo_cliente   = get_option('wc_settings_tab_jadlog_codigo_cliente');
         $this->modalidade       = Modalidade::codigo_modalidade($this->jadlog_delivery->modalidade);
@@ -92,7 +93,7 @@ class EmbarcadorService {
         $order_helper = new OrderHelper($order);
         $params = new stdClass();
         $params->conteudo        = substr($order_helper->get_items_names(), 0, 80);
-        $params->pedido          = array($order->get_order_number());
+        $params->pedido          = array(10000 + $order->get_order_number());
         $params->totPeso         = floatval($this->jadlog_delivery->peso_taxado);
         $params->totValor        = floatval($this->jadlog_delivery->valor_total);
         $params->obs             = null;
@@ -171,4 +172,33 @@ class EmbarcadorService {
         return $volume;
     }
 
+    public function cancel($shipment_id) {
+        $request_params = new stdClass();
+        $request_params->shipmentId = $shipment_id;
+
+        $response = wp_remote_post($this->url_cancelamento, array(
+            'method'   => 'POST',
+            'timeout'  => 120,
+            'blocking' => true,
+            'headers'  => array(
+                'Content-Type'  => 'application/json; charset=utf-8',
+                'Authorization' => $this->key),
+            'body'     => json_encode($request_params),
+            'cookies'  => array()));
+        error_log( 'In ' . __FUNCTION__ . '(), $request_params = ' . var_export( $request_params, true ) );
+        error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
+
+        if (is_wp_error($response)) {
+            Logger::log_error($response->get_error_message(), __FUNCTION__, $response, $request_params);
+            $result = array('status' => $response->get_error_message(), 'erro' => array());
+        }
+        elseif ($response['response']['code'] == 500) {
+            Logger::log_error($response['body'], __FUNCTION__, $response, $request_params);
+            $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
+        }
+        else
+            $result = json_decode($response['body'], true);
+
+        return $result;
+    }
 }

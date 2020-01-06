@@ -1,8 +1,9 @@
 <?php
 
 class DeliveryRepository {
-    const TABLE_NAME     = 'woocommerce_jadlog';
-    const INITIAL_STATUS = 'Pendente';
+    const TABLE_NAME      = 'woocommerce_jadlog';
+    const INITIAL_STATUS  = 'Pendente';
+    const CANCELED_STATUS = 'Cancelado';
 
     public static function create($order, $values) {
         global $wpdb;
