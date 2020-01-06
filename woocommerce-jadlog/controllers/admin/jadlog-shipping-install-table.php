@@ -32,6 +32,8 @@ function install_table()
             `dfe_valor`        DECIMAL(10,2) DEFAULT NULL,
             `dfe_danfe_cte`    VARCHAR(255)  DEFAULT NULL,
             `dfe_cfop`         VARCHAR(255)  DEFAULT NULL,
+            `codigo_inclusao`  VARCHAR(255)  DEFAULT NULL,
+            `shipment_id`      VARCHAR(255)  DEFAULT NULL,
             PRIMARY KEY (id)
         ) DEFAULT CHARSET=utf8";
     $wpdb->query($sql);
