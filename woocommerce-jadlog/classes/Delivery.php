@@ -24,9 +24,9 @@ class Delivery {
                         'modalidade'   => $meta_data['modalidade'],
                         'valor_total'  => $meta_data['valor_total'],
                         'peso_taxado'  => $meta_data['peso_taxado'],
-                        'pudo_id'      => $meta_data['pudo_id'],
-                        'pudo_name'    => $meta_data['pudo_name'],
-                        'pudo_address' => $meta_data['pudo_address']
+                        'pudo_id'      => isset($meta_data['pudo_id'])      ? $meta_data['pudo_id']      : null,
+                        'pudo_name'    => isset($meta_data['pudo_name'])    ? $meta_data['pudo_name']    : null,
+                        'pudo_address' => isset($meta_data['pudo_address']) ? $meta_data['pudo_address'] : null
                     ));
             }
         }
@@ -34,7 +34,7 @@ class Delivery {
 
     public static function retorno($row) {
         if (isset($row->shipment_id))
-            return "Shipment Id: ".$row->shipment_id."\nCódigo Inclusão: ".$row->codigo_inclusao;
+            return __('Shipment ID: ', 'jadlog').$row->shipment_id."\n".__('Solicitação de coleta: ', 'jadlog').$row->codigo_inclusao;
         else
             return $row->erro;
     }
