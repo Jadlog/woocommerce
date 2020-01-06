@@ -32,4 +32,11 @@ class Delivery {
         }
     }
 
+    public static function retorno($row) {
+        if (isset($row->shipment_id))
+            return "Shipment Id: ".$row->shipment_id."\nCódigo Inclusão: ".$row->codigo_inclusao;
+        else
+            return $row->erro;
+    }
+
 }
