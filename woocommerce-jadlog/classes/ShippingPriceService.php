@@ -5,11 +5,12 @@ class ShippingPriceService {
     public function __construct($modalidade) {
         include_once("Modalidade.php");
         include_once("Logger.php");
+        include_once("ServicesHelper.php");
 
         $this->url        = get_option('wc_settings_tab_jadlog_url_simulador_frete');
         $this->key        = get_option('wc_settings_tab_jadlog_key_embarcador');
-        $this->cepori     = get_option('wc_settings_tab_jadlog_shipper_cep');
-        $this->cnpj       = get_option('wc_settings_tab_jadlog_shipper_cnpj_cpf');
+        $this->cepori     = ServicesHelper::only_digits(get_option('wc_settings_tab_jadlog_shipper_cep'));
+        $this->cnpj       = ServicesHelper::only_digits(get_option('wc_settings_tab_jadlog_shipper_cnpj_cpf'));
         $this->conta      = get_option('wc_settings_tab_jadlog_conta_corrente');
         $this->contrato   = get_option('wc_settings_tab_jadlog_contrato');
 
@@ -22,11 +23,10 @@ class ShippingPriceService {
     }
 
     public function estimate($declared_value, $dest_zipcode, $weight) {
-        $dest_zipcode = str_replace("-", "", $dest_zipcode);
         $request = array(
             'frete' => array(array(
-                'cepori'      => $this->cepori,
-                'cepdes'      => $dest_zipcode,
+                'cepori'      => ServicesHelper::only_digits($this->cepori),
+                'cepdes'      => ServicesHelper::only_digits($dest_zipcode),
                 'frap'        => $this->frap,
                 'peso'        => $weight,
                 'cnpj'        => $this->cnpj,

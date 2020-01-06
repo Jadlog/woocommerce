@@ -10,12 +10,10 @@ class EmbarcadorService {
 
     public function __construct($jadlog_id) {
         include_once("DeliveryRepository.php");
+        include_once("Logger.php");
         include_once("Modalidade.php");
         include_once("OrderHelper.php");
-        include_once("Logger.php");
-
-        global $wpdb;
-        $this->table = $wpdb->prefix . 'woocommerce_jadlog';
+        include_once("ServicesHelper.php");
 
         $this->jadlog_delivery = DeliveryRepository::get_by_id($jadlog_id);
 
@@ -93,7 +91,6 @@ class EmbarcadorService {
     private function build_create_request_params($order) {
         $order_helper = new OrderHelper($order);
         $params = new stdClass();
-        // $params->codCliente      = $this->codigo_cliente;
         $params->conteudo        = substr($order_helper->get_items_names(), 0, 80);
         $params->pedido          = array($order->get_order_number());
         $params->totPeso         = floatval($this->jadlog_delivery->peso_taxado);
@@ -101,7 +98,6 @@ class EmbarcadorService {
         $params->obs             = null;
         $params->modalidade      = $this->modalidade;
         $params->contaCorrente   = $this->conta_corrente;
-        // $params->centroCusto     = null;
         $params->tpColeta        = $this->tipo_coleta;
         $params->tipoFrete       = intval($this->tipo_frete);
         $params->cdUnidadeOri    = $this->unidade_origem;
@@ -118,7 +114,7 @@ class EmbarcadorService {
     private function build_rem() {
         $rem = new stdClass();
         $rem->nome       = $this->rem_nome;
-        $rem->cnpjCpf    = $this->only_digits($this->rem_cpf_cnpj);
+        $rem->cnpjCpf    = ServicesHelper::only_digits($this->rem_cpf_cnpj);
         $rem->ie         = $this->rem_ie;
         $rem->endereco   = $this->rem_endereco;
         $rem->numero     = $this->rem_numero;
@@ -126,7 +122,7 @@ class EmbarcadorService {
         $rem->bairro     = $this->rem_bairro;
         $rem->cidade     = $this->rem_cidade;
         $rem->uf         = $this->rem_uf;
-        $rem->cep        = $this->only_digits($this->rem_cep);
+        $rem->cep        = ServicesHelper::only_digits($this->rem_cep);
         $rem->fone       = $this->rem_fone;
         $rem->cel        = $this->rem_cel;
         $rem->email      = $this->rem_email;
@@ -138,7 +134,7 @@ class EmbarcadorService {
         $order_helper = new OrderHelper($order);
         $des = new stdClass();
         $des->nome     = $order->get_formatted_shipping_full_name();
-        $des->cnpjCpf  = $this->only_digits($order_helper->get_cpf_or_cnpj());
+        $des->cnpjCpf  = ServicesHelper::only_digits($order_helper->get_cpf_or_cnpj());
         $des->ie       = $order_helper->get_billing_ie();
         $des->endereco = $order->get_shipping_address_1();
         $des->numero   = $order_helper->get_shipping_number();
@@ -146,7 +142,7 @@ class EmbarcadorService {
         $des->bairro   = $order_helper->get_shipping_neighborhood();
         $des->cidade   = $order->get_shipping_city();
         $des->uf       = $order->get_shipping_state();
-        $des->cep      = $this->only_digits($order->get_shipping_postcode());
+        $des->cep      = ServicesHelper::only_digits($order->get_shipping_postcode());
         $des->fone     = $order->get_billing_phone();
         $des->cel      = $order_helper->get_billing_cellphone();
         $des->email    = $order->get_billing_email();
@@ -172,11 +168,7 @@ class EmbarcadorService {
         $volume->largura       = null;
         $volume->peso          = floatval($this->jadlog_delivery->peso_taxado);
         $volume->identificador = $order->get_order_number();
-        // $volume->lacre          = null;
         return $volume;
     }
 
-    private function only_digits($string) {
-        return preg_replace('/[^0-9]/', '', $string);
-    }
 }
