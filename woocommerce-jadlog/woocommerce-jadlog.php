@@ -1306,7 +1306,7 @@ class WooCommerceJadlog
                                     </a>
                                 </div>
                                 <div>
-                                    <a href="#" class="jadlog_delivery_cancel" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
+                                    <a href="#" class="jadlog_delivery_cancel button" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
                                         <?= __('Cancelar', 'jadlog') ?>
                                     </a>
                                 </div>
@@ -1348,7 +1348,7 @@ class WooCommerceJadlog
                                             </p>
                                         </form>
                                     </div>
-                                    <a href="#" class="jadlog_delivery_request" data-id="<?= $delivery_id ?>">
+                                    <a href="#" class="jadlog_delivery_request button" data-id="<?= $delivery_id ?>">
                                         <?= __('Enviar', 'jadlog') ?>
                                     </a>
                                     <script>
@@ -1381,6 +1381,7 @@ class WooCommerceJadlog
             });
 
             $('.jadlog_delivery_cancel').on("click", function () {
+                if (!confirm('Deseja cancelar esta solicitação de coleta Jadlog?')) return;
                 var id = $(this).data('id');
                 var params = $.param({
                     id:          id,
