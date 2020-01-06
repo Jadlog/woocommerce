@@ -12,6 +12,7 @@ class EmbarcadorService {
         include_once("DeliveryRepository.php");
         include_once("Modalidade.php");
         include_once("OrderHelper.php");
+        include_once("Logger.php");
 
         global $wpdb;
         $this->table = $wpdb->prefix . 'woocommerce_jadlog';
@@ -60,34 +61,33 @@ class EmbarcadorService {
         $request_params         = $this->build_create_request_params($order);
         $request_params->rem    = $this->build_rem();
         $request_params->des    = $this->build_des($order);
-        $request_params->dfe    = $this->build_dfe($dfe);
-        $request_params->volume = $this->build_volume($order);
-
-        error_log('embarcador/coleta body: '.var_export($request_params, true));
-        error_log(var_export($order->get_data(), true));
-        return;
+        $request_params->dfe    = array($this->build_dfe($dfe));
+        $request_params->volume = array($this->build_volume($order));
 
         $response = wp_remote_post($this->url_inclusao, array(
-            'method' => 'POST',
-            'timeout' => 500,
+            'method'   => 'POST',
+            'timeout'  => 120,
             'blocking' => true,
-            'headers' => ['Content-Type' => 'application/json; charset=utf-8', 'Authorization' => $this->key],
-            'body' => json_encode($request_params),
-            'cookies' => array()
-        )
-        );
+            'headers'  => array(
+                'Content-Type'  => 'application/json; charset=utf-8',
+                'Authorization' => $this->key),
+            'body'     => json_encode($request_params),
+            'cookies'  => array()));
         error_log( 'In ' . __FUNCTION__ . '(), $request_params = ' . var_export( $request_params, true ) );
         error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
 
-        if ( is_wp_error( $response ) ) {
-            $error_message = $response->get_error_message();
-            return $error_message;
-        } else {
-            //TODO: save shipment id
-            $this->_saveStatus($response['body']);
-            return $response['body'];
+        if (is_wp_error($response)) {
+            Logger::log_error($response->get_error_message(), __FUNCTION__, $response, $request_params);
+            $result = array('status' => $response->get_error_message(), 'erro' => array());
         }
+        elseif ($response['response']['code'] == 500) {
+            Logger::log_error($response['body'], __FUNCTION__, $response, $request_params);
+            $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
+        }
+        else
+            $result = json_decode($response['body'], true);
 
+        return $result;
     }
 
     private function build_create_request_params($order) {
@@ -179,35 +179,4 @@ class EmbarcadorService {
     private function only_digits($string) {
         return preg_replace('/[^0-9]/', '', $string);
     }
-
-    /**
-     * This function is used to send the post request to embarcador
-     *
-     * @access public
-     * @return json
-     */
-    public function _saveStatus($response) {
-
-        global $wpdb;
-
-        $response = json_decode($response);
-
-        if (isset($response->erro)) {
-            $wpdb->update( $this->table, [
-                'status' => $response->status,
-                'erro' => $response->erro->descricao
-            ], [
-                'id' => $this->jadlog_id
-            ]);
-        } else {
-            $wpdb->update( $this->table, [
-                'status' => $response->status,
-                'erro' => ''
-            ], [
-                'id' => $this->jadlog_id
-            ]);
-        }
-
-    }
-
 }

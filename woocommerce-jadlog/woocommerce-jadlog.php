@@ -1238,6 +1238,7 @@ class WooCommerceJadlog
                     </script>
 
                     <?php
+                    include_once("classes/Delivery.php");
                     include_once("classes/DeliveryRepository.php");
                     include_once("classes/EmbarcadorService.php");
                     include_once("classes/OrderHelper.php");
@@ -1261,10 +1262,10 @@ class WooCommerceJadlog
                             <td class="pudo"><?= htmlentities($delivery->pudo_id.' - '.$delivery->pudo_name) ?></td>
                             <td class="pudo"><?= htmlentities($delivery->pudo_address) ?></td>
                             <td class="pudo"><?= htmlentities($delivery->status) ?></td>
-                            <td class="pudo"><?= htmlentities($delivery->erro) ?></td>
+                            <td class="pudo"><?= nl2br(htmlentities(Delivery::retorno($delivery))) ?></td>
                             <td>
-                                <?php if ($delivery->status == DeliveryRepository::INITIAL_STATUS): ?>
-                                    <?php $delivery_id = htmlentities($delivery->id) ?>
+                                <?php $delivery_id = htmlentities($delivery->id) ?>
+                                <?php if (empty($delivery->shipment_id)): ?>
                                     <div id="dialog-<?= $delivery_id ?>" title="<?= __('Preencha os dados do documento fiscal', 'jadlog') ?>" class="hidden wp-dialog">
                                         <form class="form-wrap">
                                             <input type="hidden" name="id" value="<?= $delivery_id ?>">
