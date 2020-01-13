@@ -205,12 +205,12 @@ class EmbarcadorService {
 
     public function get($shipment_id) {
         $shipment = new stdClass();
-        // $shipment->shipmentId = $shipment_id;
+        $shipment->shipmentId = $shipment_id;
 
         // PARA TESTES APENAS.
         // Usar esta consulta caso a coleta tenha sido vinculada a um CT-e manualmente, para efeito de testes.
         // Neste caso, a consulta pelo shipmentId pode não funcionar se o CT-e estiver associado a outro shipmentId.
-        $shipment->codigo = '120822394'; // ou 120822062
+        // $shipment->codigo = '120822394'; // ou 120822062
 
         $request_params = new stdClass();
         $request_params->consulta = array($shipment);

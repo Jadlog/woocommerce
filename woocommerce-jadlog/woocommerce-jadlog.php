@@ -1362,57 +1362,135 @@ class WooCommerceJadlog
             </table>
         </div>
 
+        <div id="tracking-dialog" data-id="<?= $delivery_id ?>" title="<?= __('Rastreamento Jadlog', 'jadlog') ?>" class="hidden wp-dialog">
+            <div>
+                <label for="status"><strong>Status</strong></label>
+                <div id="status"></div>
+            </div>
+            <div style="clear:both">
+              <div style="float:left; width:40%">
+                  <label for="codigo"><strong>Solicitação de coleta</strong></label>
+                  <div id="codigo"></div>
+              </div>
+              <div style="float:right; width:60%">
+                  <label for="shipmentId"><strong>Shipment ID</strong></label>
+                  <div id="shipmentId"></div>
+              </div>
+            </div>
+            <div style="clear:both">
+              <div style="float:left; width:40%">
+                <label for="dtEmissao"><strong>Data de emissão</strong></label>
+                <div id="dtEmissao"></div>
+              </div>
+              <div style="float:right; width:60%">
+                <label for="dacte"><strong>DACTE</strong></label>
+                <div id="dacte"></div>
+              </div>
+            </div>
+            <div style="clear:both">
+              <div style="float:left; width:40%">
+                <label for="valor"><strong>Valor</strong></label>
+                <div id="valor"></div>
+              </div>
+              <div style="float:right; width:60%">
+                <label for="peso"><strong>Peso</strong></label>
+                <div id="peso"></div>
+              </p>
+            </div>
+            <div>
+                <label for="recebedor"><strong>Recebedor</strong></label>
+                <div id="recebedor">--</div>
+            </div>
+            <div>
+                <label for="eventos"><strong>Eventos</strong></label>
+                <ul id="eventos">
+                </ul>
+            </div>
+        </div>
+
         <script>
-            $('.jadlog_delivery_request').on("click", function () {
-                var id = $(this).data('id');
-                $("#dialog-" + id).dialog("open");
-            });
+            $(function() {
+                $('#tracking-dialog').dialog({
+                    autoOpen: false,
+                    modal: true,
+                    width: 600,
+                    closeOnEscape: true,
+                    buttons: { Fechar: function() { $(this).dialog('close') } }
+                });
 
-            $('.jadlog_delivery_cancel').on("click", function () {
-                if (!confirm('Deseja cancelar esta solicitação de coleta Jadlog?')) return;
-                var id = $(this).data('id');
-                var params = $.param({
-                    id:          id,
-                    shipment_id: $(this).data('shipment-id')
+                $('.jadlog_delivery_request').on("click", function () {
+                    var id = $(this).data('id');
+                    $("#dialog-" + id).dialog("open");
                 });
-                $.ajax({
-                    type:     "DELETE",
-                    dataType: "json",
-                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php?" + params,
-                    success: function (response) {
-                        $('#delivery_' + id + ' .jadlog_delivery_tracking').hide();
-                        $('#delivery_' + id + ' .jadlog_delivery_cancel').hide();
-                        var status = response['status'];
-                        $('#delivery_' + id + ' .status').html(status);
-                        alert(status);
-                        console.log(response);
-                    },
-                    error: function (e) {
-                        var json = e['responseJSON'];
-                        alert(json['status'] + '\n' + json['erro']['descricao'] + '\n' + json['erro']['detalhe']);
-                        console.error(e);
-                    }
-                });
-            });
 
-            $('.jadlog_delivery_tracking').on("click", function () {
-                var id = $(this).data('id');
-                var params = $.param({
-                    id:          id,
-                    shipment_id: $(this).data('shipment-id')
+                $('.jadlog_delivery_cancel').on("click", function () {
+                    if (!confirm('Deseja cancelar esta solicitação de coleta Jadlog?')) return;
+                    var id = $(this).data('id');
+                    var params = $.param({
+                        id:          id,
+                        shipment_id: $(this).data('shipment-id')
+                    });
+                    $.ajax({
+                        type:     "DELETE",
+                        dataType: "json",
+                        url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php?" + params,
+                        success: function (response) {
+                            $('#delivery_' + id + ' .jadlog_delivery_tracking').hide();
+                            $('#delivery_' + id + ' .jadlog_delivery_cancel').hide();
+                            var status = response['status'];
+                            $('#delivery_' + id + ' .status').html(status);
+                            alert(status);
+                            console.log(response);
+                        },
+                        error: function (e) {
+                            var json = e['responseJSON'];
+                            alert(json['status'] + '\n' + json['erro']['descricao'] + '\n' + json['erro']['detalhe']);
+                            console.error(e);
+                        }
+                    });
                 });
-                $.ajax({
-                    type:     "GET",
-                    dataType: "json",
-                    url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php?" + params,
-                    success: function (response) {
-                        console.log(response);
-                        alert(JSON.stringify(response, null, 2));
-                    },
-                    error: function (e) {
-                        var json = e['responseJSON'];
-                        alert(json['consulta'][0]['error']['descricao']);
-                    }
+
+                $('.jadlog_delivery_tracking').on("click", function () {
+                    var id = $(this).data('id');
+                    var params = $.param({
+                        id:          id,
+                        shipment_id: $(this).data('shipment-id')
+                    });
+                    $.ajax({
+                        type:     "GET",
+                        dataType: "json",
+                        url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php?" + params,
+                        success: function (response) {
+                            console.log(response);
+                            var consulta = response['consulta'][0];
+                            var tracking = consulta['tracking'] || {};
+                            var recebedor = tracking['recebedor'] || {};
+                            var eventos = tracking['eventos'] || [];
+                            $('#tracking-dialog #status').html(tracking['status'] || '--');
+                            $('#tracking-dialog #codigo').html(consulta['codigo'] || '--');
+                            $('#tracking-dialog #shipmentId').html(tracking['shipmentId'] || '--');
+                            $('#tracking-dialog #dacte').html(tracking['dacte'] || '--');
+                            $('#tracking-dialog #dtEmissao').html(tracking['dtEmissao'] || '--');
+                            var valor = tracking['valor'] ? 'R$ ' + new Intl.NumberFormat().format(tracking['valor']) : '--';
+                            $('#tracking-dialog #valor').html(valor);
+                            var peso = tracking['peso'] ? new Intl.NumberFormat().format(tracking['peso']) + ' kg' : '--';
+                            $('#tracking-dialog #peso').html(peso);
+                            if (recebedor['nome']) {
+                              var recebedor_text = recebedor['nome'] + ' (doc ' + recebedor['doc'] + ') em ' + new Date(recebedor['data']).toLocaleString();
+                              $('#tracking-dialog #recebedor').html(recebedor_text);
+                            }
+                            var evento = eventos.map(function(evento) {
+                               return '<li>[' + evento['data'] + '] ' + evento['status'] + ' - ' + evento['unidade'] + '</li>';
+                            });
+                            $('#tracking-dialog #eventos').html(evento.length == 0 ? '<li>Nenhum evento</li>' : evento);
+                            $('#tracking-dialog').dialog('open');
+                            alert(JSON.stringify(response, null, 2));
+                        },
+                        error: function (e) {
+                            var json = e['responseJSON'];
+                            alert(json['consulta'][0]['error']['descricao']);
+                        }
+                    });
                 });
             });
         </script>
