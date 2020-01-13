@@ -40,4 +40,15 @@ class DeliveryRepository {
 
         $wpdb->update($table_name, $values, array('id' => $id));
     }
+
+    public static function pending($delivery) {
+        return empty($delivery->shipment_id);
+    }
+    public static function sent($delivery) {
+        return !empty($delivery->shipment_id) && $delivery->status != self::CANCELED_STATUS;
+    }
+    public static function canceled($delivery) {
+        return $delivery->status == self::CANCELED_STATUS;
+    }
+
 }

@@ -1241,8 +1241,6 @@ class WooCommerceJadlog
                                         response, 
                                         'Shipment ID: ' + response['shipmentId'] + '\n' + 'Solicitação de coleta: ' + response['codigo']);
                                     $('#delivery_' + id + ' .jadlog_delivery_request').hide();
-                                    $('#delivery_' + id + ' .jadlog_delivery_tracking').show();
-                                    $('#delivery_' + id + ' .jadlog_delivery_cancel').show();
                                     $(dialog).dialog('close');
                                 },
                                 error: function (e) {
@@ -1299,18 +1297,8 @@ class WooCommerceJadlog
                             <td class="pudo"><?= htmlentities($delivery->pudo_address) ?></td>
                             <td class="status" style="color:<?= $status_color ?>"><?= htmlentities($delivery->status) ?></td>
                             <td class="retorno"><?= nl2br(htmlentities(Delivery::retorno($delivery))) ?></td>
-                            <td>
-                                <div>
-                                    <a href="#" class="jadlog_delivery_tracking" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
-                                        <?#= __('Consultar', 'jadlog') ?>
-                                    </a>
-                                </div>
-                                <div>
-                                    <a href="#" class="jadlog_delivery_cancel button" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
-                                        <?= __('Cancelar', 'jadlog') ?>
-                                    </a>
-                                </div>
-                                <?php if (empty($delivery->shipment_id)): ?>
+                            <td style="text-align:center">
+                                <?php if (DeliveryRepository::pending($delivery)): ?>
                                     <div id="dialog-<?= $delivery_id ?>" data-id="<?= $delivery_id ?>" title="<?= __('Preencha os dados do documento fiscal', 'jadlog') ?>" class="hidden wp-dialog">
                                         <form class="form-wrap">
                                             <input type="hidden" name="id" value="<?= $delivery_id ?>">
@@ -1348,23 +1336,23 @@ class WooCommerceJadlog
                                             </p>
                                         </form>
                                     </div>
-                                    <a href="#" class="jadlog_delivery_request button" data-id="<?= $delivery_id ?>">
+                                    <a href="javascript:void(0)" class="jadlog_delivery_request button-primary" data-id="<?= $delivery_id ?>">
                                         <?= __('Enviar', 'jadlog') ?>
                                     </a>
                                     <script>
-                                        $(function() {
-                                            jadlog_embarcador_dialog_setup("#dialog-<?= $delivery_id ?>");
-                                            $('#delivery_<?= $delivery_id ?> .jadlog_delivery_tracking').hide();
-                                            $('#delivery_<?= $delivery_id ?> .jadlog_delivery_cancel').hide();
-                                        });
+                                        $(function() { jadlog_embarcador_dialog_setup("#dialog-<?= $delivery_id ?>") });
                                     </script>
-                                <?php elseif ($delivery->status == DeliveryRepository::CANCELED_STATUS): ?>
-                                    <script>
-                                        $(function() {
-                                            $('#delivery_<?= $delivery_id ?> .jadlog_delivery_tracking').hide();
-                                            $('#delivery_<?= $delivery_id ?> .jadlog_delivery_cancel').hide();
-                                        });
-                                    </script>
+                                <?php elseif (DeliveryRepository::sent($delivery)): ?>
+                                    <p>
+                                        <a href="javascript:void(0)" class="jadlog_delivery_tracking button" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
+                                            <?= __('Consultar', 'jadlog') ?>
+                                        </a>
+                                    </p>
+                                    <p>
+                                        <a href="javascript:void(0)" class="jadlog_delivery_cancel button" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
+                                            <?= __('Cancelar', 'jadlog') ?>
+                                        </a>
+                                    </p>
                                 <?php endif ?>
                             </td>
                         </tr>
@@ -1392,7 +1380,6 @@ class WooCommerceJadlog
                     dataType: "json",
                     url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php?" + params,
                     success: function (response) {
-                        $('#delivery_' + id + ' .jadlog_delivery_request').hide();
                         $('#delivery_' + id + ' .jadlog_delivery_tracking').hide();
                         $('#delivery_' + id + ' .jadlog_delivery_cancel').hide();
                         var status = response['status'];
