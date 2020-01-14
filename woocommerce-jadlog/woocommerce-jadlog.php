@@ -1282,9 +1282,9 @@ class WooCommerceJadlog
                         $order_date_created = $order_helper->get_formatted_date_created();
                         $order_full_name    = $order->get_formatted_shipping_full_name();
                         $order_address      = $order_helper->get_formatted_address('shipping');
-                        $status_color = ($delivery->status == DeliveryRepository::INITIAL_STATUS) ?
-                            'orange' :
-                            (empty($delivery->shipment_id) ? 'red' : 'green');
+                        $status_color = (DeliveryRepository::pending($delivery) ?
+                          'orange' :
+                          (DeliveryRepository::canceled($delivery) ? 'red' : 'green'));
                         ?>
                         <tr id="delivery_<?= $delivery_id ?>">
                             <td><input class="checkbox" type="checkbox" name="checkbox[]" value="<?= htmlentities($order_id) ?>"></td>
@@ -1462,19 +1462,19 @@ class WooCommerceJadlog
                         url:      "<?= JADLOG_ROOT_URL ?>/controllers/EmbarcadorController.php?" + params,
                         success: function (response) {
                             console.log(response);
-                            var consulta = response['consulta'][0];
-                            var tracking = consulta['tracking'] || {};
+                            var consulta  = response['consulta'][0];
+                            var tracking  = consulta['tracking' ] || {};
                             var recebedor = tracking['recebedor'] || {};
-                            var eventos = tracking['eventos'] || [];
-                            $('#tracking-dialog #status').html(tracking['status'] || '--');
-                            $('#tracking-dialog #codigo').html(consulta['codigo'] || '--');
+                            var eventos   = tracking['eventos'  ] || [];
+                            $('#tracking-dialog #status'    ).html(tracking['status']     || '--');
+                            $('#tracking-dialog #codigo'    ).html(consulta['codigo']     || '--');
                             $('#tracking-dialog #shipmentId').html(tracking['shipmentId'] || '--');
-                            $('#tracking-dialog #dacte').html(tracking['dacte'] || '--');
-                            $('#tracking-dialog #dtEmissao').html(tracking['dtEmissao'] || '--');
-                            var valor = tracking['valor'] ? 'R$ ' + new Intl.NumberFormat().format(tracking['valor']) : '--';
-                            $('#tracking-dialog #valor').html(valor);
+                            $('#tracking-dialog #dacte'     ).html(tracking['dacte']      || '--');
+                            $('#tracking-dialog #dtEmissao' ).html(tracking['dtEmissao']  || '--');
+                            var valor = tracking['valor'] ? new Intl.NumberFormat('pt-BR', { style: "currency", currency: 'BRL' }).format(tracking['valor']) : '--';
+                            $('#tracking-dialog #valor'     ).html(valor);
                             var peso = tracking['peso'] ? new Intl.NumberFormat().format(tracking['peso']) + ' kg' : '--';
-                            $('#tracking-dialog #peso').html(peso);
+                            $('#tracking-dialog #peso'      ).html(peso);
                             if (recebedor['nome']) {
                               var recebedor_text = recebedor['nome'] + ' (doc ' + recebedor['doc'] + ') em ' + new Date(recebedor['data']).toLocaleString();
                               $('#tracking-dialog #recebedor').html(recebedor_text);
@@ -1484,7 +1484,6 @@ class WooCommerceJadlog
                             });
                             $('#tracking-dialog #eventos').html(evento.length == 0 ? '<li>Nenhum evento</li>' : evento);
                             $('#tracking-dialog').dialog('open');
-                            alert(JSON.stringify(response, null, 2));
                         },
                         error: function (e) {
                             var json = e['responseJSON'];
