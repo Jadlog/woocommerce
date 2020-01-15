@@ -101,7 +101,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             $count = 0;
                             foreach ($pudos['PUDO_ITEMS']['PUDO_ITEM'] as $key => $pudo_item ) {
                                 $pudo_id = $pudo_item['PUDO_ID'];
-                                $address = $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' '.join(" ", $pudo_item['ADDRESS2']).' - '.$pudo_item['ADDRESS3'].
+                                $address2 = is_array($pudo_item['ADDRESS2']) ? join(" ", $pudo_item['ADDRESS2']) : $pudo_item['ADDRESS2'];
+                                $address3 = is_array($pudo_item['ADDRESS3']) ? join(" ", $pudo_item['ADDRESS3']) : $pudo_item['ADDRESS3'];
+                                $address = $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' '.$address2.' - '.$address3.
                                     ' - '.$pudo_item['CITY'].' - '.$pudo_item['ZIPCODE'];
                                 $_SESSION[$pudo_id]['latitude']  = $pudo_item['LATITUDE'];
                                 $_SESSION[$pudo_id]['longitude'] = $pudo_item['LONGITUDE'];
