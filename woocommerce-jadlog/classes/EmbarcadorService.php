@@ -94,7 +94,7 @@ class EmbarcadorService {
         $order_helper = new OrderHelper($order);
         $params = new stdClass();
         $params->conteudo        = substr($order_helper->get_items_names(), 0, 80);
-        $params->pedido          = array(10000 + $order->get_order_number());
+        $params->pedido          = array($order->get_order_number());
         $params->totPeso         = floatval($this->jadlog_delivery->peso_taxado);
         $params->totValor        = floatval($this->jadlog_delivery->valor_total);
         $params->obs             = null;
