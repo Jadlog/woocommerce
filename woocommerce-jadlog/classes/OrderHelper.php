@@ -21,7 +21,7 @@ class OrderHelper {
     }
 
     public function get_formatted_date_created() {
-        return date('d/m/Y H:i:s', strtotime($this->order->get_date_created()));
+        return $this->order->get_date_created()->date_i18n('d/m/Y H:i:s');
     }
 
     public function get_cpf_or_cnpj() {
