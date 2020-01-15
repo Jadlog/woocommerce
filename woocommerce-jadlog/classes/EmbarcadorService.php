@@ -12,6 +12,7 @@ class EmbarcadorService {
         include_once("DeliveryRepository.php");
         include_once("Logger.php");
         include_once("Modalidade.php");
+        include_once("LocalizedNumber.php");
         include_once("OrderHelper.php");
         include_once("ServicesHelper.php");
 
@@ -155,11 +156,11 @@ class EmbarcadorService {
     private function build_dfe($params) {
         $dfe = new stdClass();
         $dfe->danfeCte    = $params['danfe_cte'];
-        $dfe->valor       = $params['valor'];
         $dfe->nrDoc       = $params['nr_doc'];
         $dfe->serie       = $params['serie'];
         $dfe->cfop        = $params['cfop'];
         $dfe->tpDocumento = $params['tp_documento'];
+        $dfe->valor       = LocalizedNumber::to_float($params['valor']);
         return $dfe;
     }
 

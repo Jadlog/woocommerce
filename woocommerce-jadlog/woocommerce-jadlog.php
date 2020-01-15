@@ -1272,6 +1272,7 @@ class WooCommerceJadlog
                     include_once("classes/DeliveryRepository.php");
                     include_once("classes/EmbarcadorService.php");
                     include_once("classes/OrderHelper.php");
+                    include_once("classes/LocalizedNumber.php");
                     $deliveries = DeliveryRepository::get_all();
 
                     foreach ($deliveries as $delivery):
@@ -1323,8 +1324,9 @@ class WooCommerceJadlog
                                             </p>
                                             <p class="form-field">
                                                 <label for="valor">Valor declarado:</label>
-                                                <?php $valor_declarado = empty($delivery->dfe_valor) ? $order->get_total() : $delivery->dfe_valor ?>
+                                                <?php $valor_declarado = LocalizedNumber::to_pt_br_format(empty($delivery->dfe_valor) ? $order->get_total() : $delivery->dfe_valor) ?>
                                                 R$ <input type="text" name="valor" value="<?= htmlentities($valor_declarado) ?>" style="width:30%; text-align:right">
+                                                (formato: 9.999,00 ou 9999,00)
                                             </p>
                                             <p class="form-field">
                                                 <label for="danfe_cte">Número da DANFE ou CTE:</label>
