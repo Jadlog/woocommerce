@@ -1229,6 +1229,7 @@ class WooCommerceJadlog
                                 $(tr).children('.status').html(status);
                                 $(tr).children('.retorno').html(retorno);
                                 alert(status + '\n' + retorno);
+                                $('.ui-dialog button').prop('disabled', false);
                             };
                             $.ajax({
                                 type:     "POST",
@@ -1259,8 +1260,8 @@ class WooCommerceJadlog
                                 buttons: {
                                     Cancelar: function() { $(this).dialog('close') },
                                     Enviar:   function(target) {
-                                                  $(target.currentTarget).prop('disabled', true);
                                                   jadlog_embarcador_service_request(this);
+                                                  $(target.currentTarget).prop('disabled', true);
                                               }
                                 }
                             });
