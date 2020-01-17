@@ -26,7 +26,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->enabled = isset($this->settings['enabled']) ? $this->settings['enabled'] : 'yes';
                     $this->title = isset($this->settings['title']) ? $this->settings['title'] : __('Jadlog', 'jadlog');
 
-                    include_once('jadlog-mypudo.php');
+                    include_once('JadLogMyPudo.php');
                     include_once('Delivery.php');
                     include_once('Modalidade.php');
                     include_once('ShippingPriceService.php');

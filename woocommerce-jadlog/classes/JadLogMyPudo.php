@@ -1,21 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: quinho
- * Date: 26/10/17
- * Time: 14:54
- */
-/**
- * Class JadLogMyPudo
- */
+
 class JadLogMyPudo {
 
-    /**
-     * Constructor for your shipping class
-     *
-     * @access public
-     * @return void
-     */
     public function __construct() {
         $this->url             = get_option('wc_settings_tab_jadlog_my_pudo');
         $this->key             = get_option('wc_settings_tab_jadlog_key_pudo');
@@ -24,13 +10,6 @@ class JadLogMyPudo {
         include_once('postal-code-helper.php');
     }
 
-    /**
-     * This function is used to get the city name.
-     *
-     * @access public
-     * @param array $postalcode
-     * @return void
-     */
     public function getPudos($postalcode = null) {
 
         $postalCodeHelper = new PostalCodeHelper();
@@ -55,13 +34,6 @@ class JadLogMyPudo {
         return $array;
     }
 
-    /**
-     * This function is used to get the city name.
-     *
-     * @access public
-     * @param array $postalcode
-     * @return void
-     */
     public function getLatLongPudo($pudo_id = null) {
 
         $postalCodeHelper = new PostalCodeHelper();
@@ -84,7 +56,6 @@ class JadLogMyPudo {
         $array = json_decode($json,TRUE);
 
         return $array;
-
     }
 
 }
