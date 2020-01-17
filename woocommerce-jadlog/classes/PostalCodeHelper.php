@@ -1,24 +1,12 @@
 <?php
+
 class PostalCodeHelper {
 
-    /**
-     * Constructor
-     *
-     * @access public
-     * @return void
-     */
     public function __construct() {
         $this->url      = 'https://viacep.com.br/ws';
         $this->type     = 'json';
     }
 
-    /**
-     * Returns city name from postalcode
-     *
-     * @access public
-     * @param string $postalcode
-     * @return string
-     */
     public function getCityName($postalcode = null) {
         $return = '';
 

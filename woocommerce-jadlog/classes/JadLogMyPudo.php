@@ -7,7 +7,7 @@ class JadLogMyPudo {
         $this->key             = get_option('wc_settings_tab_jadlog_key_pudo');
         $this->max_pudo_number = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
 
-        include_once('postal-code-helper.php');
+        include_once('PostalCodeHelper.php');
     }
 
     public function getPudos($postalcode = null) {
