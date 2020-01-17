@@ -2,15 +2,16 @@ version: '3'
 
 services:
   wordpress:
-    image: wordpress
+    image: wordpress:5.2
     environment:
       - WORDPRESS_DB_HOST=db
       - WORDPRESS_DB_USER=root
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_NAME=wordpress
-      - WORDPRESS_TABLE_PREFIX=
+      - WORDPRESS_TABLE_PREFIX=wp_
+      - WORDPRESS_DEBUG=1
     volumes:
-      - ./src:/var/www/html
+      - ./wordpress:/var/www/html
       - ./woocommerce-jadlog:/var/www/html/wp-content/plugins/woocommerce-jadlog
     ports:
       - 8080:80
@@ -20,4 +21,3 @@ services:
     image: mysql:5.6
     environment:
       - MYSQL_ROOT_PASSWORD=wordpress
-
