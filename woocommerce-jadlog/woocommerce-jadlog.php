@@ -698,8 +698,8 @@ class WooCommerceJadlog
             </div>";
         echo "<h3>".__('Configuração gerais', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_shipments_settings() );
-        echo "<h3>".__('Modalidade Jadlog Expresso', 'jadlog')."</h3>";
-        woocommerce_admin_fields( $this->get_expresso_settings() );
+        echo "<h3>".__('Modalidade Jadlog Expresso (.COM)', 'jadlog')."</h3>";
+        woocommerce_admin_fields( $this->get_com_settings() );
         echo "<h3>".__('Modalidade Jadlog Pickup', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_pickup_settings() );
         echo "<h3>".__('Dados do remetente', 'jadlog')."</h3>";
@@ -710,7 +710,7 @@ class WooCommerceJadlog
     public function update_settings()
     {
         woocommerce_update_options( $this->get_shipments_settings() );
-        woocommerce_update_options( $this->get_expresso_settings() );
+        woocommerce_update_options( $this->get_com_settings() );
         woocommerce_update_options( $this->get_pickup_settings() );
         woocommerce_update_options( $this->get_shipperdata_settings() );
     }
@@ -821,55 +821,55 @@ class WooCommerceJadlog
         return $settings;
     }
 
-    public function get_expresso_settings() {
+    public function get_com_settings() {
         include_once('classes/TipoEntrega.php');
         include_once('classes/TipoSeguro.php');
 
         $settings = array(
-            'JADLOG_MODALIDADE_EXPRESSO' => array(
+            'JADLOG_MODALIDADE_COM' => array(
                 'name'     => '',
-                'desc'     => __('Ativar a modalidade de transporte Jadlog Expresso', 'jadlog'),
-                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Expresso', 'jadlog'),
+                'desc'     => __('Ativar a modalidade de transporte Jadlog Expresso (.COM)', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Expresso (.COM)', 'jadlog'),
                 'type'     => 'checkbox',
                 'default'  => 'no',
-                'id'       => 'wc_settings_tab_jadlog_modalidade_expresso'
+                'id'       => 'wc_settings_tab_jadlog_modalidade_com'
             ),
-            'JADLOG_FRAP_EXPRESSO' => array(
+            'JADLOG_FRAP_COM' => array(
                 'name'     => '',
                 'desc'     => __('FRAP', 'jadlog'),
-                'desc_tip' => __('Marque esta opção se deseja que a cobrança de frete seja feita no destino na modalidade Expresso', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja que a cobrança de frete seja feita no destino na modalidade Expresso (.COM)', 'jadlog'),
                 'type'     => 'checkbox',
                 'default'  => 'no',
-                'id'       => 'wc_settings_tab_jadlog_frap_expresso'
+                'id'       => 'wc_settings_tab_jadlog_frap_com'
             ),
-            'JADLOG_VALOR_COLETA_EXPRESSO' => array(
+            'JADLOG_VALOR_COLETA_COM' => array(
                 'name'     => __('Valor de coleta', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:200px;',
-                'desc'     => __('Valor de coleta negociado com a Jadlog na modalidade Expresso', 'jadlog'),
-                'id'       => 'wc_settings_tab_jadlog_valor_coleta_expresso'
+                'desc'     => __('Valor de coleta negociado com a Jadlog na modalidade Expresso (.COM)', 'jadlog'),
+                'id'       => 'wc_settings_tab_jadlog_valor_coleta_com'
             ),
-            'JADLOG_TIPO_ENTREGA_EXPRESSO' => array(
+            'JADLOG_TIPO_ENTREGA_COM' => array(
                 'name'     => __('Tipo de entrega', 'jadlog'),
                 'type'     => 'select',
-                'desc_tip' => 'Na modalidade Expresso',
+                'desc_tip' => 'Na modalidade Expresso (.COM)',
                 'options'  => TipoEntrega::TODOS,
                 'default'  => TipoEntrega::COD_DOMICILIO,
-                'id'       => 'wc_settings_tab_jadlog_tipo_entrega_expresso'
+                'id'       => 'wc_settings_tab_jadlog_tipo_entrega_com'
             ),
-            'JADLOG_TIPO_SEGURO_EXPRESSO' => array(
+            'JADLOG_TIPO_SEGURO_COM' => array(
                 'name'     => __('Tipo do seguro', 'jadlog'),
                 'type'     => 'select',
-                'desc_tip' => 'Na modalidade Expresso',
+                'desc_tip' => 'Na modalidade Expresso (.COM)',
                 'options'  => TipoSeguro::TODOS,
                 'default'  => TipoSeguro::COD_NORMAL,
-                'id'       => 'wc_settings_tab_jadlog_tipo_seguro_expresso'
+                'id'       => 'wc_settings_tab_jadlog_tipo_seguro_com'
             ),
-            'JADLOG_CALCULAR_PESOS_CUBADOS_EXPRESSO' => array(
-                'name'     => __('Calcular pesos cubados na modalidade Expresso', 'jadlog'),
+            'JADLOG_CALCULAR_PESOS_CUBADOS_COM' => array(
+                'name'     => __('Calcular pesos cubados na modalidade Expresso (.COM)', 'jadlog'),
                 'type'     => 'select',
                 'options'  => array(
-                    'PADRAO'                     => __('Usar fator de cubagem padrão: ', 'jadlog').__(Modalidade::modal(Modalidade::COD_EXPRESSO), 'jadlog'),
+                    'PADRAO'                     => __('Usar fator de cubagem padrão: ', 'jadlog').__(Modalidade::modal(Modalidade::COD_COM), 'jadlog'),
                     Modalidade::MODAL_RODOVIARIO => 'Usar fator de cubagem rodoviário',
                     'NAO_CALCULAR'               => 'Não calcular cubagem'
                 ),
@@ -878,7 +878,7 @@ class WooCommerceJadlog
                     '<br/>'.__('Os pesos cubados são utilizados no cálculo do frete e dependem do modal contratado (aéreo ou rodoviário).', 'jadlog').
                     '<br/>'.__('Caso selecione um modal, cadastre os pesos reais dos produtos e suas dimensões.', 'jadlog').
                     '<br/>'.__('Caso selecione a opção para não calcular cubagem, no cadastro de produtos informe no campo peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
-                'id' => 'wc_settings_tab_jadlog_calcular_pesos_cubados_expresso'
+                'id' => 'wc_settings_tab_jadlog_calcular_pesos_cubados_com'
             )
         );
         return $settings;

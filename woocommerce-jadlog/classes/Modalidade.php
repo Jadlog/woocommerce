@@ -20,7 +20,7 @@ class Modalidade {
     const LABEL_ECONOMICO     = 'ECONÔMICO';
     const LABEL_DOC           = 'DOC';
     const LABEL_CORPORATE     = 'CORPORATE';
-    const LABEL_COM           = '.COM';
+    const LABEL_COM           = 'COM';
     const LABEL_INTERNACIONAL = 'INTERNACIONAL';
     const LABEL_CARGO         = 'CARGO';
     const LABEL_EMERGENCIAL   = 'EMERGENCIAL';

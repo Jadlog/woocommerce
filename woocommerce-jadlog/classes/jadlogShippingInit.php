@@ -44,9 +44,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->init_form_fields();
                     $this->init_settings();
 
-                    $this->pickup_points_number      = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
-                    $this->modalidade_pickup_ativa   = get_option('wc_settings_tab_jadlog_modalidade_pickup')   == 'yes';
-                    $this->modalidade_expresso_ativa = get_option('wc_settings_tab_jadlog_modalidade_expresso') == 'yes';
+                    $this->pickup_points_number    = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
+                    $this->modalidade_pickup_ativa = get_option('wc_settings_tab_jadlog_modalidade_pickup') == 'yes';
+                    $this->modalidade_com_ativa    = get_option('wc_settings_tab_jadlog_modalidade_com')    == 'yes';
 
                     // Save settings in admin if you have any defined
                     add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -66,8 +66,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     if (empty($postcode))
                         return;
 
-                    if ($this->modalidade_expresso_ativa) {
-                        $shipping_package = new ShippingPackage($package, Modalidade::COD_EXPRESSO);
+                    if ($this->modalidade_com_ativa) {
+                        $shipping_package = new ShippingPackage($package, Modalidade::COD_COM);
                         $valor_total = $shipping_package->get_price();
                         $peso_taxado = $shipping_package->get_effective_weight();
 
@@ -81,7 +81,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             'cost'  => $estimated_values['estimated_value'],
                             'taxes' => true,
                             'meta_data' => [
-                                'modalidade'  => Modalidade::LABEL_EXPRESSO,
+                                'modalidade'  => Modalidade::LABEL_COM,
                                 'valor_total' => $valor_total,
                                 'peso_taxado' => $peso_taxado
                             ],
@@ -144,7 +144,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 }
 
                 private function jadlog_get_express_price($valor, $zipcode, $peso) {
-                    $service = new ShippingPriceService(Modalidade::COD_EXPRESSO);
+                    $service = new ShippingPriceService(Modalidade::COD_COM);
                     $result = $service->estimate($valor, $zipcode, $peso);
                     return $result;
                 }
