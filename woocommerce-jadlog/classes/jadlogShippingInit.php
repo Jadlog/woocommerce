@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
-    function jadlogShippingInit() {
+    function wc_jadlog_jadlogShippingInit() {
         if ( ! class_exists( 'WC_Jadlog_Shipping_Method' ) ) {
 
             class WC_Jadlog_Shipping_Method extends WC_Shipping_Method {
@@ -153,22 +153,22 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         }
     }
 
-    add_action( 'woocommerce_shipping_init', 'jadlogShippingInit' );
+    add_action( 'woocommerce_shipping_init', 'wc_jadlog_jadlogShippingInit' );
 
 
-    function save_jadlog_order($order_id) {
+    function wc_jadlog_save_order($order_id) {
         $order = wc_get_order($order_id);
         $delivery = new Delivery($order);
         $delivery->create();
     }
 
-    add_action('woocommerce_checkout_order_processed', 'save_jadlog_order');
+    add_action('woocommerce_checkout_order_processed', 'wc_jadlog_save_order');
 
 
-    function add_jadlog_shipping_method($methods) {
+    function wc_jadlog_add_shipping_method($methods) {
         $methods['WC_Jadlog_Shipping_Method'] = 'WC_Jadlog_Shipping_Method';
         return $methods;
     }
 
-    add_filter('woocommerce_shipping_methods', 'add_jadlog_shipping_method');
+    add_filter('woocommerce_shipping_methods', 'wc_jadlog_add_shipping_method');
 }
