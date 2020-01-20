@@ -9,7 +9,7 @@ if (!defined('ABSPATH'))
  * @access public
  * @return void
  */
-function install_table() 
+function wc_jadlog_install_table() 
 {
     global $wpdb;
     require_once(ABSPATH.'wp-admin/includes/upgrade.php');
@@ -36,7 +36,8 @@ function install_table()
             `shipment_id`      VARCHAR(255)  DEFAULT NULL,
             PRIMARY KEY (id)
         ) DEFAULT CHARSET=utf8";
-    $wpdb->query($sql);
+    if (!$wpdb->query($sql))
+        error_log('Error in query:'.$sql);
 }
 
 /**
@@ -45,11 +46,13 @@ function install_table()
  * @access public
  * @return void
  */
-function uninstall_table() 
+function wc_jadlog_uninstall_table() 
 {
     global $wpdb;
     require_once(ABSPATH.'wp-admin/includes/upgrade.php');
 
-    $sql = "DROP TABLE IF EXISTS {$wpdb->prefix}woocommerce_jadlog";
-    $wpdb->query($sql);
+    error_log('Warning! wc_jadlog_uninstall_table() does not drop jadlog orders table to preserve data!');
+    // $sql = "DROP TABLE IF EXISTS {$wpdb->prefix}woocommerce_jadlog";
+    // if (!$wpdb->query($sql))
+    //     error_log('Error in query:'.$sql);
 }

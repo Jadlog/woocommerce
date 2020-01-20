@@ -67,7 +67,7 @@ class WooCommerceJadlog
 
         /* Install DB tables */
         include_once('controllers/admin/jadlog-shipping-install-table.php');
-        install_table();
+        wc_jadlog_install_table();
     }
 
     /* Add Jadlog tab under Tools */
@@ -478,7 +478,7 @@ class WooCommerceJadlog
     public function deactivate()
     {
         include_once('controllers/admin/jadlog-shipping-install-table.php');
-        uninstall_table();
+        wc_jadlog_uninstall_table();
     }
 
     /* [BO] Orders management page */
