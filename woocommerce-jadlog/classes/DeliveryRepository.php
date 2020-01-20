@@ -1,4 +1,5 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
 
 class DeliveryRepository {
     const TABLE_NAME      = 'woocommerce_jadlog';

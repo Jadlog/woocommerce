@@ -1,4 +1,6 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
+
 class Logger {
 
     public static function log_error($error, $function, $response = null, $request = null) {

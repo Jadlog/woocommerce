@@ -1,4 +1,6 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
+
 class TipoColeta {
     const COD_ELETRONICA = 'S';
     const COD_REMETENTE  = 'K';

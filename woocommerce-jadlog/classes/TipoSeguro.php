@@ -1,4 +1,6 @@
- <?php
+<?php
+namespace WooCommerce\Jadlog\Classes;
+
 class TipoSeguro {
     const COD_NORMAL = 'N';
     const COD_APOLICE = 'A';

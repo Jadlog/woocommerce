@@ -1,11 +1,13 @@
 <?php
 namespace WooCommerce\Jadlog\Controllers;
-use WooCommerce\Jadlog\Classes;
 
 /* Load WordPress engine */
 $wp_root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
 require($wp_root_path.'/wp-load.php');
 
+use WooCommerce\Jadlog\Classes\DeliveryRepository;
+use WooCommerce\Jadlog\Classes\EmbarcadorService;
+use WooCommerce\Jadlog\Classes\Logger;
 include_once('../classes/DeliveryRepository.php');
 include_once('../classes/EmbarcadorService.php');
 include_once('../classes/Logger.php');

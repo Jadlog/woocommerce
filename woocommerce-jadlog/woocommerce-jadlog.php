@@ -16,6 +16,18 @@ session_start();
 if (!defined('ABSPATH'))
     exit;
 
+use WooCommerce\Jadlog\Classes\Delivery;
+use WooCommerce\Jadlog\Classes\DeliveryRepository;
+use WooCommerce\Jadlog\Classes\EmbarcadorService;
+use WooCommerce\Jadlog\Classes\LocalizedNumber;
+use WooCommerce\Jadlog\Classes\Modalidade;
+use WooCommerce\Jadlog\Classes\OrderHelper;
+use WooCommerce\Jadlog\Classes\TipoColeta;
+use WooCommerce\Jadlog\Classes\TipoEntrega;
+use WooCommerce\Jadlog\Classes\TipoFrete;
+use WooCommerce\Jadlog\Classes\TipoSeguro;
+use WooCommerce\Jadlog\Classes\TipoServico;
+
 class WooCommerceJadlog
 {
     function Jadlog_main()
@@ -672,6 +684,7 @@ class WooCommerceJadlog
                     include_once("classes/EmbarcadorService.php");
                     include_once("classes/OrderHelper.php");
                     include_once("classes/LocalizedNumber.php");
+
                     $deliveries = DeliveryRepository::get_all();
 
                     foreach ($deliveries as $delivery):
@@ -763,7 +776,7 @@ class WooCommerceJadlog
             </table>
         </div>
 
-        <div id="tracking-dialog" data-id="<?= $delivery_id ?>" title="<?= __('Rastreamento Jadlog', 'jadlog') ?>" class="hidden wp-dialog">
+        <div id="tracking-dialog" title="<?= __('Rastreamento Jadlog', 'jadlog') ?>" class="hidden wp-dialog">
             <div>
                 <label for="status"><strong>Status</strong></label>
                 <div id="status"></div>
@@ -907,5 +920,4 @@ register_deactivation_hook(__FILE__, array($module, 'deactivate'));
 
 /* Exec */
 $module->Jadlog_main();
-
 

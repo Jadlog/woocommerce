@@ -1,4 +1,6 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
+
 class TipoServico {
     const COD_SEM_PIN = 0;
     const COD_COM_PIN = 1;

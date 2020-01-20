@@ -1,4 +1,6 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
+
 class ServicesHelper {
 
     public static function only_digits($string) {

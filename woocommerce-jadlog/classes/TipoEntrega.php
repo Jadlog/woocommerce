@@ -1,4 +1,6 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
+
 class TipoEntrega {
     const COD_DOMICILIO = 'D';
     const COD_RETIRA    = 'R';

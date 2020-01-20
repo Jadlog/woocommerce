@@ -1,4 +1,6 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
+
 class TipoFrete {
     const COD_NORMAL = 0;
     const COD_SUBCONTRATACAO = 1;

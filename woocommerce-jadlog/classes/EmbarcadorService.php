@@ -1,4 +1,7 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
+use \stdClass;
+
 class EmbarcadorService {
 
     const TIPOS_DOCUMENTOS = array(

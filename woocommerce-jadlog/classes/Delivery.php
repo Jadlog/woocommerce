@@ -1,4 +1,5 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
 
 class Delivery {
 
@@ -9,7 +10,7 @@ class Delivery {
 
     public function create() {
         foreach ($this->order->get_shipping_methods() as $shipping_method) {
-            if ($shipping_method->get_method_id() == WC_Jadlog_Shipping_Method::METHOD_ID) {
+            if ($shipping_method->get_method_id() == \WC_Jadlog_Shipping_Method::METHOD_ID) {
                 $meta_data = array_reduce(
                     $shipping_method->get_formatted_meta_data(),
                     function($acc, $item) {

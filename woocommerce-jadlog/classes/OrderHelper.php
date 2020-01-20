@@ -1,4 +1,6 @@
 <?php
+namespace WooCommerce\Jadlog\Classes;
+
 class OrderHelper {
 
     public function __construct($order) {

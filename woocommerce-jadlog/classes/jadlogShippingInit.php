@@ -1,6 +1,12 @@
 <?php
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
+use WooCommerce\Jadlog\Classes\JadLogMyPudo;
+use WooCommerce\Jadlog\Classes\Delivery;
+use WooCommerce\Jadlog\Classes\Modalidade;
+use WooCommerce\Jadlog\Classes\ShippingPriceService;
+use WooCommerce\Jadlog\Classes\ShippingPackage;
+
 if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
     function wc_jadlog_jadlogShippingInit() {
