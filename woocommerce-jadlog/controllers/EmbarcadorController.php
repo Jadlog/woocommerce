@@ -1,4 +1,6 @@
 <?php
+namespace WooCommerce\Jadlog\Controllers;
+use WooCommerce\Jadlog\Classes;
 
 /* Load WordPress engine */
 $wp_root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
