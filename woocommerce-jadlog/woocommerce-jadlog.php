@@ -108,7 +108,7 @@ class WooCommerceJadlog
             <div class=\"updated woocommerce-message\">
                 <p><strong>".__('Por favor, faça a configuração do plugin Jadlog.', 'jadlog')."</strong></p>
             </div>";
-        echo "<h3>".__('Configuração gerais', 'jadlog')."</h3>";
+        echo "<h3>".__('Configurações gerais', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_shipments_settings() );
         echo "<h3>".__('Modalidade Jadlog Expresso (.COM)', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_com_settings() );
