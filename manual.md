@@ -9,7 +9,7 @@
 
 !!! _**Versão BETA**_ !!!
 
-![Jadlog](jadlog_logo.png)
+![Jadlog](woocommerce-jadlog/assets/img/jadlog_logo.png)
 
 ## Conteúdo
 <!-- MarkdownTOC -->
@@ -45,7 +45,7 @@ Há quatro seções distintas.
 
 #### Configuração Geral
 
-![Configuração Geral](woocommerceJadlog.png)
+![Configuração Geral](woocommerce-jadlog/assets/img/woocommerceJadlog.png)
 
 - **URL da API de simulação de frete (Embarcador)**:  
 Endereço para cotação do frete.
@@ -192,7 +192,7 @@ Caso o cliente escolha como forma de entrega a modalidade "Jadlog - Retire em um
 Acessar *WooCommerce -> Jadlog*
 Os dados fiscais do pedido são informados da seguinte forma:
 
-![Dados Fiscais](dadosFiscais.png)
+![Dados Fiscais](woocommerce-jadlog/assets/img/dadosFiscais.png)
 
 - Tipo de Documento Fiscal  
 Preencher de acordo com o tipo de documento fiscal:  
@@ -223,7 +223,7 @@ shipment.png
 
 ### Rastreamento
 Pode ser feito diretamente pelo site da Jadlog ou pelo no Botão *Consultar*
-![Shipment](shipment.png)
+![Shipment](woocommerce-jadlog/assets/img/shipment.png)
 
 ## Desenvolvimento
 
