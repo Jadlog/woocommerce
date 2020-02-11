@@ -26,6 +26,10 @@ Este plugin para [WooCommerce](https://woocommerce.com) disponibiliza opções d
 * Configure o plugin em *WooCommerce* -> *Configurações* -> *Aba Jadlog* (será necessário fornecer dados do seu contrato com a Jadlog &ndash; entre em contato com o Depto. Comercial da Jadlog caso ainda não o tenha feito).
 
 
+#### Manual de instalação e uso
+* [Manual de Instalação e Utilização](doc/MANUAL.md)
+
+
 ## Ambiente para desenvolvimento
 
 O ambiente de desenvolvimento utiliza imagens [Docker](https://www.docker.com) e ferramenta [Docker Compose](https://docs.docker.com/compose/).
