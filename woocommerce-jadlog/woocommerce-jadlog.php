@@ -308,26 +308,19 @@ class WooCommerceJadlog
                 'default'  => 'no',
                 'id'       => 'wc_settings_tab_jadlog_modalidade_pickup'
             ),
-            'JADLOG_MY_PUDO' => array(
+            'JADLOG_URL_EMBARCADOR_CONSULTA_PUDOS' => array(
                 'name'     => __('URL da API de consulta de pontos Pickup', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:500px;',
                 'desc'     => '',
-                'default'  => 'http://mypudo.pickup-services.com/mypudo/mypudo.asmx/GetPudoList',
-                'id'       => 'wc_settings_tab_jadlog_my_pudo'
-            ),
-            'JADLOG_KEY_PUDO' => array(
-                'name'     => __('Chave de acesso Pickup', 'jadlog'),
-                'type'     => 'text',
-                'css'      => 'width:400px;',
-                'desc'     => '',
-                'id'       => 'wc_settings_tab_jadlog_key_pudo'
+                'default'  => 'http://www.jadlog.com.br/embarcador/api/pickup/pudos',
+                'id'       => 'wc_settings_tab_jadlog_url_consulta_pudos'
             ),
             'JADLOG_QTD_PONTOS_PICKUP' => array(
                 'name'     => __('Qtd de pontos pickup a mostrar', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:200px;',
-                'desc'     => __('Quantidade de pontos pickup a serem mostrados no carrinho de compras', 'jadlog'),
+                'desc'     => __('Quantidade de pontos pickup a serem mostrados no carrinho de compras (máximo 10)', 'jadlog'),
                 'default'  => 5,
                 'id'       => 'wc_settings_tab_jadlog_qtd_pontos_pickup'
             ),
