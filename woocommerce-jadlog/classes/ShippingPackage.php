@@ -85,8 +85,6 @@ class ShippingPackage {
             $weight            = $this->get_weight();
             $volumetric_weight = $this->get_volumetric_weight();
             $this->effective_weight = empty($volumetric_weight) ? $weight : max($weight, $volumetric_weight);
-            if (empty($this->effective_weight))
-                $this->effective_weight = 0.1;
         }
         return $this->effective_weight;
     }
