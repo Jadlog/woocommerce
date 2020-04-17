@@ -1,11 +1,13 @@
 <?php
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
-use WooCommerce\Jadlog\Classes\JadLogMyPudo;
 use WooCommerce\Jadlog\Classes\Delivery;
+use WooCommerce\Jadlog\Classes\EmbarcadorService;
 use WooCommerce\Jadlog\Classes\Modalidade;
-use WooCommerce\Jadlog\Classes\ShippingPriceService;
+use WooCommerce\Jadlog\Classes\PudoInfo;
 use WooCommerce\Jadlog\Classes\ShippingPackage;
+use WooCommerce\Jadlog\Classes\ShippingPrice;
+use WooCommerce\Jadlog\Classes\ShippingPriceService;
 
 if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
@@ -32,11 +34,13 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->enabled = isset($this->settings['enabled']) ? $this->settings['enabled'] : 'yes';
                     $this->title = isset($this->settings['title']) ? $this->settings['title'] : __('Jadlog', 'jadlog');
 
-                    include_once('JadLogMyPudo.php');
                     include_once('Delivery.php');
+                    include_once('EmbarcadorService.php');
                     include_once('Modalidade.php');
-                    include_once('ShippingPriceService.php');
+                    include_once('PudoInfo.php');
                     include_once('ShippingPackage.php');
+                    include_once('ShippingPrice.php');
+                    include_once('ShippingPriceService.php');
                 }
 
                 /**
@@ -50,16 +54,17 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->init_form_fields();
                     $this->init_settings();
 
-                    $this->pickup_points_number    = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
-                    $this->modalidade_pickup_ativa = get_option('wc_settings_tab_jadlog_modalidade_pickup') == 'yes';
-                    $this->modalidade_com_ativa    = get_option('wc_settings_tab_jadlog_modalidade_com')    == 'yes';
+                    $this->jadlog_pickup_points_number    = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
+                    $this->jadlog_modalidade_pickup_ativa = get_option('wc_settings_tab_jadlog_modalidade_pickup') == 'yes';
+                    $this->jadlog_modalidade_com_ativa    = get_option('wc_settings_tab_jadlog_modalidade_com')    == 'yes';
 
                     // Save settings in admin if you have any defined
                     add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
                 }
 
                 /**
-                 * This function is used to calculate the shipping cost. Within this function we can check for weights, dimensions and other parameters.
+                 * This function is used to calculate the shipping cost.
+                 * Within this function we can check for weights, dimensions and other parameters.
                  *
                  * @access public
                  * @param array $package
@@ -72,87 +77,99 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     if (empty($postcode))
                         return;
 
-                    if ($this->modalidade_com_ativa) {
-                        $shipping_package = new ShippingPackage($package, Modalidade::COD_COM);
-                        $valor_total = $shipping_package->get_price();
-                        $peso_taxado = $shipping_package->get_effective_weight();
+                    if ($this->jadlog_modalidade_com_ativa)
+                        $this->jadlog_add_com_rate($package, $postcode);
 
-                        $estimated_values = $this->jadlog_get_express_price($valor_total, $postcode, $peso_taxado);
-                        $time = isset($estimated_values['estimated_time']) ? ' - '.$estimated_values['estimated_time'].' dias úteis' : '';
-                        $label = __('Jadlog Expresso', 'jadlog').$time;
+                    if ($this->jadlog_modalidade_pickup_ativa)
+                        $this->jadlog_add_pickup_rates($package, $postcode);
+                }
+
+                private function jadlog_add_com_rate($package, $postcode) {
+                    $shipping_package = new ShippingPackage($package, Modalidade::COD_COM);
+                    $shipping_price   = new ShippingPrice($postcode, $shipping_package);
+
+                    $rate = array(
+                        'label' => $this->jadlog_build_com_label($shipping_price),
+                        'cost'  => $shipping_price->get_estimated_value(),
+                        'taxes' => true,
+                        'meta_data' => [
+                            'modalidade'  => Modalidade::LABEL_COM,
+                            'valor_total' => $shipping_package->get_price(),
+                            'peso_taxado' => $shipping_package->get_effective_weight()
+                        ],
+                    );
+                    $this->add_rate($rate);
+                }
+
+                private function jadlog_add_pickup_rates($package, $postcode) {
+                    $shipping_package = new ShippingPackage($package, Modalidade::COD_PICKUP);
+                    $embarcador       = new EmbarcadorService(null);
+                    $pudos_result     = $embarcador->get_pudos($postcode);
+                    $pudos_data       = (isset($pudos_result) && is_array($pudos_result['pudos'])) ? $pudos_result['pudos'] : [];
+
+                    $count = 0;
+                    foreach ($pudos_data as $pudo_data) {
+                        $pudo           = new PudoInfo($pudo_data);
+                        $shipping_price = new ShippingPrice($pudo->get_postcode(), $shipping_package);
+
+                        if ($pudo->nao_esta_ativo())
+                            continue;
+
+                        $_SESSION[$pudo->get_id()] = $this->jadlog_build_session_array($pudo);
 
                         $rate = array(
-                            // 'id'    => $pudo_id,
-                            'label' => $label,
-                            'cost'  => $estimated_values['estimated_value'],
+                            'id'    => $pudo->get_id(),
+                            'label' => $this->jadlog_build_pickup_label($shipping_price, $pudo),
+                            'cost'  => $shipping_price->get_estimated_value(),
                             'taxes' => true,
-                            'meta_data' => [
-                                'modalidade'  => Modalidade::LABEL_COM,
-                                'valor_total' => $valor_total,
-                                'peso_taxado' => $peso_taxado
-                            ],
+                            'meta_data' => array(
+                                'modalidade'   => Modalidade::LABEL_PICKUP,
+                                'valor_total'  => $shipping_package->get_price(),
+                                'peso_taxado'  => $shipping_package->get_effective_weight(),
+                                'pudo_id'      => $pudo->get_id(),
+                                'pudo_name'    => $pudo->get_name(),
+                                'pudo_address' => $pudo->get_formatted_address()
+                            )
                         );
                         $this->add_rate($rate);
-                    }
 
-                    if ($this->modalidade_pickup_ativa) {
-                        $shipping_package = new ShippingPackage($package, Modalidade::COD_PICKUP);
-                        $valor_total = $shipping_package->get_price();
-                        $peso_taxado = $shipping_package->get_effective_weight();
-
-                        $jadlogMyPudo = new JadLogMyPudo();
-                        $pudos        = $jadlogMyPudo->getPudos($postcode);
-
-                        if (isset($pudos['PUDO_ITEMS']['PUDO_ITEM'])) {
-                            $count = 0;
-                            foreach ($pudos['PUDO_ITEMS']['PUDO_ITEM'] as $key => $pudo_item ) {
-                                $pudo_id = $pudo_item['PUDO_ID'];
-                                $address2 = is_array($pudo_item['ADDRESS2']) ? join(" ", $pudo_item['ADDRESS2']) : $pudo_item['ADDRESS2'];
-                                $address3 = is_array($pudo_item['ADDRESS3']) ? join(" ", $pudo_item['ADDRESS3']) : $pudo_item['ADDRESS3'];
-                                $address = $pudo_item['ADDRESS1'].', '.$pudo_item['STREETNUM'].' '.$address2.' - '.$address3.
-                                    ' - '.$pudo_item['CITY'].' - '.$pudo_item['ZIPCODE'];
-                                $_SESSION[$pudo_id]['latitude']  = $pudo_item['LATITUDE'];
-                                $_SESSION[$pudo_id]['longitude'] = $pudo_item['LONGITUDE'];
-                                $_SESSION[$pudo_id]['address']   = $address;
-                                $_SESSION[$pudo_id]['time']      = $pudo_item['OPENING_HOURS_ITEMS'];
-                                $distance = round(intval($pudo_item['DISTANCE']) / 1000.0, 1);
-                                $estimated_values = $this->jadlog_get_pudo_price($valor_total, $pudo_item, $peso_taxado);
-                                $time = isset($estimated_values['estimated_time']) ? ' - '.$estimated_values['estimated_time'].' dias úteis' : '';
-                                $label = __('Retire no ponto Pickup Jadlog', 'jadlog').' '.$pudo_item['NAME'].' - '.
-                                    $address.' ('.number_format($distance, 1, ',', '.').' km)'.$time;
-                                $rate = array(
-                                    'id'    => $pudo_id,
-                                    'label' => $label,
-                                    'cost'  => $estimated_values['estimated_value'],
-                                    'taxes' => true,
-                                    'meta_data' => [
-                                        'modalidade'   => Modalidade::LABEL_PICKUP,
-                                        'valor_total'  => $valor_total,
-                                        'peso_taxado'  => $peso_taxado,
-                                        'pudo_id'      => $pudo_item['PUDO_ID'],
-                                        'pudo_name'    => $pudo_item['NAME'],
-                                        'pudo_address' => $address
-                                    ],
-                                );
-                                $this->add_rate($rate);
-
-                                if (++$count >= $this->pickup_points_number)
-                                    break;
-                            }
-                        }
+                        if (++$count >= $this->jadlog_pickup_points_number)
+                            break;
                     }
                 }
 
-                private function jadlog_get_pudo_price($valor, $pudo, $peso) {
-                    $service = new ShippingPriceService(Modalidade::COD_PICKUP);
-                    $result = $service->estimate($valor, $pudo['ZIPCODE'], $peso);
-                    return $result;
+                private function jadlog_build_session_array($pudo) {
+                    return array(
+                        'latitude'  => $pudo->get_latitude(),
+                        'longitude' => $pudo->get_longitude(),
+                        'address'   => $pudo->get_formatted_address(),
+                        'time'      => $pudo->get_openning_hours()
+                    );
                 }
 
-                private function jadlog_get_express_price($valor, $zipcode, $peso) {
-                    $service = new ShippingPriceService(Modalidade::COD_COM);
-                    $result = $service->estimate($valor, $zipcode, $peso);
-                    return $result;
+                private function jadlog_build_com_label($shipping_price) {
+                    return __('Jadlog Expresso', 'jadlog').$this->jadlog_insert_if_present(
+                        $shipping_price->get_estimated_time(),
+                        ' - $1 '.__('dias úteis', 'jadlog'),
+                        ' - $1 '.__('dia útil', 'jadlog'));
+                }
+
+                private function jadlog_build_pickup_label($shipping_price, $pudo) {
+                    return __('Retire no ponto Pickup Jadlog', 'jadlog').' '.
+                        $pudo->get_formatted_name_and_address().
+                        $this->jadlog_insert_if_present(
+                            $shipping_price->get_estimated_time(),
+                            ' - $1 '.__('dias úteis', 'jadlog'),
+                            ' - $1 '.__('dia útil', 'jadlog'));
+                }
+
+                private function jadlog_insert_if_present($text, $plural_phrase, $singular_phrase = '') {
+                    if (empty($text))
+                        return '';
+                    else {
+                        $phrase = is_numeric($text) && intval($text) == 1 ? $singular_phrase : $plural_phrase;
+                        return str_replace('$1', $text, $phrase);
+                    }
                 }
 
             } //end of WC_Jadlog_Shipping_Method

@@ -1,3 +1,4 @@
 *.log
 /tags
 /wordpress
+.DS_Store

@@ -44,6 +44,7 @@ O plugin *WooCommerce Jadlog* já está instalado, mas deve ser ativado no paine
 ## Changelog
 
 * v0.1.0 - Lançamento (versão beta).
+* v0.1.1 - Utilização da mesma chave do Embarcador para consulta de PUDOs.
 
 
 ## Licença

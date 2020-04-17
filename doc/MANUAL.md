@@ -118,13 +118,10 @@ Marque esta opção para ativar a modalidade de transporte Jadlog Pickup
 
 - **URL da API de consulta de pontos Pickup**:  
 Endereço para consulta dos pontos de retirada (pickup).  
-Valor padrão: *http://mypudo.pickup-services.com/mypudo/mypudo.asmx/GetPudoList*
-
-- **Chave de acesso Pickup**:  
-Chave do serviço de consulta de pontos de coleta fornecida pela Jadlog após a assinatura do contrato.
+Valor padrão: *http://www.jadlog.com.br/embarcador/api/pickup/pudos*
 
 - **Qtd de pontos pickup a mostrar**:  
-Quantidade de pontos pickup a serem mostrados no carrinho de compras
+Quantidade de pontos pickup a serem mostrados no carrinho de compras. Valor máximo: 10.
 
 - **FRAP**:  
 Marque esta opção se deseja que a cobrança de frete seja feita no destino na modalidade Pickup.
