@@ -24,6 +24,7 @@ require_once $_tests_dir . '/includes/functions.php';
  */
 function _manually_load_plugin() {
     require dirname(dirname(dirname(__FILE__))).'/woocommerce/woocommerce.php';
+    require dirname(__FILE__).'/woocommerce-src/tests/framework/helpers/class-wc-helper-product.php';
     require dirname(dirname(dirname(__FILE__))).'/woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php';
     require dirname(dirname( __FILE__ )).'/woocommerce-jadlog.php';
 }
