@@ -11,7 +11,7 @@ services:
       - WORDPRESS_TABLE_PREFIX=wp_
       - WORDPRESS_DEBUG=1
     volumes:
-      - ./wordpress:/var/www/html
+      - ./wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
       - ./woocommerce:/var/www/html/wp-content/plugins/woocommerce
       - ./woocommerce-extra-checkout-fields-for-brazil:/var/www/html/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/var/www/html/wp-content/plugins/woocommerce-jadlog
@@ -34,7 +34,6 @@ services:
       - WP_TESTS_DIR=/wordpress-tests-lib
       - WP_CORE_DIR=/wordpress
     volumes:
-      - ./wordpress:/wordpress
       - ./woocommerce:/wordpress/wp-content/plugins/woocommerce
       - ./woocommerce-extra-checkout-fields-for-brazil:/wordpress/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/wordpress/wp-content/plugins/woocommerce-jadlog
