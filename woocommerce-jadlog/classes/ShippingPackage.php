@@ -3,13 +3,16 @@ namespace WooCommerce\Jadlog\Classes;
 
 class ShippingPackage {
 
-    public function __construct($wc_package, $modalidade) {
+    public function __construct($wc_package, $modalidade, $options = array()) {
         include_once("Modalidade.php");
         include_once("VolumetricWeight.php");
         include_once('WeightConverter.php');
-        $this->weight_converter = new WeightConverter();
         include_once('DimensionConverter.php');
-        $this->dimension_converter = new DimensionConverter();
+
+        $this->weight_converter =
+            $options['weight_converter'] ?? new WeightConverter();
+        $this->dimension_converter = 
+            $options['dimension_converter'] ?? new DimensionConverter();
 
         $this->items      = $wc_package['contents'];
         $this->modalidade = $modalidade;
