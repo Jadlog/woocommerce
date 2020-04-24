@@ -7,6 +7,8 @@ RUN apt-get update && \
     chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
 
 VOLUME /wordpress
+VOLUME /wordpress/wp-content/plugins/woocommerce
+VOLUME /wordpress/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
 VOLUME /wordpress/wp-content/plugins/woocommerce-jadlog
 VOLUME /wordpress-tests-lib
 

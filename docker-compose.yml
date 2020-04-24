@@ -12,6 +12,8 @@ services:
       - WORDPRESS_DEBUG=1
     volumes:
       - ./wordpress:/var/www/html
+      - ./woocommerce:/var/www/html/wp-content/plugins/woocommerce
+      - ./woocommerce-extra-checkout-fields-for-brazil:/var/www/html/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/var/www/html/wp-content/plugins/woocommerce-jadlog
     ports:
       - 8080:80
@@ -32,9 +34,11 @@ services:
       - WP_TESTS_DIR=/wordpress-tests-lib
       - WP_CORE_DIR=/wordpress
     volumes:
-      - ./wordpress-tests-lib:/wordpress-tests-lib
       - ./wordpress:/wordpress
+      - ./woocommerce:/wordpress/wp-content/plugins/woocommerce
+      - ./woocommerce-extra-checkout-fields-for-brazil:/wordpress/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/wordpress/wp-content/plugins/woocommerce-jadlog
+      - ./wordpress-tests-lib:/wordpress-tests-lib
     depends_on:
       - db
 
