@@ -26,6 +26,8 @@ services:
   test:
     build:
       context: ./test-container
+      args:
+        WORDPRESS_VERSION: 5.4
     environment:
       - WORDPRESS_DB_HOST=db
       - WORDPRESS_DB_USER=root
