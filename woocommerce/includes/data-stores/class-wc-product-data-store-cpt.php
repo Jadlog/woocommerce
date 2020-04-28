@@ -5,6 +5,8 @@
  * @package WooCommerce/Classes
  */
 
+use Automattic\Jetpack\Constants;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -105,7 +107,7 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 	 */
 	public function create( &$product ) {
 		if ( ! $product->get_date_created( 'edit' ) ) {
-			$product->set_date_created( current_time( 'timestamp', true ) );
+			$product->set_date_created( time() );
 		}
 
 		$id = wp_insert_post(
@@ -644,7 +646,7 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 			}
 		}
 
-		if ( array_intersect( $this->updated_props, array( 'sku', 'regular_price', 'sale_price', 'date_on_sale_from', 'date_on_sale_to', 'total_sales', 'average_rating', 'stock_quantity', 'stock_status', 'manage_stock', 'downloadable', 'virtual' ) ) ) {
+		if ( array_intersect( $this->updated_props, array( 'sku', 'regular_price', 'sale_price', 'date_on_sale_from', 'date_on_sale_to', 'total_sales', 'average_rating', 'stock_quantity', 'stock_status', 'manage_stock', 'downloadable', 'virtual', 'tax_status', 'tax_class' ) ) ) {
 			$this->update_lookup_table( $product->get_id(), 'wc_product_meta_lookup' );
 		}
 
@@ -823,7 +825,7 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 		$new_type = $product->get_type();
 
 		wp_set_object_terms( $product->get_id(), $new_type, 'product_type' );
-		update_post_meta( $product->get_id(), '_product_version', WC_VERSION );
+		update_post_meta( $product->get_id(), '_product_version', Constants::get_constant( 'WC_VERSION' ) );
 
 		// Action for the transition.
 		if ( $old_type !== $new_type ) {
@@ -842,10 +844,10 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 		wc_delete_product_transients( $product->get_id() );
 		if ( $product->get_parent_id( 'edit' ) ) {
 			wc_delete_product_transients( $product->get_parent_id( 'edit' ) );
-			WC_Cache_Helper::incr_cache_prefix( 'product_' . $product->get_parent_id( 'edit' ) );
+			WC_Cache_Helper::invalidate_cache_group( 'product_' . $product->get_parent_id( 'edit' ) );
 		}
 		WC_Cache_Helper::invalidate_attribute_count( array_keys( $product->get_attributes() ) );
-		WC_Cache_Helper::incr_cache_prefix( 'product_' . $product->get_id() );
+		WC_Cache_Helper::invalidate_cache_group( 'product_' . $product->get_id() );
 	}
 
 	/*
@@ -880,7 +882,7 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 		}
 
 		return $wpdb->get_results(
-			// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			"
 			SELECT posts.ID as id, posts.post_parent as parent_id
 			FROM {$wpdb->posts} AS posts
@@ -898,7 +900,7 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 			)
 			GROUP BY posts.ID
 			"
-			// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		);
 	}
 
@@ -1019,7 +1021,7 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 					AND postmeta.meta_value > 0
 					AND postmeta.meta_value < %s
 					AND postmeta_2.meta_value != postmeta_3.meta_value",
-				current_time( 'timestamp', true )
+				time()
 			)
 		);
 	}
@@ -1045,7 +1047,7 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 					AND postmeta.meta_value > 0
 					AND postmeta.meta_value < %s
 					AND postmeta_2.meta_value != postmeta_3.meta_value",
-				current_time( 'timestamp', true )
+				time()
 			)
 		);
 	}
@@ -1178,7 +1180,7 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 			if ( in_array( $possible_attribute, $existing_attributes ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				continue;
 			}
-			$variation = new WC_Product_Variation();
+			$variation = wc_get_product_object( 'variation' );
 			$variation->set_parent_id( $product->get_id() );
 			$variation->set_attributes( $possible_attribute );
 			$variation_id = $variation->save();
@@ -1553,7 +1555,6 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 		$type_where   = '';
 		$status_where = '';
 		$limit_query  = '';
-		$term         = wc_strtolower( $term );
 
 		/**
 		 * Hook woocommerce_search_products_post_statuses.
@@ -1567,8 +1568,8 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 		);
 
 		// See if search term contains OR keywords.
-		if ( strstr( $term, ' or ' ) ) {
-			$term_groups = explode( ' or ', $term );
+		if ( stristr( $term, ' or ' ) ) {
+			$term_groups = preg_split( '/\s+or\s+/i', $term );
 		} else {
 			$term_groups = array( $term );
 		}
@@ -2034,6 +2035,8 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 				'rating_count'   => array_sum( (array) get_post_meta( $id, '_wc_rating_count', true ) ),
 				'average_rating' => get_post_meta( $id, '_wc_average_rating', true ),
 				'total_sales'    => get_post_meta( $id, 'total_sales', true ),
+				'tax_status'     => get_post_meta( $id, '_tax_status', true ),
+				'tax_class'      => get_post_meta( $id, '_tax_class', true ),
 			);
 		}
 		return array();

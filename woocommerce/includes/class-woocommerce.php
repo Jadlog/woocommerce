@@ -20,7 +20,7 @@ final class WooCommerce {
 	 *
 	 * @var string
 	 */
-	public $version = '3.8.1';
+	public $version = '4.0.1';
 
 	/**
 	 * The single instance of the class.
@@ -338,6 +338,11 @@ final class WooCommerce {
 		include_once WC_ABSPATH . 'includes/interfaces/class-wc-queue-interface.php';
 
 		/**
+		 * Core traits.
+		 */
+		include_once WC_ABSPATH . 'includes/traits/trait-wc-item-totals.php';
+
+		/**
 		 * Abstract classes.
 		 */
 		include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-data.php';
@@ -441,9 +446,9 @@ final class WooCommerce {
 		include_once WC_ABSPATH . 'includes/wccom-site/class-wc-wccom-site.php';
 
 		/**
-		 * Libraries
+		 * Libraries and packages.
 		 */
-		include_once WC_ABSPATH . 'includes/libraries/action-scheduler/action-scheduler.php';
+		include_once WC_ABSPATH . 'packages/action-scheduler/action-scheduler.php';
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			include_once WC_ABSPATH . 'includes/class-wc-cli.php';
@@ -473,7 +478,7 @@ final class WooCommerce {
 	 * @since 3.3.0
 	 */
 	private function theme_support_includes() {
-		if ( wc_is_active_theme( array( 'twentytwenty', 'twentynineteen', 'twentyseventeen', 'twentysixteen', 'twentyfifteen', 'twentyfourteen', 'twentythirteen', 'twentyeleven', 'twentytwelve', 'twentyten' ) ) ) {
+		if ( wc_is_wp_default_theme_active() ) {
 			switch ( get_template() ) {
 				case 'twentyten':
 					include_once WC_ABSPATH . 'includes/theme-support/class-wc-twenty-ten.php';
@@ -876,5 +881,15 @@ final class WooCommerce {
 			'https://github.com/woocommerce/woocommerce/releases'
 		);
 		printf( '<div class="error"><p>%s %s</p></div>', $message_one, $message_two ); /* WPCS: xss ok. */
+	}
+
+	/**
+	 * Is the WooCommerce Admin actively included in the WooCommerce core?
+	 * Based on presence of a basic WC Admin function.
+	 *
+	 * @return boolean
+	 */
+	public function is_wc_admin_active() {
+		return function_exists( 'wc_admin_url' );
 	}
 }
