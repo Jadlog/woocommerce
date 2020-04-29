@@ -8,7 +8,7 @@
  * Author URI: https://www.jadlog.com.br/
  * Text Domain: woocommerce-jadlog
  *
- * WC requires at least: 4.0.1
+ * WC requires at least: 3.8.1
  * WC tested up to: 4.0.1
  *
  * License: GNU General Public License Version 3

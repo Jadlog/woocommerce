@@ -7,8 +7,8 @@ Este plugin para [WooCommerce](https://woocommerce.com) disponibiliza opções d
 
 * PHP 7.3
 * MySQL 5.6
-* [Wordpress](https://wordpress.org) 5.2
-* [WooCommerce](https://woocommerce.com) 3.8
+* [Wordpress](https://wordpress.org) 5.2 - 5.4
+* [WooCommerce](https://woocommerce.com) 3.8.1 - 4.0.1
 * Plugin [Brazilian Market on WooCommerce](https://wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/) 3.7
 
 
