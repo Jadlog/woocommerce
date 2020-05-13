@@ -27,7 +27,7 @@ case 'POST':
     $response = $embarcador->create($dfe);
 
     if (isset($response['erro'])) {
-        Logger::log_error($response['erro'], __FILE__, $response);
+        Logger::log_error($response['erro'], __METHOD__, $response);
         DeliveryRepository::update($jadlog_id, array(
             'status' => $response['status'],
             'erro'   => $response['erro']['descricao'].' ('.$response['erro']['id'].')'
@@ -52,7 +52,7 @@ case 'DELETE':
     $response = $embarcador->cancel($shipment_id);
 
     if (isset($response['erro'])) {
-        Logger::log_error($response['erro'], __FILE__, $response);
+        Logger::log_error($response['erro'], __METHOD__, $response);
         http_response_code(400);
     }
     else {
@@ -71,7 +71,7 @@ case 'GET':
     $response = $embarcador->get($shipment_id);
 
     if (isset($response['consulta'][0]['error'])) {
-        Logger::log_error($response, __FILE__, $response);
+        Logger::log_error($response, __METHOD__, $response);
         http_response_code(400);
     }
     else

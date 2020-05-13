@@ -83,15 +83,15 @@ class EmbarcadorService {
                 'Authorization' => $this->key),
             'body'     => json_encode($request_params),
             'cookies'  => array()));
-        error_log( 'In ' . __FUNCTION__ . '(), $request_params = ' . var_export( $request_params, true ) );
-        error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
+        error_log( 'In ' . __METHOD__ . '(), $request_params = ' . var_export( $request_params, true ) );
+        error_log( 'In ' . __METHOD__ . '(), $response = ' . var_export( $response, true ) );
 
         if (is_wp_error($response)) {
-            Logger::log_error($response->get_error_message(), __FUNCTION__, $response, $request_params);
+            Logger::log_error($response->get_error_message(), __METHOD__, $response, $request_params);
             $result = array('status' => $response->get_error_message(), 'erro' => array());
         }
         elseif ($response['response']['code'] == 500) {
-            Logger::log_error($response['body'], __FUNCTION__, $response, $request_params);
+            Logger::log_error($response['body'], __METHOD__, $response, $request_params);
             $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
         }
         else
@@ -196,15 +196,15 @@ class EmbarcadorService {
                 'Authorization' => $this->key),
             'body'     => json_encode($request_params),
             'cookies'  => array()));
-        error_log( 'In ' . __FUNCTION__ . '(), $request_params = ' . var_export( $request_params, true ) );
-        error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
+        error_log( 'In ' . __METHOD__ . '(), $request_params = ' . var_export( $request_params, true ) );
+        error_log( 'In ' . __METHOD__ . '(), $response = ' . var_export( $response, true ) );
 
         if (is_wp_error($response)) {
-            Logger::log_error($response->get_error_message(), __FUNCTION__, $response, $request_params);
+            Logger::log_error($response->get_error_message(), __METHOD__, $response, $request_params);
             $result = array('status' => $response->get_error_message(), 'erro' => array());
         }
         elseif ($response['response']['code'] == 500) {
-            Logger::log_error($response['body'], __FUNCTION__, $response, $request_params);
+            Logger::log_error($response['body'], __METHOD__, $response, $request_params);
             $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
         }
         else
@@ -234,15 +234,15 @@ class EmbarcadorService {
                 'Authorization' => $this->key),
             'body'     => json_encode($request_params),
             'cookies'  => array()));
-        error_log( 'In ' . __FUNCTION__ . '(), $request_params = ' . var_export( $request_params, true ) );
-        error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
+        error_log( 'In ' . __METHOD__ . '(), $request_params = ' . var_export( $request_params, true ) );
+        error_log( 'In ' . __METHOD__ . '(), $response = ' . var_export( $response, true ) );
 
         if (is_wp_error($response)) {
-            Logger::log_error($response->get_error_message(), __FUNCTION__, $response, $request_params);
+            Logger::log_error($response->get_error_message(), __METHOD__, $response, $request_params);
             $result = array('status' => $response->get_error_message(), 'erro' => array());
         }
         elseif ($response['response']['code'] == 500) {
-            Logger::log_error($response['body'], __FUNCTION__, $response, $request_params);
+            Logger::log_error($response['body'], __METHOD__, $response, $request_params);
             $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
         }
         else
@@ -263,14 +263,14 @@ class EmbarcadorService {
                 'Content-Type'  => 'application/json; charset=utf-8',
                 'Authorization' => $this->key),
             'cookies'  => array()));
-        error_log( 'In ' . __FUNCTION__ . '(), $response = ' . var_export( $response, true ) );
+        error_log( 'In ' . __METHOD__ . '(), $response = ' . var_export( $response, true ) );
 
         if (is_wp_error($response)) {
-            Logger::log_error($response->get_error_message(), __FUNCTION__, $response);
+            Logger::log_error($response->get_error_message(), __METHOD__, $response);
             $result = array('status' => $response->get_error_message(), 'erro' => array());
         }
         elseif ($response['response']['code'] == 500) {
-            Logger::log_error($response['body'], __FUNCTION__, $response);
+            Logger::log_error($response['body'], __METHOD__, $response);
             $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
         }
         else

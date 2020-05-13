@@ -53,17 +53,17 @@ class ShippingPriceService {
 
         $result = array('estimated_value' => null, 'estimated_time' => null);
         if (is_wp_error($response))
-            Logger::log_error($response->get_error_message(), __FUNCTION__, $response, $request);
+            Logger::log_error($response->get_error_message(), __METHOD__, $response, $request);
         elseif ($response['response']['code'] == 500)
-            Logger::log_error($response['body'], __FUNCTION__, $response, $request);
+            Logger::log_error($response['body'], __METHOD__, $response, $request);
         else {
             $response_body = json_decode($response['body'], true);
             if (isset($response_body['erro']))
-                Logger::log_error($response_body['erro'], __FUNCTION__, $response, $request);
+                Logger::log_error($response_body['erro'], __METHOD__, $response, $request);
             elseif (isset($response_body['error']))
-                Logger::log_error($response_body['error'], __FUNCTION__, $response, $request);
+                Logger::log_error($response_body['error'], __METHOD__, $response, $request);
             elseif (isset($response_body['frete'][0]['erro']))
-                Logger::log_error($response_body['frete'][0]['erro'], __FUNCTION__, $response, $request);
+                Logger::log_error($response_body['frete'][0]['erro'], __METHOD__, $response, $request);
             else {
                 $result['estimated_value'] = $response_body['frete'][0]['vltotal'];
                 $result['estimated_time']  = $response_body['frete'][0]['prazo'];
