@@ -9,20 +9,20 @@ class ShippingPriceServiceTest extends \WP_UnitTestCase {
         parent::setUp();
         include_once("Modalidade.php");
         include_once("ShippingPriceService.php");
-        add_filter('pre_http_request', __CLASS__.'::mock_wp_remote_post', 10, 2);
+        add_filter('pre_http_request', __CLASS__.'::mock_wp_remote_post', 10, 3);
 
         $this->subject = new ShippingPriceService(Modalidade::COD_COM);
-    }
-
-    private static $response, $request_data;
-    public static function mock_wp_remote_post($url, $data) {
-        self::$request_data = $data;
-        return self::$response;
     }
 
     public function tearDown() {
         parent::tearDown();
         remove_filter('pre_http_request', __CLASS__.'::mock_wp_remote_post');
+    }
+
+    private static $response, $request_data;
+    public static function mock_wp_remote_post($preempt, $parsed_args, $url) {
+        self::$request_data = $parsed_args;
+        return self::$response;
     }
 
     public function test_estimate_with_success() {
