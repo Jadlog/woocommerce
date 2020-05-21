@@ -60,7 +60,7 @@ class ShippingPriceService {
         $error_handler = new ErrorHandler($request, $response, __METHOD__);
         $result = array('estimated_value' => null, 'estimated_time' => null);
 
-        if ($error_handler->is_wp_error() || $error_handler->is_500())
+        if ($error_handler->is_wp_error() || !$error_handler->is_http_success())
             return $result;
         else {
             $response_body = json_decode($response['body'], true);
