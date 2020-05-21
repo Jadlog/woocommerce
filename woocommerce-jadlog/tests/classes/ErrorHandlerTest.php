@@ -33,6 +33,36 @@ class ErrorHandlerTest extends \WP_UnitTestCase {
         $this->assertFalse($subject->is_wp_error());
     }
 
+    public function test_is_http_success_returns_true_for_2xx_http_response() {
+        $response = array('response' => array('code' => 200));
+        $subject = new ErrorHandler(
+            $this->request_body, $response, __FUNCTION__, $this->options);
+        $this->assertTrue($subject->is_http_success());
+
+        $response = array('response' => array('code' => 201));
+        $subject = new ErrorHandler(
+            $this->request_body, $response, __FUNCTION__, $this->options);
+        $this->assertTrue($subject->is_http_success());
+    }
+
+    public function test_is_http_success_returns_false_for_other_http_responses() {
+        $response = array(
+            'response' => array('code' => '404'),
+            'body' => 'Resource not found');
+        $subject = new ErrorHandler(
+            $this->request_body, $response, __FUNCTION__, $this->options);
+        $this->assertFalse($subject->is_http_success());
+
+        $logger = ErrorHandlerTest\LoggerMock::get_attributes();
+        $this->assertEquals(
+            array(
+                'message'      => 'Resource not found',
+                'function'     => __FUNCTION__,
+                'response'     => $response,
+                'request_body' => $this->request_body),
+            $logger);
+    }
+
     public function test_is_500_returns_true_for_500_http_responses() {
         $response = array(
             'response' => array('code' => '500'),
