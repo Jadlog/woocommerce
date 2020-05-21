@@ -35,3 +35,4 @@ require $_tests_dir . '/includes/bootstrap.php';
 
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(dirname(__FILE__)).'/classes');
 
+define('ERROR_LOG_OUTPUT_FILE', '/tmp/phpunit-errors.log');
