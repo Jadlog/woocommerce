@@ -4,6 +4,7 @@ namespace WooCommerce\Jadlog\Classes;
 class ShippingPriceService {
 
     public function __construct($modalidade) {
+        include_once("ErrorHandler.php");
         include_once("Modalidade.php");
         include_once("Logger.php");
         include_once("ServicesHelper.php");
@@ -50,25 +51,22 @@ class ShippingPriceService {
         );
 
         $response = wp_remote_post($this->url, $params);
-
+        $error_handler = new ErrorHandler($request, $response, __METHOD__);
         $result = array('estimated_value' => null, 'estimated_time' => null);
-        if (is_wp_error($response))
-            Logger::log_error($response->get_error_message(), __METHOD__, $response, $request);
-        elseif ($response['response']['code'] == 500)
-            Logger::log_error($response['body'], __METHOD__, $response, $request);
+
+        if ($error_handler->is_wp_error() || $error_handler->is_500())
+            return $result;
         else {
             $response_body = json_decode($response['body'], true);
-            if (isset($response_body['erro']))
-                Logger::log_error($response_body['erro'], __METHOD__, $response, $request);
-            elseif (isset($response_body['error']))
-                Logger::log_error($response_body['error'], __METHOD__, $response, $request);
-            elseif (isset($response_body['frete'][0]['erro']))
-                Logger::log_error($response_body['frete'][0]['erro'], __METHOD__, $response, $request);
+            if ($error_handler->is_error_set($response_body['erro'])  ||
+                $error_handler->is_error_set($response_body['error']) ||
+                $error_handler->is_error_set($response_body['frete'][0]['erro']))
+                return $result;
             else {
                 $result['estimated_value'] = $response_body['frete'][0]['vltotal'];
                 $result['estimated_time']  = $response_body['frete'][0]['prazo'];
+                return $result;
             }
         }
-        return $result;
     }
 }
