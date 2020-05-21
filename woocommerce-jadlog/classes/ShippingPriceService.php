@@ -9,19 +9,25 @@ class ShippingPriceService {
         include_once("Logger.php");
         include_once("ServicesHelper.php");
 
-        $this->url        = get_option('wc_settings_tab_jadlog_url_simulador_frete');
-        $this->key        = get_option('wc_settings_tab_jadlog_key_embarcador');
-        $this->cepori     = ServicesHelper::only_digits(get_option('wc_settings_tab_jadlog_shipper_cep'));
-        $this->cnpj       = ServicesHelper::only_digits(get_option('wc_settings_tab_jadlog_shipper_cnpj_cpf'));
-        $this->conta      = get_option('wc_settings_tab_jadlog_conta_corrente');
-        $this->contrato   = get_option('wc_settings_tab_jadlog_contrato');
+        $this->url        = $this->get_system_option("url_simulador_frete");
+        $this->key        = $this->get_system_option("key_embarcador");
+        $this->cepori     = ServicesHelper::only_digits(
+            $this->get_system_option("shipper_cep"));
+        $this->cnpj       = ServicesHelper::only_digits(
+            $this->get_system_option("shipper_cnpj_cpf"));
+        $this->conta      = $this->get_system_option("conta_corrente");
+        $this->contrato   = $this->get_system_option("contrato");
 
-        $sufix = '_'.strtolower(Modalidade::TODOS[$modalidade]);
+        $sufix = strtolower(Modalidade::TODOS[$modalidade]);
         $this->modalidade = $modalidade;
-        $this->frap       = get_option('wc_settings_tab_jadlog_frap'.$sufix) == 'yes' ? 'S' : 'N';
-        $this->tpentrega  = get_option('wc_settings_tab_jadlog_tipo_entrega'.$sufix);
-        $this->tpseguro   = get_option('wc_settings_tab_jadlog_tipo_seguro'.$sufix);
-        $this->vlcoleta   = (double)get_option('wc_settings_tab_jadlog_valor_coleta'.$sufix);
+        $this->frap       = $this->get_system_option("frap_{$sufix}") == 'yes' ? 'S' : 'N';
+        $this->tpentrega  = $this->get_system_option("tipo_entrega_{$sufix}");
+        $this->tpseguro   = $this->get_system_option("tipo_seguro_{$sufix}");
+        $this->vlcoleta   = (double)$this->get_system_option("valor_coleta_{$sufix}");
+    }
+
+    private function get_system_option($name) {
+        return get_option("wc_settings_tab_jadlog_{$name}");
     }
 
     public function estimate($declared_value, $dest_zipcode, $weight) {
