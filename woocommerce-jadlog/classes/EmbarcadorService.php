@@ -90,7 +90,7 @@ class EmbarcadorService {
             return array(
                 'status' => $response->get_error_message(),
                 'erro' => array());
-        elseif ($error_handler->is_500())
+        elseif (!$error_handler->is_http_success())
             return array(
                 'status' => $response['body'],
                 'erro' => array('descricao' => $response['response']['code']));
@@ -200,7 +200,7 @@ class EmbarcadorService {
             return array(
                 'status' => $response->get_error_message(),
                 'erro' => array());
-        elseif ($error_handler->is_500())
+        elseif (!$error_handler->is_http_success())
             return array(
                 'status' => $response['body'],
                 'erro' => array('descricao' => $response['response']['code']));
@@ -235,7 +235,7 @@ class EmbarcadorService {
             return array(
                 'status' => $response->get_error_message(),
                 'erro' => array());
-        elseif ($error_handler->is_500())
+        elseif (!$error_handler->is_http_success())
             return array(
                 'status' => $response['body'],
                 'erro' => array('descricao' => $response['response']['code']));
@@ -261,7 +261,7 @@ class EmbarcadorService {
             return array(
                 'status' => $response->get_error_message(),
                 'erro'   => array());
-        elseif ($error_handler->is_500())
+        elseif (!$error_handler->is_http_success())
             return array(
                 'status' => $response['body'],
                 'erro'   => array('descricao' => $response['response']['code']));
