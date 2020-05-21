@@ -13,14 +13,15 @@ class EmbarcadorService {
 
     public function __construct($jadlog_id) {
         include_once("DeliveryRepository.php");
+        include_once("ErrorHandler.php");
+        include_once("LocalizedNumber.php");
         include_once("Logger.php");
         include_once("Modalidade.php");
-        include_once("LocalizedNumber.php");
         include_once("OrderHelper.php");
         include_once("ServicesHelper.php");
 
         if (!empty($jadlog_id))
-          $this->jadlog_delivery = DeliveryRepository::get_by_id($jadlog_id);
+            $this->jadlog_delivery = DeliveryRepository::get_by_id($jadlog_id);
 
         $this->url_inclusao     = get_option('wc_settings_tab_jadlog_url_inclusao_pedidos');
         $this->url_cancelamento = get_option('wc_settings_tab_jadlog_url_cancelamento_pedidos');
@@ -83,21 +84,18 @@ class EmbarcadorService {
                 'Authorization' => $this->key),
             'body'     => json_encode($request_params),
             'cookies'  => array()));
-        error_log( 'In ' . __METHOD__ . '(), $request_params = ' . var_export( $request_params, true ) );
-        error_log( 'In ' . __METHOD__ . '(), $response = ' . var_export( $response, true ) );
 
-        if (is_wp_error($response)) {
-            Logger::log_error($response->get_error_message(), __METHOD__, $response, $request_params);
-            $result = array('status' => $response->get_error_message(), 'erro' => array());
-        }
-        elseif ($response['response']['code'] == 500) {
-            Logger::log_error($response['body'], __METHOD__, $response, $request_params);
-            $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
-        }
+        $error_handler = new ErrorHandler($request_params, $response, __METHOD__);
+        if ($error_handler->is_wp_error())
+            return array(
+                'status' => $response->get_error_message(),
+                'erro' => array());
+        elseif ($error_handler->is_500())
+            return array(
+                'status' => $response['body'],
+                'erro' => array('descricao' => $response['response']['code']));
         else
-            $result = json_decode($response['body'], true);
-
-        return $result;
+            return json_decode($response['body'], true);
     }
 
     private function build_create_request_params($order) {
@@ -196,21 +194,18 @@ class EmbarcadorService {
                 'Authorization' => $this->key),
             'body'     => json_encode($request_params),
             'cookies'  => array()));
-        error_log( 'In ' . __METHOD__ . '(), $request_params = ' . var_export( $request_params, true ) );
-        error_log( 'In ' . __METHOD__ . '(), $response = ' . var_export( $response, true ) );
 
-        if (is_wp_error($response)) {
-            Logger::log_error($response->get_error_message(), __METHOD__, $response, $request_params);
-            $result = array('status' => $response->get_error_message(), 'erro' => array());
-        }
-        elseif ($response['response']['code'] == 500) {
-            Logger::log_error($response['body'], __METHOD__, $response, $request_params);
-            $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
-        }
+        $error_handler = new ErrorHandler($request_params, $response, __METHOD__);
+        if ($error_handler->is_wp_error())
+            return array(
+                'status' => $response->get_error_message(),
+                'erro' => array());
+        elseif ($error_handler->is_500())
+            return array(
+                'status' => $response['body'],
+                'erro' => array('descricao' => $response['response']['code']));
         else
-            $result = json_decode($response['body'], true);
-
-        return $result;
+            return json_decode($response['body'], true);
     }
 
     public function get($shipment_id) {
@@ -234,21 +229,18 @@ class EmbarcadorService {
                 'Authorization' => $this->key),
             'body'     => json_encode($request_params),
             'cookies'  => array()));
-        error_log( 'In ' . __METHOD__ . '(), $request_params = ' . var_export( $request_params, true ) );
-        error_log( 'In ' . __METHOD__ . '(), $response = ' . var_export( $response, true ) );
 
-        if (is_wp_error($response)) {
-            Logger::log_error($response->get_error_message(), __METHOD__, $response, $request_params);
-            $result = array('status' => $response->get_error_message(), 'erro' => array());
-        }
-        elseif ($response['response']['code'] == 500) {
-            Logger::log_error($response['body'], __METHOD__, $response, $request_params);
-            $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
-        }
+        $error_handler = new ErrorHandler($request_params, $response, __METHOD__);
+        if ($error_handler->is_wp_error())
+            return array(
+                'status' => $response->get_error_message(),
+                'erro' => array());
+        elseif ($error_handler->is_500())
+            return array(
+                'status' => $response['body'],
+                'erro' => array('descricao' => $response['response']['code']));
         else
-            $result = json_decode($response['body'], true);
-
-        return $result;
+            return json_decode($response['body'], true);
     }
 
     public function get_pudos($zip_code) {
@@ -263,20 +255,17 @@ class EmbarcadorService {
                 'Content-Type'  => 'application/json; charset=utf-8',
                 'Authorization' => $this->key),
             'cookies'  => array()));
-        error_log( 'In ' . __METHOD__ . '(), $response = ' . var_export( $response, true ) );
 
-        if (is_wp_error($response)) {
-            Logger::log_error($response->get_error_message(), __METHOD__, $response);
-            $result = array('status' => $response->get_error_message(), 'erro' => array());
-        }
-        elseif ($response['response']['code'] == 500) {
-            Logger::log_error($response['body'], __METHOD__, $response);
-            $result = array('status' => $response['body'], 'erro' => array('descricao' => $response['response']['code']));
-        }
+        $error_handler = new ErrorHandler(null, $response, __METHOD__);
+        if ($error_handler->is_wp_error())
+            return array(
+                'status' => $response->get_error_message(),
+                'erro'   => array());
+        elseif ($error_handler->is_500())
+            return array(
+                'status' => $response['body'],
+                'erro'   => array('descricao' => $response['response']['code']));
         else
-            $result = json_decode($response['body'], true);
-
-        error_log(var_export($result, true));
-        return $result;
+            return json_decode($response['body'], true);
     }
 }
