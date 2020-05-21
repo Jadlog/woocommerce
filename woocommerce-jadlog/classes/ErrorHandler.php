@@ -4,10 +4,12 @@ namespace WooCommerce\Jadlog\Classes;
 class ErrorHandler {
 
     public function __construct($request_body, $response, $method, $options = array()) {
+        include_once("Logger.php");
+
         $this->_request_body = $request_body;
         $this->_response     = $response;
         $this->_method       = $method;
-        $this->_logger_class = $options['logger_class'] ?? Logger;
+        $this->_logger_class = $options['logger_class'] ?? Logger::class;
     }
 
     public function is_wp_error() {
