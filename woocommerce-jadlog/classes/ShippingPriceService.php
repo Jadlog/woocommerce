@@ -4,23 +4,30 @@ namespace WooCommerce\Jadlog\Classes;
 class ShippingPriceService {
 
     public function __construct($modalidade) {
+        include_once("ErrorHandler.php");
         include_once("Modalidade.php");
         include_once("Logger.php");
         include_once("ServicesHelper.php");
 
-        $this->url        = get_option('wc_settings_tab_jadlog_url_simulador_frete');
-        $this->key        = get_option('wc_settings_tab_jadlog_key_embarcador');
-        $this->cepori     = ServicesHelper::only_digits(get_option('wc_settings_tab_jadlog_shipper_cep'));
-        $this->cnpj       = ServicesHelper::only_digits(get_option('wc_settings_tab_jadlog_shipper_cnpj_cpf'));
-        $this->conta      = get_option('wc_settings_tab_jadlog_conta_corrente');
-        $this->contrato   = get_option('wc_settings_tab_jadlog_contrato');
+        $this->url        = $this->get_system_option("url_simulador_frete");
+        $this->key        = $this->get_system_option("key_embarcador");
+        $this->cepori     = ServicesHelper::only_digits(
+            $this->get_system_option("shipper_cep"));
+        $this->cnpj       = ServicesHelper::only_digits(
+            $this->get_system_option("shipper_cnpj_cpf"));
+        $this->conta      = $this->get_system_option("conta_corrente");
+        $this->contrato   = $this->get_system_option("contrato");
 
-        $sufix = '_'.strtolower(Modalidade::TODOS[$modalidade]);
+        $sufix = strtolower(Modalidade::TODOS[$modalidade]);
         $this->modalidade = $modalidade;
-        $this->frap       = get_option('wc_settings_tab_jadlog_frap'.$sufix) == 'yes' ? 'S' : 'N';
-        $this->tpentrega  = get_option('wc_settings_tab_jadlog_tipo_entrega'.$sufix);
-        $this->tpseguro   = get_option('wc_settings_tab_jadlog_tipo_seguro'.$sufix);
-        $this->vlcoleta   = (double)get_option('wc_settings_tab_jadlog_valor_coleta'.$sufix);
+        $this->frap       = $this->get_system_option("frap_{$sufix}") == 'yes' ? 'S' : 'N';
+        $this->tpentrega  = $this->get_system_option("tipo_entrega_{$sufix}");
+        $this->tpseguro   = $this->get_system_option("tipo_seguro_{$sufix}");
+        $this->vlcoleta   = (double)$this->get_system_option("valor_coleta_{$sufix}");
+    }
+
+    private function get_system_option($name) {
+        return get_option("wc_settings_tab_jadlog_{$name}");
     }
 
     public function estimate($declared_value, $dest_zipcode, $weight) {
@@ -50,25 +57,22 @@ class ShippingPriceService {
         );
 
         $response = wp_remote_post($this->url, $params);
-
+        $error_handler = new ErrorHandler($request, $response, __METHOD__);
         $result = array('estimated_value' => null, 'estimated_time' => null);
-        if (is_wp_error($response))
-            Logger::log_error($response->get_error_message(), __FUNCTION__, $response, $request);
-        elseif ($response['response']['code'] == 500)
-            Logger::log_error($response['body'], __FUNCTION__, $response, $request);
+
+        if ($error_handler->is_wp_error() || !$error_handler->is_http_success())
+            return $result;
         else {
             $response_body = json_decode($response['body'], true);
-            if (isset($response_body['erro']))
-                Logger::log_error($response_body['erro'], __FUNCTION__, $response, $request);
-            elseif (isset($response_body['error']))
-                Logger::log_error($response_body['error'], __FUNCTION__, $response, $request);
-            elseif (isset($response_body['frete'][0]['erro']))
-                Logger::log_error($response_body['frete'][0]['erro'], __FUNCTION__, $response, $request);
+            if (isset($response_body['erro'])  && $error_handler->is_error_set($response_body['erro'])  ||
+                isset($response_body['error']) && $error_handler->is_error_set($response_body['error']) ||
+                isset($response_body['frete'][0]['erro']) && $error_handler->is_error_set($response_body['frete'][0]['erro']))
+                return $result;
             else {
                 $result['estimated_value'] = $response_body['frete'][0]['vltotal'];
                 $result['estimated_time']  = $response_body['frete'][0]['prazo'];
+                return $result;
             }
         }
-        return $result;
     }
 }

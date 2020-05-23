@@ -1,4 +1,5 @@
 *.log
 /tags
-/wordpress
 .DS_Store
+.svn
+/wordpress/wp-content/uploads/

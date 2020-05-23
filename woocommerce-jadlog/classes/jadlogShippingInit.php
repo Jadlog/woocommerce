@@ -87,18 +87,21 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 private function jadlog_add_com_rate($package, $postcode) {
                     $shipping_package = new ShippingPackage($package, Modalidade::COD_COM);
                     $shipping_price   = new ShippingPrice($postcode, $shipping_package);
+                    $cost             = $shipping_price->get_estimated_value();
 
-                    $rate = array(
-                        'label' => $this->jadlog_build_com_label($shipping_price),
-                        'cost'  => $shipping_price->get_estimated_value(),
-                        'taxes' => true,
-                        'meta_data' => [
-                            'modalidade'  => Modalidade::LABEL_COM,
-                            'valor_total' => $shipping_package->get_price(),
-                            'peso_taxado' => $shipping_package->get_effective_weight()
-                        ],
-                    );
-                    $this->add_rate($rate);
+                    if (!is_null($cost)) {
+                        $rate = array(
+                            'label' => $this->jadlog_build_com_label($shipping_price),
+                            'cost'  => $cost,
+                            'taxes' => true,
+                            'meta_data' => [
+                                'modalidade'  => Modalidade::LABEL_COM,
+                                'valor_total' => $shipping_package->get_price(),
+                                'peso_taxado' => $shipping_package->get_effective_weight()
+                            ],
+                        );
+                        $this->add_rate($rate);
+                    }
                 }
 
                 private function jadlog_add_pickup_rates($package, $postcode) {
@@ -111,8 +114,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     foreach ($pudos_data as $pudo_data) {
                         $pudo           = new PudoInfo($pudo_data);
                         $shipping_price = new ShippingPrice($pudo->get_postcode(), $shipping_package);
+                        $cost           = $shipping_price->get_estimated_value();
 
-                        if ($pudo->nao_esta_ativo())
+                        if ($pudo->nao_esta_ativo() || is_null($cost))
                             continue;
 
                         $_SESSION[$pudo->get_id()] = $this->jadlog_build_session_array($pudo);
@@ -120,7 +124,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         $rate = array(
                             'id'    => $pudo->get_id(),
                             'label' => $this->jadlog_build_pickup_label($shipping_price, $pudo),
-                            'cost'  => $shipping_price->get_estimated_value(),
+                            'cost'  => $cost,
                             'taxes' => true,
                             'meta_data' => array(
                                 'modalidade'   => Modalidade::LABEL_PICKUP,
@@ -180,6 +184,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 
     function wc_jadlog_save_order($order_id) {
+        include_once('Delivery.php');
         $order = wc_get_order($order_id);
         $delivery = new Delivery($order);
         $delivery->create();

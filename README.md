@@ -7,8 +7,8 @@ Este plugin para [WooCommerce](https://woocommerce.com) disponibiliza opções d
 
 * PHP 7.3
 * MySQL 5.6
-* [Wordpress](https://wordpress.org) 5.2
-* [WooCommerce](https://woocommerce.com) 3.8
+* [Wordpress](https://wordpress.org) 5.2 - 5.4
+* [WooCommerce](https://woocommerce.com) 3.8.1 - 4.1.1
 * Plugin [Brazilian Market on WooCommerce](https://wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/) 3.7
 
 
@@ -34,18 +34,38 @@ Este plugin para [WooCommerce](https://woocommerce.com) disponibiliza opções d
 
 O ambiente de desenvolvimento utiliza imagens [Docker](https://www.docker.com) e ferramenta [Docker Compose](https://docs.docker.com/compose/).
 
-Após clonar este repositório, rode `docker-compose up -d` para subir dois contêineres: MySQL e Wordpress (PHP + Apache + Wordpress).
+Após clonar este repositório, rode `docker-compose up -d` para subir três contêineres:
 
-Acesse então http://localhost:8080/wp-admin para configurar o Wordpress e depois instale os plugins *WooCommerce* e *Brazilian Market on WooCommerce*;
+- Wordpress (PHP + Apache + Wordpress)
+- MySQL
+- PHPUnit
 
-O plugin *WooCommerce Jadlog* já está instalado, mas deve ser ativado no painel do Wordpress.
+Acesse então http://localhost:8080/wp-admin para configurar o Wordpress e ativar os plugins *WooCommerce*, *Brazilian Market on WooCommerce* e *WooCommerce Jadlog* (já devem estar instalados).
 
+Para rodar os testes automatizados:
+
+`docker-compose run --rm test phpunit`
+
+## Error monitoring
+
+Este plugin pode se integrar ao serviço de monitoramento de erros [Bugsnag](https://www.bugsnag.com).
+
+1. Crie uma conta no Bugsnag;
+1. No painel de administração do Wordpress, instale o plugin [WordPress Error Monitoring by Bugsnag](https://br.wordpress.org/plugins/bugsnag/);
+1. Configure o plugin, inserindo a *Bugsnag API Key*;
+1. Agora todas as exceções do PHP e logs de erro gerados por este plugin serão enviados ao painel do Bugsnag.
 
 ## Changelog
 
-* v0.1.0 - Lançamento (versão beta).
-* v0.1.1 - Utilização da mesma chave do Embarcador para consulta de PUDOs.
-
+- v0.1.0
+  - Lançamento (versão beta).
+- v0.1.1
+  - Utilização da mesma chave do Embarcador para consulta de PUDOs.
+- v0.1.2
+  - WooCommerce 4.1.1;
+  - Integração com [Bugsnag](https://www.bugsnag.com) para monitoramento de erros.
+- v0.1.3
+  - Correções de bugs.
 
 ## Licença
 
@@ -54,4 +74,6 @@ O plugin *WooCommerce Jadlog* já está instalado, mas deve ser ativado no paine
 Texto completo em [LICENSE.txt](woocommerce-jadlog/LICENSE.txt).
 
 ## Desenvolvimento
+
 [Jadlog](http://www.jadlog.com.br) - *Uma empresa DPDgroup*
+

@@ -1,13 +1,18 @@
 <?php
 /**
  * Plugin Name: WooCommerce Jadlog
- * Plugin URI: https://www.jadlog.com.br/
- * Description: Jadlog Shipping Module for WooCommerce 3
- * Version: 0.1.1
+ * Plugin URI: https://github.com/Jadlog/woocommerce
+ * Description: Jadlog Shipping Module for WooCommerce 3 & 4
+ * Version: 0.1.3
  * Author: Jadlog Logística
  * Author URI: https://www.jadlog.com.br/
- * License: GNU General Public License Version 3 - https://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: woocommerce-jadlog
+ *
+ * WC requires at least: 3.8.1
+ * WC tested up to: 4.1.1
+ *
+ * License: GNU General Public License Version 3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
 session_start();

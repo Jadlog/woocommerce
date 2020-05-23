@@ -2,7 +2,7 @@ version: '3'
 
 services:
   wordpress:
-    image: wordpress:5.2
+    image: wordpress:5.4
     environment:
       - WORDPRESS_DB_HOST=db
       - WORDPRESS_DB_USER=root
@@ -11,7 +11,9 @@ services:
       - WORDPRESS_TABLE_PREFIX=wp_
       - WORDPRESS_DEBUG=1
     volumes:
-      - ./wordpress:/var/www/html
+      - ./wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
+      - ./woocommerce:/var/www/html/wp-content/plugins/woocommerce
+      - ./woocommerce-extra-checkout-fields-for-brazil:/var/www/html/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/var/www/html/wp-content/plugins/woocommerce-jadlog
     ports:
       - 8080:80
@@ -21,3 +23,23 @@ services:
     image: mysql:5.6
     environment:
       - MYSQL_ROOT_PASSWORD=wordpress
+  test:
+    build:
+      context: ./test-container
+      args:
+        WORDPRESS_VERSION: 5.4
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=root
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress_test
+      - WP_TESTS_DIR=/wordpress-tests-lib
+      - WP_CORE_DIR=/wordpress
+    volumes:
+      - ./woocommerce:/wordpress/wp-content/plugins/woocommerce
+      - ./woocommerce-extra-checkout-fields-for-brazil:/wordpress/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
+      - ./woocommerce-jadlog:/wordpress/wp-content/plugins/woocommerce-jadlog
+      - ./wordpress-tests-lib:/wordpress-tests-lib
+    depends_on:
+      - db
+
