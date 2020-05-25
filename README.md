@@ -42,9 +42,16 @@ Após clonar este repositório, rode `docker-compose up -d` para subir três con
 
 Acesse então http://localhost:8080/wp-admin para configurar o Wordpress e ativar os plugins *WooCommerce*, *Brazilian Market on WooCommerce* e *WooCommerce Jadlog* (já devem estar instalados).
 
-Para rodar os testes automatizados:
+## Testes
 
-`docker-compose run --rm test phpunit`
+Rodar uma vez para configurar os testes:
+`docker-compose run --rm test setup-tests`
+
+Para rodar todos os testes:
+`docker-compose run --rm test`
+
+Para rodar um teste específico:
+`docker-compose run --rm test phpunit tests/classes/EmbarcadorServiceTest.php`
 
 ## Error monitoring
 
@@ -52,8 +59,8 @@ Este plugin pode se integrar ao serviço de monitoramento de erros [Bugsnag](htt
 
 1. Crie uma conta no Bugsnag;
 1. No painel de administração do Wordpress, instale o plugin [WordPress Error Monitoring by Bugsnag](https://br.wordpress.org/plugins/bugsnag/);
-1. Configure o plugin, inserindo a *Bugsnag API Key*;
-1. Agora todas as exceções do PHP e logs de erro gerados por este plugin serão enviados ao painel do Bugsnag.
+1. Configure o plugin, inserindo a *Bugsnag API Key* e os tipos de erros a reportar: *Crashes, errors, warnings & info messages*;
+1. Agora todas os erros, avisos e mensagens do PHP e logs de erro gerados por este plugin serão enviados ao painel do Bugsnag.
 
 ## Changelog
 
