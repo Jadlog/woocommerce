@@ -27,12 +27,19 @@ class OrderHelper {
     }
 
     public function get_cpf_or_cnpj() {
-        $property = $this->is_legal_entity() ?  '_billing_cnpj': '_billing_cpf';
-        return $this->order->get_meta($property);
+        $property = $this->is_legal_entity() ? '_billing_cnpj': '_billing_cpf';
+        $result = $this->order->get_meta($property);
+        if (empty($result))
+            $result = $this->order->get_meta('_billing_cpf');
+        if (empty($result))
+            $result = $this->order->get_meta('_billing_cnpj');
+
+        return $result;
     }
 
     private function is_legal_entity() {
-        return $this->order->get_meta('_billing_persontype') != 1;
+        $type = $this->order->get_meta('_billing_persontype');
+        return intval($type) === 2;
     }
 
     public function get_billing_ie() {

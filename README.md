@@ -21,7 +21,7 @@ Este plugin para [WooCommerce](https://woocommerce.com) disponibiliza opções d
 * Instalar e ativar o plugin *Brazilian Market on WooCommerce*;
 
 ### Instalação deste plugin
-* Fazer [download](downloads/) deste plugin no formato .zip 
+* Na página de *[releases](https://github.com/Jadlog/woocommerce/releases)* fazer download deste plugin no formato .zip 
 * No painel de administração do Wordpress, faça upload do arquivo .zip em *Plugins* -> *Adicionar novo* -> *Enviar plugin*;
 * Configure o plugin em *WooCommerce* -> *Configurações* -> *Aba Jadlog* (será necessário fornecer dados do seu contrato com a Jadlog &ndash; entre em contato com o Depto. Comercial da Jadlog caso ainda não o tenha feito).
 
@@ -64,15 +64,17 @@ Este plugin pode se integrar ao serviço de monitoramento de erros [Bugsnag](htt
 
 ## Changelog
 
-- v0.1.0
-  - Lançamento (versão beta).
-- v0.1.1
-  - Utilização da mesma chave do Embarcador para consulta de PUDOs.
+- v0.1.4
+  - Correção na integração com *Brazilian Market on WooCommerce*
+- v0.1.3
+  - Correções de bugs.
 - v0.1.2
   - WooCommerce 4.1.1;
   - Integração com [Bugsnag](https://www.bugsnag.com) para monitoramento de erros.
-- v0.1.3
-  - Correções de bugs.
+- v0.1.1
+  - Utilização da mesma chave do Embarcador para consulta de PUDOs.
+- v0.1.0
+  - Lançamento (versão beta).
 
 ## Licença
 
