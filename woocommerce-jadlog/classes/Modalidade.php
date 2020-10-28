@@ -16,7 +16,7 @@ class Modalidade {
     const COD_PICKUP        = 40;
 
     const LABEL_EXPRESSO      = 'EXPRESSO';
-    const LABEL_PACKAGE       = '.PACKAGE';
+    const LABEL_PACKAGE       = 'PACKAGE';
     const LABEL_RODOVIARIO    = 'RODOVIÁRIO';
     const LABEL_ECONOMICO     = 'ECONÔMICO';
     const LABEL_DOC           = 'DOC';

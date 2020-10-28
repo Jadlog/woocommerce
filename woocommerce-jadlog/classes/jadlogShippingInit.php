@@ -54,9 +54,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->init_form_fields();
                     $this->init_settings();
 
-                    $this->jadlog_pickup_points_number    = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
-                    $this->jadlog_modalidade_pickup_ativa = get_option('wc_settings_tab_jadlog_modalidade_pickup') == 'yes';
-                    $this->jadlog_modalidade_com_ativa    = get_option('wc_settings_tab_jadlog_modalidade_com')    == 'yes';
+                    $this->jadlog_pickup_points_number     = get_option('wc_settings_tab_jadlog_qtd_pontos_pickup');
+                    $this->jadlog_modalidade_com_ativa     = get_option('wc_settings_tab_jadlog_modalidade_com')     == 'yes';
+                    $this->jadlog_modalidade_package_ativa = get_option('wc_settings_tab_jadlog_modalidade_package') == 'yes';
+                    $this->jadlog_modalidade_pickup_ativa  = get_option('wc_settings_tab_jadlog_modalidade_pickup')  == 'yes';
 
                     // Save settings in admin if you have any defined
                     add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -80,6 +81,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     if ($this->jadlog_modalidade_com_ativa)
                         $this->jadlog_add_com_rate($package, $postcode);
 
+                    if ($this->jadlog_modalidade_package_ativa)
+                        $this->jadlog_add_package_rate($package, $postcode);
+
                     if ($this->jadlog_modalidade_pickup_ativa)
                         $this->jadlog_add_pickup_rates($package, $postcode);
                 }
@@ -91,11 +95,33 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                     if (!is_null($cost)) {
                         $rate = array(
+                            'id'    => 'jadlog_com',
                             'label' => $this->jadlog_build_com_label($shipping_price),
                             'cost'  => $cost,
                             'taxes' => true,
                             'meta_data' => [
                                 'modalidade'  => Modalidade::LABEL_COM,
+                                'valor_total' => $shipping_package->get_price(),
+                                'peso_taxado' => $shipping_package->get_effective_weight()
+                            ],
+                        );
+                        $this->add_rate($rate);
+                    }
+                }
+
+                private function jadlog_add_package_rate($package, $postcode) {
+                    $shipping_package = new ShippingPackage($package, Modalidade::COD_PACKAGE);
+                    $shipping_price   = new ShippingPrice($postcode, $shipping_package);
+                    $cost             = $shipping_price->get_estimated_value();
+
+                    if (!is_null($cost)) {
+                        $rate = array(
+                            'id'    => 'jadlog_package',
+                            'label' => $this->jadlog_build_package_label($shipping_price),
+                            'cost'  => $cost,
+                            'taxes' => true,
+                            'meta_data' => [
+                                'modalidade'  => Modalidade::LABEL_PACKAGE,
                                 'valor_total' => $shipping_package->get_price(),
                                 'peso_taxado' => $shipping_package->get_effective_weight()
                             ],
@@ -122,7 +148,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         $_SESSION[$pudo->get_id()] = $this->jadlog_build_session_array($pudo);
 
                         $rate = array(
-                            'id'    => $pudo->get_id(),
+                            'id'    => "jadlog_pudo_".$pudo->get_id(),
                             'label' => $this->jadlog_build_pickup_label($shipping_price, $pudo),
                             'cost'  => $cost,
                             'taxes' => true,
@@ -153,6 +179,13 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                 private function jadlog_build_com_label($shipping_price) {
                     return __('Jadlog Expresso', 'jadlog').$this->jadlog_insert_if_present(
+                        $shipping_price->get_estimated_time(),
+                        ' - $1 '.__('dias úteis', 'jadlog'),
+                        ' - $1 '.__('dia útil', 'jadlog'));
+                }
+
+                private function jadlog_build_package_label($shipping_price) {
+                    return __('Jadlog Package', 'jadlog').$this->jadlog_insert_if_present(
                         $shipping_price->get_estimated_time(),
                         ' - $1 '.__('dias úteis', 'jadlog'),
                         ' - $1 '.__('dia útil', 'jadlog'));

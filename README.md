@@ -64,8 +64,10 @@ Este plugin pode se integrar ao serviço de monitoramento de erros [Bugsnag](htt
 
 ## Changelog
 
+- v0.2.0
+  - Modalidade Package.
 - v0.1.4
-  - Correção na integração com *Brazilian Market on WooCommerce*
+  - Correção na integração com *Brazilian Market on WooCommerce*.
 - v0.1.3
   - Correções de bugs.
 - v0.1.2

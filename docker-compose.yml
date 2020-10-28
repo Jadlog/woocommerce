@@ -32,6 +32,7 @@ services:
       args:
         WORDPRESS_VERSION: 5.4
     environment:
+      WORDPRESS_VERSION: 5.4
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: wordpress

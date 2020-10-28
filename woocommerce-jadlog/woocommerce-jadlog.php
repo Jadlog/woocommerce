@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Jadlog
  * Plugin URI: https://github.com/Jadlog/woocommerce
  * Description: Jadlog Shipping Module for WooCommerce 3 & 4
- * Version: 0.1.4
+ * Version: 0.2.0
  * Author: Jadlog Logística
  * Author URI: https://www.jadlog.com.br/
  * Text Domain: woocommerce-jadlog
@@ -117,6 +117,8 @@ class WooCommerceJadlog
         woocommerce_admin_fields( $this->get_shipments_settings() );
         echo "<h3>".__('Modalidade Jadlog Expresso (.COM)', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_com_settings() );
+        echo "<h3>".__('Modalidade Jadlog Package', 'jadlog')."</h3>";
+        woocommerce_admin_fields( $this->get_package_settings() );
         echo "<h3>".__('Modalidade Jadlog Pickup', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_pickup_settings() );
         echo "<h3>".__('Dados do remetente', 'jadlog')."</h3>";
@@ -128,6 +130,7 @@ class WooCommerceJadlog
     {
         woocommerce_update_options( $this->get_shipments_settings() );
         woocommerce_update_options( $this->get_com_settings() );
+        woocommerce_update_options( $this->get_package_settings() );
         woocommerce_update_options( $this->get_pickup_settings() );
         woocommerce_update_options( $this->get_shipperdata_settings() );
     }
@@ -263,7 +266,7 @@ class WooCommerceJadlog
                 'name'     => __('Valor de coleta', 'jadlog'),
                 'type'     => 'text',
                 'css'      => 'width:200px;',
-                'desc'     => __('Valor de coleta negociado com a Jadlog na modalidade Expresso (.COM)', 'jadlog'),
+                'desc'     => __('Valor de coleta negociado com a Jadlog na modalidade Expresso (.COM). Formato: 1234.99', 'jadlog'),
                 'id'       => 'wc_settings_tab_jadlog_valor_coleta_com'
             ),
             'JADLOG_TIPO_ENTREGA_COM' => array(
@@ -296,6 +299,69 @@ class WooCommerceJadlog
                     '<br/>'.__('Caso selecione um modal, cadastre os pesos reais dos produtos e suas dimensões.', 'jadlog').
                     '<br/>'.__('Caso selecione a opção para não calcular cubagem, no cadastro de produtos informe no campo peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
                 'id' => 'wc_settings_tab_jadlog_calcular_pesos_cubados_com'
+            )
+        );
+        return $settings;
+    }
+
+    public function get_package_settings() {
+        include_once('classes/TipoEntrega.php');
+        include_once('classes/TipoSeguro.php');
+
+        $settings = array(
+            'JADLOG_MODALIDADE_PACKAGE' => array(
+                'name'     => '',
+                'desc'     => __('Ativar a modalidade de transporte Jadlog Package', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Package', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_modalidade_package'
+            ),
+            'JADLOG_FRAP_PACKAGE' => array(
+                'name'     => '',
+                'desc'     => __('FRAP', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja que a cobrança de frete seja feita no destino na modalidade Package', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_frap_package'
+            ),
+            'JADLOG_VALOR_COLETA_PACKAGE' => array(
+                'name'     => __('Valor de coleta', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:200px;',
+                'desc'     => __('Valor de coleta negociado com a Jadlog na modalidade Package (formato: 1234.99)', 'jadlog'),
+                'id'       => 'wc_settings_tab_jadlog_valor_coleta_package'
+            ),
+            'JADLOG_TIPO_ENTREGA_PACKAGE' => array(
+                'name'     => __('Tipo de entrega', 'jadlog'),
+                'type'     => 'select',
+                'desc_tip' => 'Na modalidade Package',
+                'options'  => TipoEntrega::TODOS,
+                'default'  => TipoEntrega::COD_DOMICILIO,
+                'id'       => 'wc_settings_tab_jadlog_tipo_entrega_package'
+            ),
+            'JADLOG_TIPO_SEGURO_PACKAGE' => array(
+                'name'     => __('Tipo do seguro', 'jadlog'),
+                'type'     => 'select',
+                'desc_tip' => 'Na modalidade Package',
+                'options'  => TipoSeguro::TODOS,
+                'default'  => TipoSeguro::COD_NORMAL,
+                'id'       => 'wc_settings_tab_jadlog_tipo_seguro_package'
+            ),
+            'JADLOG_CALCULAR_PESOS_CUBADOS_PACKAGE' => array(
+                'name'     => __('Calcular pesos cubados na modalidade Package', 'jadlog'),
+                'type'     => 'select',
+                'options'  => array(
+                    'PADRAO'                => __('Usar fator de cubagem padrão: ', 'jadlog').__(Modalidade::modal(Modalidade::COD_PACKAGE), 'jadlog'),
+                    Modalidade::MODAL_AEREO => 'Usar fator de cubagem aéreo',
+                    'NAO_CALCULAR'          => 'Não calcular cubagem'
+                ),
+                'default'  => 'PADRAO',
+                'desc' => 
+                    '<br/>'.__('Os pesos cubados são utilizados no cálculo do frete e dependem do modal contratado (aéreo ou rodoviário).', 'jadlog').
+                    '<br/>'.__('Caso selecione um modal, cadastre os pesos reais dos produtos e suas dimensões.', 'jadlog').
+                    '<br/>'.__('Caso selecione a opção para não calcular cubagem, no cadastro de produtos informe no campo peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
+                'id' => 'wc_settings_tab_jadlog_calcular_pesos_cubados_package'
             )
         );
         return $settings;
