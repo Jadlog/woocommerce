@@ -1,7 +1,15 @@
 version: '3'
 
 services:
-  wordpress:
+
+  db:
+    image: mysql:5.6
+    environment:
+      - MYSQL_ROOT_PASSWORD=wordpress
+    volumes:
+      - mysql-files:/var/lib/mysql
+
+  wordpress-dev:
     image: wordpress:5.4
     environment:
       WORDPRESS_DB_HOST: db
@@ -14,7 +22,7 @@ services:
         define('WP_DEBUG_LOG',     true);
         define('WP_DEBUG_DISPLAY', true);
     volumes:
-      - ./wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
+      - ./wordpress/dev/wp-content/uploads:/var/www/html/wp-content/uploads
       - ./woocommerce:/var/www/html/wp-content/plugins/woocommerce
       - ./woocommerce-extra-checkout-fields-for-brazil:/var/www/html/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/var/www/html/wp-content/plugins/woocommerce-jadlog
@@ -22,28 +30,66 @@ services:
       - 8080:80
     depends_on:
       - db
-  db:
-    image: mysql:5.6
+
+  wordpress-test:
+    image: wordpress:5.4
     environment:
-      - MYSQL_ROOT_PASSWORD=wordpress
-  test:
-    build:
-      context: ./test-container
-      args:
-        WORDPRESS_VERSION: 5.4
-    environment:
-      WORDPRESS_VERSION: 5.4
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress_test
-      WP_TESTS_DIR: /wordpress-tests-lib
-      WP_CORE_DIR: /wordpress
+      WORDPRESS_TABLE_PREFIX: wp_
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_DEBUG_LOG',     true);
+        define('WP_DEBUG_DISPLAY', true);
     volumes:
+      - wordpress-test-files:/var/www/html
+      - ./woocommerce:/var/www/html/wp-content/plugins/woocommerce
+      - ./woocommerce-extra-checkout-fields-for-brazil:/var/www/html/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
+      - ./woocommerce-jadlog:/var/www/html/wp-content/plugins/woocommerce-jadlog
+    ports:
+      - 18080:80
+    depends_on:
+      - db
+
+  codecept:
+    build:
+      context: ./docker-images
+      dockerfile: Dockerfile.codecept
+    volumes:
+      - wordpress-test-files:/wordpress
       - ./woocommerce:/wordpress/wp-content/plugins/woocommerce
       - ./woocommerce-extra-checkout-fields-for-brazil:/wordpress/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/wordpress/wp-content/plugins/woocommerce-jadlog
-      - ./wordpress-tests-lib:/wordpress-tests-lib
+    depends_on:
+      - wordpress-test
+      - chrome
+
+  chrome:
+      image: 'selenium/standalone-chrome-debug'
+      ports:
+        - '5900'
+
+  composer:
+    build:
+      context: ./docker-images
+      dockerfile: Dockerfile.composer
+    volumes:
+      - ./woocommerce-jadlog:/woocommerce-jadlog
+
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: wordpress
     depends_on:
       - db
+
+volumes:
+  mysql-files:
+  wordpress-test-files:
 

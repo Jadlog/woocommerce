@@ -1,0 +1,3 @@
+FROM composer
+
+WORKDIR /woocommerce-jadlog

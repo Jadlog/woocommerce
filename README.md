@@ -34,24 +34,20 @@ Este plugin para [WooCommerce](https://woocommerce.com) disponibiliza opções d
 
 O ambiente de desenvolvimento utiliza imagens [Docker](https://www.docker.com) e ferramenta [Docker Compose](https://docs.docker.com/compose/).
 
-Após clonar este repositório, rode `docker-compose up -d` para subir três contêineres:
+Após clonar este repositório, rode `docker-compose up -d wordpress-dev` para subir dois contêineres:
 
 - Wordpress (PHP + Apache + Wordpress)
 - MySQL
-- PHPUnit
 
 Acesse então http://localhost:8080/wp-admin para configurar o Wordpress e ativar os plugins *WooCommerce*, *Brazilian Market on WooCommerce* e *WooCommerce Jadlog* (já devem estar instalados).
 
 ## Testes
 
-Rodar uma vez para configurar os testes:
-`docker-compose run --rm test setup-tests`
-
 Para rodar todos os testes:
-`docker-compose run --rm test`
+`docker-compose run --rm codecept run`
 
 Para rodar um teste específico:
-`docker-compose run --rm test phpunit tests/classes/EmbarcadorServiceTest.php`
+`docker-compose run --rm codecept tests/wpunit/WooCommerce/Jadlog/Classes/EmbarcadorServiceTest.php`
 
 ## Error monitoring
 
@@ -64,6 +60,8 @@ Este plugin pode se integrar ao serviço de monitoramento de erros [Bugsnag](htt
 
 ## Changelog
 
+- v0.2.1
+  - Correção de bug nos pedidos de coleta.
 - v0.2.0
   - Modalidade Package.
 - v0.1.4

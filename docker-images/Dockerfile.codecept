@@ -1,0 +1,4 @@
+FROM codeception/codeception
+
+WORKDIR /wordpress/wp-content/plugins/woocommerce-jadlog
+

@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Jadlog
  * Plugin URI: https://github.com/Jadlog/woocommerce
  * Description: Jadlog Shipping Module for WooCommerce 3 & 4
- * Version: 0.2.0
+ * Version: 0.2.1
  * Author: Jadlog Logística
  * Author URI: https://www.jadlog.com.br/
  * Text Domain: woocommerce-jadlog
@@ -755,6 +755,8 @@ class WooCommerceJadlog
                         $delivery_id        = htmlentities($delivery->id);
                         $order_helper       = new OrderHelper($delivery->order_id);
                         $order              = $order_helper->get_order();
+                        if ($order === FALSE)
+                            continue;
                         $order_id           = $order->get_order_number();
                         $order_date_created = $order_helper->get_formatted_date_created();
                         $order_full_name    = $order->get_formatted_shipping_full_name();

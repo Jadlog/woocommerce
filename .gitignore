@@ -2,5 +2,7 @@
 /tags
 .DS_Store
 .svn
-/wordpress/wp-content/uploads/
-/wordpress-tests-lib/
+/wordpress/
+/woocommerce-jadlog/tests/_output/failed
+/woocommerce-jadlog/tests/_support/_generated
+/woocommerce-jadlog/vendor/
