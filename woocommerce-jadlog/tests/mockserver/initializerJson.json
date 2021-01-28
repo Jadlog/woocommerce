@@ -1,0 +1,49 @@
+[
+    {
+        "httpRequest": { "path": "/embarcador/api/pedido/incluir" },
+        "httpResponse": {
+            "statusCode": 200,
+            "body": {
+                "status":     "Pedido de coleta enviado",
+                "codigo":     "111",
+                "shipmentId": "222"
+            }
+        }
+    },
+    {
+        "httpRequest": { "path": "/embarcador/api/tracking/consultar" },
+        "httpResponse": {
+            "statusCode": 200,
+            "body": {
+                "consulta": [ {
+                    "codigo": "333",
+                    "tracking": {
+                        "recebedor": {
+                            "nome": "José da Silva",
+                            "doc":  "111.222.333-44",
+                            "data": "2021-01-22"
+                        },
+                        "eventos": [ {
+                            "data":    "21/01/2021",
+                            "status":  "Saiu para entrega",
+                            "unidade": "Matriz"
+                        } ],
+                        "status":     "ENTREGUE",
+                        "shipmentId": "222",
+                        "dacte":      "90001234567890",
+                        "dtEmissao":  "20/01/2021",
+                        "valor": 125.34,
+                        "peso":    5.6
+                    }
+                } ]
+            }
+        }
+    },
+    {
+        "httpRequest": { "path": "/embarcador/api/pedido/cancelar" },
+        "httpResponse": {
+            "statusCode": 200,
+            "body": { "status": "Pedido de coleta cancelado" }
+        }
+    }
+]

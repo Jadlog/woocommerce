@@ -3,6 +3,6 @@
 .DS_Store
 .svn
 /wordpress/
-/woocommerce-jadlog/tests/_output/failed
+/woocommerce-jadlog/tests/_output/
 /woocommerce-jadlog/tests/_support/_generated
 /woocommerce-jadlog/vendor/

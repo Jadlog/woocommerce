@@ -10,7 +10,13 @@ services:
       - mysql-files:/var/lib/mysql
 
   wordpress-dev:
-    image: wordpress:5.4
+    image: wordpress-dev:${WORDPRESS_VERSION}-wc${WOOCOMMERCE_VERSION}
+    build:
+      context: ./docker-images
+      dockerfile: Dockerfile.wordpress
+      args:
+        - WORDPRESS_VERSION
+        - WOOCOMMERCE_VERSION
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: root
@@ -23,7 +29,6 @@ services:
         define('WP_DEBUG_DISPLAY', true);
     volumes:
       - ./wordpress/dev/wp-content/uploads:/var/www/html/wp-content/uploads
-      - ./woocommerce:/var/www/html/wp-content/plugins/woocommerce
       - ./woocommerce-extra-checkout-fields-for-brazil:/var/www/html/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/var/www/html/wp-content/plugins/woocommerce-jadlog
     ports:
@@ -32,7 +37,13 @@ services:
       - db
 
   wordpress-test:
-    image: wordpress:5.4
+    image: wordpress-test:${WORDPRESS_VERSION}-wc${WOOCOMMERCE_VERSION}
+    build:
+      context: ./docker-images
+      dockerfile: Dockerfile.wordpress
+      args:
+        - WORDPRESS_VERSION
+        - WOOCOMMERCE_VERSION
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: root
@@ -44,8 +55,7 @@ services:
         define('WP_DEBUG_LOG',     true);
         define('WP_DEBUG_DISPLAY', true);
     volumes:
-      - wordpress-test-files:/var/www/html
-      - ./woocommerce:/var/www/html/wp-content/plugins/woocommerce
+      - wordpress-test-${WORDPRESS_VERSION}-wc${WOOCOMMERCE_VERSION}:/var/www/html
       - ./woocommerce-extra-checkout-fields-for-brazil:/var/www/html/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/var/www/html/wp-content/plugins/woocommerce-jadlog
     ports:
@@ -57,19 +67,36 @@ services:
     build:
       context: ./docker-images
       dockerfile: Dockerfile.codecept
+    environment:
+      MOCK_SERVER: 'mockserver:1080'
     volumes:
-      - wordpress-test-files:/wordpress
-      - ./woocommerce:/wordpress/wp-content/plugins/woocommerce
+      - wordpress-test-${WORDPRESS_VERSION}-wc${WOOCOMMERCE_VERSION}:/wordpress
       - ./woocommerce-extra-checkout-fields-for-brazil:/wordpress/wp-content/plugins/woocommerce-extra-checkout-fields-for-brazil
       - ./woocommerce-jadlog:/wordpress/wp-content/plugins/woocommerce-jadlog
     depends_on:
       - wordpress-test
       - chrome
+      - mockserver
 
   chrome:
-      image: 'selenium/standalone-chrome-debug'
-      ports:
-        - '5900'
+    image: 'selenium/standalone-chrome-debug:3.141.59-20201119'
+    volumes:
+      - /dev/shm:/dev/shm
+    ports:
+      - '5900'
+      - '4444'
+
+  mockserver:
+    image: 'mockserver/mockserver:mockserver-5.11.2'
+    command: -logLevel DEBUG -serverPort 1080
+    ports:
+      - 1080:1080
+    environment:
+      MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/initializerJson.json
+      MOCKSERVER_WATCH_INITIALIZATION_JSON: "true"
+    volumes:
+      - ./woocommerce-jadlog/tests/mockserver:/config
 
   composer:
     build:
@@ -91,5 +118,15 @@ services:
 
 volumes:
   mysql-files:
-  wordpress-test-files:
+  wordpress-test-5.6-wc4.9.1:
+  wordpress-test-5.6-wc4.8.0:
+  wordpress-test-5.6-wc4.7.1:
+  wordpress-test-5.6-wc4.6.2:
+  wordpress-test-5.6-wc4.5.2:
+  wordpress-test-5.6-wc4.4.1:
+  wordpress-test-5.6-wc4.3.3:
+  wordpress-test-5.6-wc4.2.2:
+  wordpress-test-5.6-wc4.1.1:
+  wordpress-test-5.6-wc4.0.0:
+  wordpress-test-5.6-wc3.9.3:
 

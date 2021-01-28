@@ -6,5 +6,10 @@ namespace Helper;
 
 class Acceptance extends \Codeception\Module
 {
-
+    function waitForAlert($timeout = 5)
+    {
+        $this->getModule('WPWebDriver')->webDriver->
+            wait($timeout)->
+            until(\Facebook\WebDriver\WebDriverExpectedCondition::alertIsPresent());
+    }
 }

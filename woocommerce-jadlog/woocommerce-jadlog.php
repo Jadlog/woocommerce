@@ -3,13 +3,13 @@
  * Plugin Name: WooCommerce Jadlog
  * Plugin URI: https://github.com/Jadlog/woocommerce
  * Description: Jadlog Shipping Module for WooCommerce 3 & 4
- * Version: 0.2.1
+ * Version: 0.3.0
  * Author: Jadlog Logística
  * Author URI: https://www.jadlog.com.br/
  * Text Domain: woocommerce-jadlog
  *
- * WC requires at least: 3.8.1
- * WC tested up to: 4.1.1
+ * WC requires at least: 3.9.3
+ * WC tested up to: 4.9.1
  *
  * License: GNU General Public License Version 3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -953,7 +953,7 @@ class WooCommerceJadlog
                             $('#tracking-dialog #dtEmissao' ).html(tracking['dtEmissao']  || '--');
                             var valor = tracking['valor'] ? new Intl.NumberFormat('pt-BR', { style: "currency", currency: 'BRL' }).format(tracking['valor']) : '--';
                             $('#tracking-dialog #valor'     ).html(valor);
-                            var peso = tracking['peso'] ? new Intl.NumberFormat().format(tracking['peso']) + ' kg' : '--';
+                            var peso = tracking['peso'] ? new Intl.NumberFormat('pt-BR').format(tracking['peso']) + ' kg' : '--';
                             $('#tracking-dialog #peso'      ).html(peso);
                             if (recebedor['nome']) {
                               var recebedor_text = recebedor['nome'] + ' (doc ' + recebedor['doc'] + ') em ' + new Date(recebedor['data']).toLocaleString();

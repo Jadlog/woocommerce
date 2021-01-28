@@ -7,8 +7,8 @@ Este plugin para [WooCommerce](https://woocommerce.com) disponibiliza opções d
 
 * PHP 7.3
 * MySQL 5.6
-* [Wordpress](https://wordpress.org) 5.2 - 5.4
-* [WooCommerce](https://woocommerce.com) 3.8.1 - 4.1.1
+* [Wordpress](https://wordpress.org) 5.2 - 5.6
+* [WooCommerce](https://woocommerce.com) 3.9.3 - 4.9.1
 * Plugin [Brazilian Market on WooCommerce](https://wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/) 3.7
 
 
@@ -30,7 +30,7 @@ Este plugin para [WooCommerce](https://woocommerce.com) disponibiliza opções d
 * [Manual de Instalação e Utilização](doc/MANUAL.md)
 
 
-## Ambiente para desenvolvimento
+## Ambiente de desenvolvimento
 
 O ambiente de desenvolvimento utiliza imagens [Docker](https://www.docker.com) e ferramenta [Docker Compose](https://docs.docker.com/compose/).
 
@@ -41,13 +41,60 @@ Após clonar este repositório, rode `docker-compose up -d wordpress-dev` para s
 
 Acesse então http://localhost:8080/wp-admin para configurar o Wordpress e ativar os plugins *WooCommerce*, *Brazilian Market on WooCommerce* e *WooCommerce Jadlog* (já devem estar instalados).
 
+
 ## Testes
 
 Para rodar todos os testes:
-`docker-compose run --rm codecept run`
+
+```bash
+$ docker-compose run --rm codecept run
+```
 
 Para rodar um teste específico:
-`docker-compose run --rm codecept tests/wpunit/WooCommerce/Jadlog/Classes/EmbarcadorServiceTest.php`
+
+```bash
+$ docker-compose run --rm codecept tests/wpunit/WooCommerce/Jadlog/Classes/EmbarcadorServiceTest.php
+```
+
+Para rodar com uma versão específica do Wordpress e/ou WooCommerce, use as
+variáveis de ambiente `$WORDPRESS_VERSION` e `$WOOCOMMERCE_VERSION`,
+respectivamente:
+
+```bash
+$ docker-compose rm -s wordpress-test #excluir o container para reconstruir o volume com a versão correta
+$ WOOCOMMERCE_VERSION=4.8.0 docker-compose run --rm codecept
+```
+
+Os testes de aceitação rodam com selenium/chrome/webdriver no modo _headless_.
+Para rodar no modo visual, abra com VNC o endereço `vnc://localhost:<porta vnc do container do chrome>` e rode:
+
+```bash
+$ docker-compose run --rm -e HEADLESS= codecept run acceptance
+```
+
+### Upgrade do banco de testes
+
+Quando há atualizações do Wordpress ou WooCommerce, é exigido que o banco de dados também seja atualizado. Assim, é preciso atualizar o arquivo dump `woocommerce-jadlog/tests/_data/wordpress_test.sql`
+
+1. Entrar num shell do conteiner `wordpress-test`:
+```bash
+    $ docker-compose exec wordpress-test bash
+```
+2. Instalar o [wp-cli](https://wp-cli.org/#installing):
+```bash
+    $ curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    $ chmod +x wp-cli.phar
+    $ mv wp-cli.phar /usr/local/bin/wp
+```
+3. Atualizar o [esquema do Wordpress](https://developer.wordpress.org/cli/commands/core/update-db/):
+```bash
+    $ wp core update-db
+```
+4. Atualizar o [esquema do WooCommerce](https://github.com/woocommerce/woocommerce/wiki/Upgrading-the-database-using-WP-CLI):
+```bash
+    $ wp wc update
+```
+5. Fazer um dump do banco `wordpress_test` e atualizar o arquivo `woocommerce-jadlog/tests/_data/wordpress_test.sql`
 
 ## Error monitoring
 
@@ -60,6 +107,8 @@ Este plugin pode se integrar ao serviço de monitoramento de erros [Bugsnag](htt
 
 ## Changelog
 
+- v0.3.0
+  - Suporta Wordpress 5.6 e WooCommerce 4.9
 - v0.2.1
   - Correção de bug nos pedidos de coleta.
 - v0.2.0

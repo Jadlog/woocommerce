@@ -1,0 +1,18 @@
+ARG WORDPRESS_VERSION
+FROM wordpress:${WORDPRESS_VERSION}
+
+ARG WOOCOMMERCE_VERSION
+
+RUN apt-get -yq update && apt-get -yq install wget unzip
+
+ENV DOWNLOAD_URL="https://github.com/woocommerce/woocommerce/releases/download/${WOOCOMMERCE_VERSION}/woocommerce.zip"
+ENV ARCHIVE_URL="https://github.com/woocommerce/woocommerce/archive/${WOOCOMMERCE_VERSION}.zip"
+
+RUN URL=$([ "${WOOCOMMERCE_VERSION}" \> "4.1.1" ] && echo "${DOWNLOAD_URL}" || echo "${ARCHIVE_URL}") && \
+    echo "--> Downloading ${URL}..." && \
+    wget --no-verbose ${URL} -O /woocommerce.zip && \
+    echo "--> Unzipping woocommerce.zip..." && \
+    unzip -oq /woocommerce.zip -d / && \
+    rm -f /woocommerce.zip && \
+    mv -v /woocommerce* /usr/src/wordpress/wp-content/plugins/woocommerce
+
