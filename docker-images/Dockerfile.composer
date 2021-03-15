@@ -1,3 +1,13 @@
-FROM composer
+FROM php:7.4
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+RUN apt-get -y update && \
+    apt-get -y install libzip-dev && \
+    docker-php-ext-configure zip && \
+    docker-php-ext-install zip && \
+    echo "extension=zip" > /usr/local/etc/php/conf.d/docker-php-ext-zip.ini
 
 WORKDIR /woocommerce-jadlog
+
+ENTRYPOINT [ "/usr/bin/composer" ]

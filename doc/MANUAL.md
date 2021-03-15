@@ -35,7 +35,7 @@
 ## Configuração
 
 ### Parâmetros iniciais
-Para configurar os parâmetros iniciais do módulo acesse a configuração a partir do menu *WooCommerce -> Configuration*, aba *Jadlog*.
+Para configurar os parâmetros iniciais do módulo acesse a configuração a partir do menu *WooCommerce -> Configuração*, aba *Jadlog*.
 Há quatro seções distintas.
 - Configuração Geral
 - Modalidade Jadlog Expresso
@@ -181,6 +181,35 @@ Email do contato da loja.
 - **Pessoa para contato**:  
 Nome do Responsável da loja.
 
+
+#### Configuração de Área de Entrega
+
+A configuração de áreas de entrega é obrigatória para que o método de entrega Jadlog apareça no carrinho de compras.
+
+Para configurar a entrega acesse a configuração a partir do menu *WooCommerce -> Configuração*, aba *Entrega*.
+
+- **Adicionar Área de Entrega**:
+
+![Adicionar Entrega](img/adcentrega.png)
+
+- **Localização da Área de Entrega**:
+
+Após inserir Nome da Área e Regiões da Área, clique no botão "Adicionar Entrega".
+![Localização Área de Entrega](img/areadeentrega.png)
+
+- **Adicionar Método de Entrega**:
+
+Escolher opção "Jadlog".
+![Adicionar Método de Entrega](img/adcmetodo.png)
+
+- **Habilitar Área de Entrega**:
+
+Habilitar o método de Entrega jadlog e salvar alterações.
+![Habilitar Método de Entrega](img/habilitajad.png)
+
+- **Alterações Salvas**:
+
+![Alterações Salvas](img/entregahabilitada.png)
 
 
 ## Utilização pelos clientes

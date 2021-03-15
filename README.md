@@ -44,6 +44,12 @@ Acesse então http://localhost:8080/wp-admin para configurar o Wordpress e ativa
 
 ## Testes
 
+Instale as bibliotecas:
+
+```bash
+$ docker-compose run --rm composer install
+```
+
 Para rodar todos os testes:
 
 ```bash
@@ -107,6 +113,8 @@ Este plugin pode se integrar ao serviço de monitoramento de erros [Bugsnag](htt
 
 ## Changelog
 
+- v0.4.0
+  - Suporte a zonas de entrega. *Configuração obrigatória*.
 - v0.3.0
   - Suporta Wordpress 5.6 e WooCommerce 4.9
 - v0.2.1

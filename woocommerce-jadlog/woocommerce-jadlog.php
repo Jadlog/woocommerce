@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Jadlog
  * Plugin URI: https://github.com/Jadlog/woocommerce
  * Description: Jadlog Shipping Module for WooCommerce 3 & 4
- * Version: 0.3.0
+ * Version: 0.4.0
  * Author: Jadlog Logística
  * Author URI: https://www.jadlog.com.br/
  * Text Domain: woocommerce-jadlog

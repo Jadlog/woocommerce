@@ -9,10 +9,10 @@ use WooCommerce\Jadlog\Classes\ShippingPackage;
 use WooCommerce\Jadlog\Classes\ShippingPrice;
 use WooCommerce\Jadlog\Classes\ShippingPriceService;
 
-if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
 
     function wc_jadlog_jadlogShippingInit() {
-        if ( ! class_exists( 'WC_Jadlog_Shipping_Method' ) ) {
+        if (! class_exists('WC_Jadlog_Shipping_Method')) {
 
             class WC_Jadlog_Shipping_Method extends WC_Shipping_Method {
 
@@ -24,15 +24,20 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                  * @access public
                  * @return void
                  */
-                public function __construct() {
-                    $this->id                 = self::METHOD_ID;
-                    $this->method_title       = __('Jadlog', 'jadlog');
-                    // $this->method_description = __('Jadlog', 'jadlog');
+                public function __construct($instance_id = 0) {
+                    $this->id          = self::METHOD_ID;
+                    $this->instance_id = absint($instance_id);
+                    $this->method_title       = 'Jadlog';
+                    $this->method_description =
+                        'Modalidades Package, Expresso e Pickup.<br/>'.
+                        '<a href="http://www.jadlog.com.br" target="_blank">jadlog.com.br</a> - '.
+                        'Uma empresa DPDgroup. Sua encomenda no melhor caminho.';
+
+                    $this->enabled  = isset($this->settings['enabled']) ? $this->settings['enabled'] : 'yes';
+                    $this->title    = isset($this->settings['title']) ? $this->settings['title'] : __('Jadlog', 'jadlog');
+                    $this->supports = array('shipping-zones');
 
                     $this->init();
-
-                    $this->enabled = isset($this->settings['enabled']) ? $this->settings['enabled'] : 'yes';
-                    $this->title = isset($this->settings['title']) ? $this->settings['title'] : __('Jadlog', 'jadlog');
 
                     include_once('Delivery.php');
                     include_once('EmbarcadorService.php');
@@ -95,7 +100,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                     if (!is_null($cost)) {
                         $rate = array(
-                            'id'    => 'jadlog_com',
+                            'id'    => self::METHOD_ID.'_COM',
                             'label' => $this->jadlog_build_com_label($shipping_price),
                             'cost'  => $cost,
                             'taxes' => true,
@@ -116,7 +121,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                     if (!is_null($cost)) {
                         $rate = array(
-                            'id'    => 'jadlog_package',
+                            'id'    => self::METHOD_ID.'_PACKAGE',
                             'label' => $this->jadlog_build_package_label($shipping_price),
                             'cost'  => $cost,
                             'taxes' => true,
@@ -148,7 +153,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         $_SESSION[$pudo->get_id()] = $this->jadlog_build_session_array($pudo);
 
                         $rate = array(
-                            'id'    => "jadlog_pudo_".$pudo->get_id(),
+                            'id'    => self::METHOD_ID.'_PUDO_'.$pudo->get_id(),
                             'label' => $this->jadlog_build_pickup_label($shipping_price, $pudo),
                             'cost'  => $cost,
                             'taxes' => true,
@@ -213,7 +218,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         }
     }
 
-    add_action( 'woocommerce_shipping_init', 'wc_jadlog_jadlogShippingInit' );
+    add_action('woocommerce_shipping_init', 'wc_jadlog_jadlogShippingInit');
 
 
     function wc_jadlog_save_order($order_id) {
@@ -227,7 +232,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 
     function wc_jadlog_add_shipping_method($methods) {
-        $methods['WC_Jadlog_Shipping_Method'] = 'WC_Jadlog_Shipping_Method';
+        $methods[WC_Jadlog_Shipping_Method::METHOD_ID] = 'WC_Jadlog_Shipping_Method';
         return $methods;
     }
 
