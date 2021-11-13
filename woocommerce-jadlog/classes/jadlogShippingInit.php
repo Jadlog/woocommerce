@@ -149,7 +149,11 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                         if ($pudo->nao_esta_ativo() || is_null($cost))
                             continue;
-
+                        
+                        if (!session_id()) {
+                            session_start(['read_and_close' => true,]);
+                        }
+                        
                         $_SESSION[$pudo->get_id()] = $this->jadlog_build_session_array($pudo);
 
                         $rate = array(
