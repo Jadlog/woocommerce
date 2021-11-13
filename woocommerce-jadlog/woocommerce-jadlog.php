@@ -15,8 +15,6 @@
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
-session_start();
-
 /* Exit if accessed directly */
 if (!defined('ABSPATH'))
     exit;
