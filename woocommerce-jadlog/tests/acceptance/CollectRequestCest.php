@@ -17,7 +17,7 @@ class CollectRequestCest
         // Incluir
         update_option(
             'wc_settings_tab_jadlog_url_inclusao_pedidos',
-            'http://'.$_ENV['MOCK_SERVER'].'/embarcador/api/pedido/incluir');
+            'https://'.$_ENV['MOCK_SERVER'].'/embarcador/api/pedido/incluir');
         $I->click('Enviar');
         $I->fillField(['name' => 'nr_doc'], '1234');
         $I->click('div.ui-dialog-buttonset > button:nth-child(2)');
@@ -30,7 +30,7 @@ class CollectRequestCest
         // Consultar
         update_option(
             'wc_settings_tab_jadlog_url_consulta_pedidos',
-            'http://'.$_ENV['MOCK_SERVER'].'/embarcador/api/tracking/consultar');
+            'https://'.$_ENV['MOCK_SERVER'].'/embarcador/api/tracking/consultar');
         $I->amOnAdminPage('/admin.php?page=jadlog');
         $I->click('Consultar');
         $I->waitForElementVisible('#tracking-dialog', 5);
@@ -51,7 +51,7 @@ class CollectRequestCest
         // Cancelar
         update_option(
             'wc_settings_tab_jadlog_url_cancelamento_pedidos',
-            'http://'.$_ENV['MOCK_SERVER'].'/embarcador/api/pedido/cancelar');
+            'https://'.$_ENV['MOCK_SERVER'].'/embarcador/api/pedido/cancelar');
         $I->click('Cancelar');
         $I->waitForAlert();
         $I->seeInPopup('Deseja cancelar');

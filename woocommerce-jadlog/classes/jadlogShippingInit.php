@@ -30,7 +30,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $this->method_title       = 'Jadlog';
                     $this->method_description =
                         'Modalidades Package, Expresso e Pickup.<br/>'.
-                        '<a href="http://www.jadlog.com.br" target="_blank">jadlog.com.br</a> - '.
+                        '<a href="https://www.jadlog.com.br" target="_blank">jadlog.com.br</a> - '.
                         'Uma empresa DPDgroup. Sua encomenda no melhor caminho.';
 
                     $this->enabled  = isset($this->settings['enabled']) ? $this->settings['enabled'] : 'yes';
@@ -63,6 +63,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     $this->jadlog_modalidade_com_ativa     = get_option('wc_settings_tab_jadlog_modalidade_com')     == 'yes';
                     $this->jadlog_modalidade_package_ativa = get_option('wc_settings_tab_jadlog_modalidade_package') == 'yes';
                     $this->jadlog_modalidade_pickup_ativa  = get_option('wc_settings_tab_jadlog_modalidade_pickup')  == 'yes';
+                    $this->jadlog_modalidade_economico_ativa  = get_option('wc_settings_tab_jadlog_modalidade_economico')  == 'yes';
 
                     // Save settings in admin if you have any defined
                     add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -91,6 +92,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                     if ($this->jadlog_modalidade_pickup_ativa)
                         $this->jadlog_add_pickup_rates($package, $postcode);
+
+                    if ($this->jadlog_modalidade_economico_ativa)
+                        $this->jadlog_add_economico_rates($package, $postcode);
                 }
 
                 private function jadlog_add_com_rate($package, $postcode) {
@@ -173,6 +177,27 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     }
                 }
 
+                private function jadlog_add_economico_rates($package, $postcode) {
+                    $shipping_package = new ShippingPackage($package, Modalidade::COD_ECONOMICO);
+                    $shipping_price   = new ShippingPrice($postcode, $shipping_package);
+                    $cost             = $shipping_price->get_estimated_value();
+
+                    if (!is_null($cost)) {
+                        $rate = array(
+                            'id'    => self::METHOD_ID.'_ECONOMICO',
+                            'label' => $this->jadlog_build_economico_label($shipping_price),
+                            'cost'  => $cost,
+                            'taxes' => true,
+                            'meta_data' => [
+                                'modalidade'  => Modalidade::LABEL_ECONOMICO,
+                                'valor_total' => $shipping_package->get_price(),
+                                'peso_taxado' => $shipping_package->get_effective_weight()
+                            ],
+                        );
+                        $this->add_rate($rate);
+                    }
+                }
+
                 private function jadlog_build_session_array($pudo) {
                     return array(
                         'latitude'  => $pudo->get_latitude(),
@@ -203,6 +228,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                             $shipping_price->get_estimated_time(),
                             ' - $1 '.__('dias úteis', 'jadlog'),
                             ' - $1 '.__('dia útil', 'jadlog'));
+                }
+
+                private function jadlog_build_economico_label($shipping_price) {
+                    return __('Jadlog Economico', 'jadlog').$this->jadlog_insert_if_present(
+                        $shipping_price->get_estimated_time(),
+                        ' - $1 '.__('dias úteis', 'jadlog'),
+                        ' - $1 '.__('dia útil', 'jadlog'));
                 }
 
                 private function jadlog_insert_if_present($text, $plural_phrase, $singular_phrase = '') {

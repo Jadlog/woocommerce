@@ -48,19 +48,19 @@ Há quatro seções distintas.
 
 - **URL da API de simulação de frete (Embarcador)**:  
 Endereço para cotação do frete.  
-Valor padrão: http://www.jadlog.com.br/embarcador/api/frete/valor
+Valor padrão: https://www.jadlog.com.br/embarcador/api/frete/valor
 
 - **URL da API de inclusão de pedidos (Embarcador)**:  
 Endereço para envio do pedido de coleta.  
-Valor padrão: http://www.jadlog.com.br/embarcador/api/pedido/incluir
+Valor padrão: https://www.jadlog.com.br/embarcador/api/pedido/incluir
 
 - **URL da API de cancelamento de pedidos (Embarcador)**: 
 Endereço para cancelamento do pedido.  
-Valor padrão: http://www.jadlog.com.br/embarcador/api/pedido/cancelar
+Valor padrão: https://www.jadlog.com.br/embarcador/api/pedido/cancelar
 
 - **URL da API de consulta de pedidos (Embarcador)**:  
 Endereço para rastreamento do pedido.  
-Valor padrão: http://www.jadlog.com.br/embarcador/api/tracking/consultar
+Valor padrão: https://www.jadlog.com.br/embarcador/api/tracking/consultar
 
 - **Token**:  
 Token de autorização fornecido pela Jadlog após a assinatura do contrato  
@@ -118,7 +118,7 @@ Marque esta opção para ativar a modalidade de transporte Jadlog Pickup
 
 - **URL da API de consulta de pontos Pickup**:  
 Endereço para consulta dos pontos de retirada (pickup).  
-Valor padrão: *http://www.jadlog.com.br/embarcador/api/pickup/pudos*
+Valor padrão: *https://www.jadlog.com.br/embarcador/api/pickup/pudos*
 
 - **Qtd de pontos pickup a mostrar**:  
 Quantidade de pontos pickup a serem mostrados no carrinho de compras. Valor máximo: 10.
@@ -258,4 +258,4 @@ Pode ser feito diretamente pelo site da Jadlog ou pelo WooCommerce no Botão *Co
 
 ## Desenvolvimento
 
-* [Jadlog](http://www.jadlog.com.br) - *Uma empresa DPDgroup*
+* [Jadlog](https://www.jadlog.com.br) - *Uma empresa DPDgroup*

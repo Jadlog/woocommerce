@@ -1519,7 +1519,7 @@ INSERT INTO `wp_options` (`option_id`, `option_name`, `option_value`, `autoload`
 (306, '_transient_product-transient-version', '1606245832', 'yes'),
 (313, 'wcbcf_settings', 'a:6:{s:11:\"person_type\";s:1:\"1\";s:10:\"cell_phone\";s:1:\"1\";s:9:\"mailcheck\";s:1:\"1\";s:11:\"maskedinput\";s:1:\"1\";s:12:\"validate_cpf\";s:1:\"1\";s:13:\"validate_cnpj\";s:1:\"1\";}', 'yes'),
 (314, 'wcbcf_version', '3.7.2', 'yes'),
-(319, 'wc_settings_tab_jadlog_url_simulador_frete', 'http://www.jadlog.com.br/embarcador/api/frete/valor', 'yes'),
+(319, 'wc_settings_tab_jadlog_url_simulador_frete', 'https://www.jadlog.com.br/embarcador/api/frete/valor', 'yes'),
 (320, 'wc_settings_tab_jadlog_url_inclusao_pedidos', 'http://mockserver:1080/embarcador/api/pedido/incluir', 'yes'),
 (321, 'wc_settings_tab_jadlog_url_cancelamento_pedidos', 'http://mockserver:1080/embarcador/api/pedido/cancelar', 'yes'),
 (322, 'wc_settings_tab_jadlog_url_consulta_pedidos', 'http://mockserver:1080/embarcador/api/tracking/consultar', 'yes'),

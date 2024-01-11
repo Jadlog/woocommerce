@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Jadlog
  * Plugin URI: https://github.com/Jadlog/woocommerce
  * Description: Jadlog Shipping Module for WooCommerce 3 & 4
- * Version: 0.4.0
+ * Version: 0.5.1
  * Author: Jadlog Logística
  * Author URI: https://www.jadlog.com.br/
  * Text Domain: woocommerce-jadlog
@@ -119,6 +119,8 @@ class WooCommerceJadlog
         woocommerce_admin_fields( $this->get_com_settings() );
         echo "<h3>".__('Modalidade Jadlog Package', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_package_settings() );
+        echo "<h3>".__('Modalidade Jadlog Econômico', 'jadlog')."</h3>";
+        woocommerce_admin_fields( $this->get_economico_settings() );
         echo "<h3>".__('Modalidade Jadlog Pickup', 'jadlog')."</h3>";
         woocommerce_admin_fields( $this->get_pickup_settings() );
         echo "<h3>".__('Dados do remetente', 'jadlog')."</h3>";
@@ -131,6 +133,7 @@ class WooCommerceJadlog
         woocommerce_update_options( $this->get_shipments_settings() );
         woocommerce_update_options( $this->get_com_settings() );
         woocommerce_update_options( $this->get_package_settings() );
+        woocommerce_update_options( $this->get_economico_settings() );
         woocommerce_update_options( $this->get_pickup_settings() );
         woocommerce_update_options( $this->get_shipperdata_settings() );
     }
@@ -148,7 +151,7 @@ class WooCommerceJadlog
                 'type'     => 'text',
                 'css'      => 'width:500px;',
                 'desc'     => '',
-                'default'  => 'http://www.jadlog.com.br/embarcador/api/frete/valor',
+                'default'  => 'https://www.jadlog.com.br/embarcador/api/frete/valor',
                 'id'       => 'wc_settings_tab_jadlog_url_simulador_frete'
             ),
             'JADLOG_URL_EMBARCADOR_INCLUSAO_PEDIDOS' => array(
@@ -156,7 +159,7 @@ class WooCommerceJadlog
                 'type'     => 'text',
                 'css'      => 'width:500px;',
                 'desc'     => '',
-                'default'  => 'http://www.jadlog.com.br/embarcador/api/pedido/incluir',
+                'default'  => 'https://www.jadlog.com.br/embarcador/api/pedido/incluir',
                 'id'       => 'wc_settings_tab_jadlog_url_inclusao_pedidos'
             ),
             'JADLOG_URL_EMBARCADOR_CANCELAMENTO_PEDIDOS' => array(
@@ -164,7 +167,7 @@ class WooCommerceJadlog
                 'type'     => 'text',
                 'css'      => 'width:500px;',
                 'desc'     => '',
-                'default'  => 'http://www.jadlog.com.br/embarcador/api/pedido/cancelar',
+                'default'  => 'https://www.jadlog.com.br/embarcador/api/pedido/cancelar',
                 'id'       => 'wc_settings_tab_jadlog_url_cancelamento_pedidos'
             ),
             'JADLOG_URL_EMBARCADOR_CONSULTA_PEDIDOS' => array(
@@ -172,7 +175,7 @@ class WooCommerceJadlog
                 'type'     => 'text',
                 'css'      => 'width:500px;',
                 'desc'     => '',
-                'default'  => 'http://www.jadlog.com.br/embarcador/api/tracking/consultar',
+                'default'  => 'https://www.jadlog.com.br/embarcador/api/tracking/consultar',
                 'id'       => 'wc_settings_tab_jadlog_url_consulta_pedidos'
             ),
             'JADLOG_KEY_EMBARCADOR' => array(
@@ -367,6 +370,69 @@ class WooCommerceJadlog
         return $settings;
     }
 
+    public function get_economico_settings() {
+        include_once('classes/TipoEntrega.php');
+        include_once('classes/TipoSeguro.php');
+
+        $settings = array(
+            'JADLOG_MODALIDADE_ECONOMICO' => array(
+                'name'     => '',
+                'desc'     => __('Ativar a modalidade de transporte Jadlog Econômico', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja utilizar a modalidade de transporte Jadlog Econômico', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_modalidade_economico'
+            ),
+            'JADLOG_FRAP_ECONOMICO' => array(
+                'name'     => '',
+                'desc'     => __('FRAP', 'jadlog'),
+                'desc_tip' => __('Marque esta opção se deseja que a cobrança de frete seja feita no destino na modalidade Econômico', 'jadlog'),
+                'type'     => 'checkbox',
+                'default'  => 'no',
+                'id'       => 'wc_settings_tab_jadlog_frap_economico'
+            ),
+            'JADLOG_VALOR_COLETA_ECONOMICO' => array(
+                'name'     => __('Valor de coleta', 'jadlog'),
+                'type'     => 'text',
+                'css'      => 'width:200px;',
+                'desc'     => __('Valor de coleta negociado com a Jadlog na modalidade Econômico (formato: 1234.99)', 'jadlog'),
+                'id'       => 'wc_settings_tab_jadlog_valor_coleta_economico'
+            ),
+            'JADLOG_TIPO_ENTREGA_ECONOMICO' => array(
+                'name'     => __('Tipo de entrega', 'jadlog'),
+                'type'     => 'select',
+                'desc_tip' => 'Na modalidade Econômico',
+                'options'  => TipoEntrega::TODOS,
+                'default'  => TipoEntrega::COD_DOMICILIO,
+                'id'       => 'wc_settings_tab_jadlog_tipo_entrega_economico'
+            ),
+            'JADLOG_TIPO_SEGURO_ECONOMICO' => array(
+                'name'     => __('Tipo do seguro', 'jadlog'),
+                'type'     => 'select',
+                'desc_tip' => 'Na modalidade Econômico',
+                'options'  => TipoSeguro::TODOS,
+                'default'  => TipoSeguro::COD_NORMAL,
+                'id'       => 'wc_settings_tab_jadlog_tipo_seguro_economico'
+            ),
+            'JADLOG_CALCULAR_PESOS_CUBADOS_ECONOMICO' => array(
+                'name'     => __('Calcular pesos cubados na modalidade Econômico', 'jadlog'),
+                'type'     => 'select',
+                'options'  => array(
+                    'PADRAO'                => __('Usar fator de cubagem padrão: ', 'jadlog').__(Modalidade::modal(Modalidade::COD_ECONOMICO), 'jadlog'),
+                    Modalidade::MODAL_AEREO => 'Usar fator de cubagem aéreo',
+                    'NAO_CALCULAR'          => 'Não calcular cubagem'
+                ),
+                'default'  => 'PADRAO',
+                'desc' => 
+                    '<br/>'.__('Os pesos cubados são utilizados no cálculo do frete e dependem do modal contratado (aéreo ou rodoviário).', 'jadlog').
+                    '<br/>'.__('Caso selecione um modal, cadastre os pesos reais dos produtos e suas dimensões.', 'jadlog').
+                    '<br/>'.__('Caso selecione a opção para não calcular cubagem, no cadastro de produtos informe no campo peso o maior valor entre o peso real e o peso cubado do respectivo produto.', 'jadlog'),
+                'id' => 'wc_settings_tab_jadlog_calcular_pesos_cubados_economico'
+            )
+        );
+        return $settings;
+    }
+
     public function get_pickup_settings() {
         include_once('classes/TipoSeguro.php');
 
@@ -384,7 +450,7 @@ class WooCommerceJadlog
                 'type'     => 'text',
                 'css'      => 'width:500px;',
                 'desc'     => '',
-                'default'  => 'http://www.jadlog.com.br/embarcador/api/pickup/pudos',
+                'default'  => 'https://www.jadlog.com.br/embarcador/api/pickup/pudos',
                 'id'       => 'wc_settings_tab_jadlog_url_consulta_pudos'
             ),
             'JADLOG_QTD_PONTOS_PICKUP' => array(
@@ -983,6 +1049,40 @@ $module = new WooCommerceJadlog();
 /* Register plugin status hooks */
 register_activation_hook(__FILE__, array($module, 'install'));
 register_deactivation_hook(__FILE__, array($module, 'deactivate'));
+register_activation_hook(__FILE__, 'atualizacao_https');
+
+function atualizacao_https() {
+    $frete_valor_url = get_option('wc_settings_tab_jadlog_url_simulador_frete');
+
+    if ($frete_valor_url === 'http://www.jadlog.com.br/embarcador/api/frete/valor') {
+        update_option('wc_settings_tab_jadlog_url_simulador_frete', 'https://www.jadlog.com.br/embarcador/api/frete/valor');
+    }
+
+    $pedido_incluir_url = get_option('wc_settings_tab_jadlog_url_inclusao_pedidos');
+
+    if ($pedido_incluir_url === 'http://www.jadlog.com.br/embarcador/api/pedido/incluir') {
+        update_option('wc_settings_tab_jadlog_url_inclusao_pedidos', 'https://www.jadlog.com.br/embarcador/api/pedido/incluir');
+    }
+
+
+    $pedido_cancelar_url = get_option('wc_settings_tab_jadlog_url_cancelamento_pedidos');
+
+    if ($pedido_cancelar_url === 'http://www.jadlog.com.br/embarcador/api/pedido/cancelar') {
+        update_option('wc_settings_tab_jadlog_url_cancelamento_pedidos', 'https://www.jadlog.com.br/embarcador/api/pedido/cancelar');
+    }
+
+    $pedido_consultar_url = get_option('wc_settings_tab_jadlog_url_consulta_pedidos');
+
+    if ($pedido_consultar_url === 'http://www.jadlog.com.br/embarcador/api/tracking/consultar') {
+        update_option('wc_settings_tab_jadlog_url_consulta_pedidos', 'https://www.jadlog.com.br/embarcador/api/tracking/consultar');
+    }
+
+    $pickup_pudos_url = get_option('wc_settings_tab_jadlog_url_consulta_pudos');
+
+    if ($pickup_pudos_url === 'http://www.jadlog.com.br/embarcador/api/pickup/pudos') {
+        update_option('wc_settings_tab_jadlog_url_consulta_pudos', 'https://www.jadlog.com.br/embarcador/api/pickup/pudos');
+    }
+}
 
 /* Exec */
 $module->Jadlog_main();

@@ -112,7 +112,10 @@ Este plugin pode se integrar ao serviço de monitoramento de erros [Bugsnag](htt
 1. Agora todas os erros, avisos e mensagens do PHP e logs de erro gerados por este plugin serão enviados ao painel do Bugsnag.
 
 ## Changelog
-
+- v0.5.1
+  - Alteração de URL's externas da API Jadlog para HTTPS
+- v0.5.0
+  - Adição de modalidade econômico
 - v0.4.0
   - Suporte a zonas de entrega. *Configuração obrigatória*.
 - v0.3.0
@@ -141,5 +144,5 @@ Texto completo em [LICENSE.txt](woocommerce-jadlog/LICENSE.txt).
 
 ## Desenvolvimento
 
-[Jadlog](http://www.jadlog.com.br) - *Uma empresa DPDgroup*
+[Jadlog](https://www.jadlog.com.br) - *Uma empresa DPDgroup*
 

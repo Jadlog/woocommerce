@@ -114,7 +114,7 @@ class EmbarcadorService {
         $params->cdUnidadeDes    = null;
         $params->cdPickupOri     = null;
         $params->cdPickupDes     = $this->jadlog_delivery->pudo_id;
-        $params->nrContrato      = intval($this->contrato);
+        $params->nrContrato      = empty($this->contrato) ? null : intval($this->contrato);
         $params->servico         = intval($this->servico);
         $params->shipmentId      = null;
         $params->vlColeta        = empty($this->valor_coleta) ? null : floatval($this->valor_coleta);

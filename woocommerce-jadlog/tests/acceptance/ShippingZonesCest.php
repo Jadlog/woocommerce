@@ -19,7 +19,7 @@ class ShippingZonesCest
         $I->selectOption('select[name=add_method_id]', 'Jadlog');
         $I->click('Adicionar método de entrega', '.wc-backbone-modal');
         $I->see('Jadlog');
-        $I->see('Modalidades Package, Expresso e Pickup');
+        $I->see('Modalidades Package, Expresso, .Com, Pickup e Economico');
 
         $I->fillField('input[placeholder="Selecione as regiões desta área"]', 'Argentina');
         $I->see('Buenos Aires');
