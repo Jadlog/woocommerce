@@ -889,6 +889,11 @@ class WooCommerceJadlog
                                         $(function() { jadlog_embarcador_dialog_setup("#dialog-<?= $delivery_id ?>") });
                                     </script>
                                 <?php elseif (DeliveryRepository::sent($delivery)): ?>
+                                  <p>
+                                     <a href="javascript:void(0)" class="jadlog_print_label button" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
+                                         <?= __('Etiqueta', 'jadlog') ?>
+                                     </a>
+                                   </p>
                                     <p>
                                         <a href="javascript:void(0)" class="jadlog_delivery_tracking button" data-id="<?= $delivery_id ?>" data-shipment-id="<?= $delivery->shipment_id ?>">
                                             <?= __('Consultar', 'jadlog') ?>
@@ -1036,6 +1041,13 @@ class WooCommerceJadlog
                             alert(json['consulta'][0]['error']['descricao']);
                         }
                     });
+                });
+                $('.jadlog_print_label').on("click", function () {
+                   var id = $(this).data('id');
+                   var params = $.param({
+                      id: id
+                    });
+                    window.open('<?= JADLOG_ROOT_URL ?>/controllers/LabelController.php?' + params);
                 });
             });
         </script>
